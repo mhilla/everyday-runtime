@@ -31,7 +31,8 @@ export const APP_STYLES = `
   box-sizing: border-box;
   height: 100%;
   min-height: 420px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   background: var(--er-bg);
   color: var(--er-text);
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -68,12 +69,15 @@ export const APP_STYLES = `
 :where(.er-app) :where(h1, h2, h3, h4, p, ul, dl) { margin: 0; }
 .er-app :focus-visible { outline: 3px solid var(--er-focus); outline-offset: 2px; }
 
+.er-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 .er-header { padding: 16px 16px 0; }
+@container er (max-width: 480px) {
+  .er-header { padding-top: 10px; }
+  .er-greeting { font-size: 18px; }
+  .er-date { font-size: 13px; }
+}
 .er-nav {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  padding: 14px 16px 8px;
+  padding: 10px 16px 8px;
   background: var(--er-bg);
 }
 .er-header-inner, .er-content, .er-nav-inner { max-width: 760px; margin: 0 auto; width: 100%; }

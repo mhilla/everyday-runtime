@@ -72,8 +72,10 @@ export const EverydayApp = () => {
           </div>
         </div>
       </nav>
-      <main className="er-main" id="er-panel" role="tabpanel" aria-labelledby={`er-tab-${tab}`}>
-        <div className="er-content">
+      {/* Keyed by tab so each tab starts scrolled to the top: setting
+          scrollTop is a no-op inside Twenty's front component sandbox. */}
+      <main className="er-main er-scroll" key={tab}>
+        <div className="er-content" id="er-panel" role="tabpanel" aria-labelledby={`er-tab-${tab}`}>
           <div className="er-visually-hidden" aria-live="polite">
             {announcement}
           </div>
