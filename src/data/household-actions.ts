@@ -174,6 +174,16 @@ export const createHouseholdActions = (
       });
     },
 
+    // Undo a check-off or removal from an external list (e.g. Home Assistant).
+    // A purchase already recorded stays recorded.
+    async reopenItem(item: ShoppingItem) {
+      await repository.updateShoppingItem(item.id, {
+        status: 'OPEN',
+        purchasedAt: null,
+        dismissedAt: null,
+      });
+    },
+
     // Works from the list (item given) or directly from a product.
     async markPurchased(
       item: ShoppingItem | null,
