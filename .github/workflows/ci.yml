@@ -42,6 +42,19 @@ jobs:
       - name: Unit tests
         run: yarn test
 
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
   integration:
     name: Integration tests (Twenty)
     runs-on: ubuntu-latest
@@ -54,7 +67,7 @@ jobs:
 
       - name: Spawn Twenty test instance
         id: twenty
-        uses: twentyhq/twenty/.github/actions/spawn-twenty-app-dev-test@main
+        uses: twentyhq/twenty/.github/actions/spawn-twenty-app-dev-test@19bb8009e0b43f10e9ab801b9cd84b04fefe168b # main, 2026-09-26
         with:
           twenty-version: ${{ env.TWENTY_VERSION }}
 

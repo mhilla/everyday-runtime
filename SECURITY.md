@@ -31,6 +31,18 @@ Out of scope: vulnerabilities in Twenty itself (report those to
 [twentyhq/twenty](https://github.com/twentyhq/twenty/security)), and issues that
 require an already compromised Twenty server or administrator account.
 
+## How the repository is protected
+
+- GitHub secret scanning and push protection are enabled.
+- Dependabot alerts and security updates are enabled; `.github/dependabot.yml`
+  proposes grouped dependency updates monthly.
+- CodeQL code scanning (GitHub default setup) analyses the TypeScript code and
+  the workflows.
+- Pull requests run a dependency review that fails on new high-severity
+  vulnerabilities.
+- Workflows run with read-only tokens by default; third-party actions from
+  outside GitHub are pinned to a commit SHA.
+
 ## Security notes for self-hosters
 
 - The app has no backend of its own and makes no outbound network calls.

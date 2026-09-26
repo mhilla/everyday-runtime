@@ -4,8 +4,9 @@
 # 1. On npmjs.com open your package > Settings > Trusted Publisher and register
 #    this repository and this workflow file (publish.yml).
 #    See https://docs.npmjs.com/trusted-publishers
-# 2. Push a version tag (e.g. `git tag v1.0.0 && git push --tags`) or run the
-#    workflow manually from the Actions tab.
+# 2. Run the workflow manually from the Actions tab.
+#    (It is deliberately not triggered by version tags: GitHub releases of this
+#    repository do not imply an npm release until trusted publishing is set up.)
 #
 # Publishing with provenance certifies which GitHub repository the package is
 # built from. This is also how you claim ownership of your app in a Twenty
@@ -14,9 +15,6 @@
 name: Publish
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -31,10 +29,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version-file: '.nvmrc'
           registry-url: https://registry.npmjs.org
 
       - name: Update npm

@@ -6,6 +6,20 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+### Added
+
+- Governance: CODE_OF_CONDUCT (Contributor Covenant 2.1), SUPPORT, MAINTAINERS.
+- Dependabot configuration (grouped monthly updates) and a dependency review
+  check on pull requests; CodeQL default setup enabled for the repository.
+
+### Changed
+
+- CONTRIBUTING describes branches, the pull request workflow, commit expectations
+  and scope.
+- The npm publish workflow runs on demand only (it no longer starts on version
+  tags) and enables Corepack.
+- Actions from `twentyhq/twenty` are pinned to a commit SHA instead of `main`.
+
 ## 0.1.0
 
 First usable version of the smart shopping workflow.
