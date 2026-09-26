@@ -1,0 +1,43 @@
+# Assist sentences for Everyday Runtime (see ../../everyday_voice.yaml).
+language: en
+intents:
+  EverydayEmpty:
+    data:
+      - sentences:
+          - "(we're|we are) out of {product}"
+          - "{product} (is|are) (empty|gone|finished)"
+          - "we ran out of {product}"
+        slots:
+          lang: en
+  EverydayBought:
+    data:
+      - sentences:
+          - "[I] (bought|got|picked up) {product}"
+        slots:
+          lang: en
+  EverydayInStock:
+    data:
+      - sentences:
+          - "we still have {product}"
+          - "we have enough {product}"
+        slots:
+          lang: en
+  EverydayAsk:
+    data:
+      - sentences:
+          - "do we [still] have [any] {product}"
+          - "is there [any] {product} left"
+        slots:
+          lang: en
+  EverydayNeeds:
+    data:
+      - sentences:
+          - "what do (we|I) need [to buy]"
+        slots:
+          lang: en
+lists:
+  product:
+    wildcard: true
+  lang:
+    values:
+      - en

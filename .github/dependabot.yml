@@ -24,6 +24,14 @@ updates:
           - minor
           - patch
 
+  - package-ecosystem: pip
+    directory: /integrations/home-assistant
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
+      include: scope
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

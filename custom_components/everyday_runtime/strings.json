@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Everyday Runtime",
+        "description": "Everyday Runtime runs as an app in your Twenty workspace. Create an API key in Twenty under Settings → APIs & Webhooks.",
+        "data": {
+          "url": "Twenty URL",
+          "api_key": "API key"
+        },
+        "data_description": {
+          "url": "The address you open Twenty with, e.g. https://crm.example.com",
+          "api_key": "A Twenty API key of the workspace where Everyday Runtime is installed"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Everyday Runtime needs a new API key",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach Everyday Runtime. Check the URL and that the app is installed in this workspace.",
+      "invalid_auth": "Twenty rejected the API key."
+    },
+    "abort": {
+      "already_configured": "This workspace is already connected.",
+      "reauth_successful": "The API key was updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "probably_needed": {
+        "name": "Probably needed"
+      },
+      "on_list": {
+        "name": "On the list"
+      }
+    },
+    "todo": {
+      "shopping_list": {
+        "name": "Shopping list"
+      }
+    }
+  },
+  "services": {
+    "talk": {
+      "name": "Talk",
+      "description": "Tell Everyday Runtime something in plain words (German or English), like \"Milch ist leer\" or \"What do we need?\", and get its answer.",
+      "fields": {
+        "text": {
+          "name": "Sentence",
+          "description": "What happened or what you want to know."
+        },
+        "config_entry_id": {
+          "name": "Household",
+          "description": "Only needed if you connected more than one workspace."
+        }
+      }
+    }
+  }
+}

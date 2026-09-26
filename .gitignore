@@ -41,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 *.d.ts
+
+# python (Home Assistant integration tests)
+__pycache__/
+.pytest_cache/

@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Everyday Runtime verbinden",
+        "description": "Everyday Runtime läuft als App in deinem Twenty-Workspace. Einen API-Schlüssel erstellst du in Twenty unter Einstellungen → APIs & Webhooks.",
+        "data": {
+          "url": "Twenty-Adresse",
+          "api_key": "API-Schlüssel"
+        },
+        "data_description": {
+          "url": "Die Adresse, unter der du Twenty öffnest, z. B. https://crm.example.com",
+          "api_key": "Ein Twenty-API-Schlüssel des Workspaces, in dem Everyday Runtime installiert ist"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Everyday Runtime braucht einen neuen API-Schlüssel",
+        "data": {
+          "api_key": "API-Schlüssel"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Everyday Runtime ist nicht erreichbar. Prüfe die Adresse und ob die App in diesem Workspace installiert ist.",
+      "invalid_auth": "Twenty hat den API-Schlüssel abgelehnt."
+    },
+    "abort": {
+      "already_configured": "Dieser Workspace ist schon verbunden.",
+      "reauth_successful": "Der API-Schlüssel wurde aktualisiert."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "probably_needed": {
+        "name": "Wahrscheinlich gebraucht"
+      },
+      "on_list": {
+        "name": "Auf der Liste"
+      }
+    },
+    "todo": {
+      "shopping_list": {
+        "name": "Einkaufsliste"
+      }
+    }
+  },
+  "services": {
+    "talk": {
+      "name": "Sprechen",
+      "description": "Sag Everyday Runtime etwas in normalen Worten (Deutsch oder Englisch), z. B. „Milch ist leer“ oder „Was brauchen wir?“, und bekomm die Antwort.",
+      "fields": {
+        "text": {
+          "name": "Satz",
+          "description": "Was passiert ist oder was du wissen willst."
+        },
+        "config_entry_id": {
+          "name": "Haushalt",
+          "description": "Nur nötig, wenn du mehr als einen Workspace verbunden hast."
+        }
+      }
+    }
+  }
+}

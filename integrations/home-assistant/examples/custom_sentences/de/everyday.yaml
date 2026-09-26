@@ -1,0 +1,44 @@
+# Assist-Sätze für Everyday Runtime (siehe ../../everyday_voice.yaml).
+language: de
+intents:
+  EverydayEmpty:
+    data:
+      - sentences:
+          - "{product} ist (leer|alle|aus)"
+          - "{product} sind (leer|alle)"
+          - "(wir haben|es gibt) (kein|keine|keinen) {product} mehr"
+        slots:
+          lang: de
+  EverydayBought:
+    data:
+      - sentences:
+          - "[ich] (habe|hab) {product} (gekauft|geholt)"
+          - "{product} (ist|sind) gekauft"
+        slots:
+          lang: de
+  EverydayInStock:
+    data:
+      - sentences:
+          - "wir haben noch {product}"
+          - "{product} ist noch da"
+        slots:
+          lang: de
+  EverydayAsk:
+    data:
+      - sentences:
+          - "haben wir noch {product}"
+          - "(ist|sind) noch {product} da"
+        slots:
+          lang: de
+  EverydayNeeds:
+    data:
+      - sentences:
+          - "was (brauchen wir|fehlt [uns]|muss ich [ein]kaufen)"
+        slots:
+          lang: de
+lists:
+  product:
+    wildcard: true
+  lang:
+    values:
+      - de

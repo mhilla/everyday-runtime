@@ -1,0 +1,63 @@
+# Home Assistant package: Assist forwards everyday sentences to Everyday Runtime
+# and speaks its answer. Adding to the list already works with Assist's built-in
+# to-do sentences ("Add milk to my shopping list"), so it is not repeated here.
+#
+# 1. Copy this file to config/packages/everyday_voice.yaml and enable packages:
+#      homeassistant:
+#        packages: !include_dir_named packages
+# 2. Copy custom_sentences/de/everyday.yaml and/or custom_sentences/en/everyday.yaml
+#    to config/custom_sentences/<language>/.
+# 3. Restart Home Assistant.
+#
+# The sentence files set `lang`, and Assist fills in `product`.
+intent_script:
+  EverydayEmpty:
+    action:
+      - action: everyday_runtime.talk
+        data:
+          text: "{{ product ~ ' ist leer' if lang == 'de' else 'We are out of ' ~ product }}"
+        response_variable: everyday
+      - stop: ""
+        response_variable: everyday
+    speech:
+      text: "{{ action_response.reply }}"
+  EverydayBought:
+    action:
+      - action: everyday_runtime.talk
+        data:
+          text: "{{ product ~ ' gekauft' if lang == 'de' else 'Bought ' ~ product }}"
+        response_variable: everyday
+      - stop: ""
+        response_variable: everyday
+    speech:
+      text: "{{ action_response.reply }}"
+  EverydayInStock:
+    action:
+      - action: everyday_runtime.talk
+        data:
+          text: "{{ 'Wir haben noch ' ~ product if lang == 'de' else 'We still have ' ~ product }}"
+        response_variable: everyday
+      - stop: ""
+        response_variable: everyday
+    speech:
+      text: "{{ action_response.reply }}"
+  EverydayAsk:
+    action:
+      - action: everyday_runtime.talk
+        data:
+          text: "{{ 'Haben wir noch ' ~ product ~ '?' if lang == 'de' else 'Do we have ' ~ product ~ '?' }}"
+        response_variable: everyday
+      - stop: ""
+        response_variable: everyday
+    speech:
+      text: "{{ action_response.reply }}"
+  EverydayNeeds:
+    action:
+      - action: everyday_runtime.talk
+        data:
+          text: "{{ 'Was brauchen wir?' if lang == 'de' else 'What do we need?' }}"
+        response_variable: everyday
+      - stop: ""
+        response_variable: everyday
+    speech:
+      text: "{{ action_response.reply }}"

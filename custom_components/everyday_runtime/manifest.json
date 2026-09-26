@@ -1,0 +1,12 @@
+{
+  "domain": "everyday_runtime",
+  "name": "Everyday Runtime",
+  "codeowners": ["@micha16372"],
+  "config_flow": true,
+  "documentation": "https://github.com/micha16372/everyday-runtime/blob/main/docs/HOME_ASSISTANT.md",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/micha16372/everyday-runtime/issues",
+  "requirements": [],
+  "version": "0.4.1"
+}

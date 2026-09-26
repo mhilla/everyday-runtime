@@ -1,0 +1,14 @@
+{
+  "entity": {
+    "sensor": {
+      "probably_needed": { "default": "mdi:cart-heart" },
+      "on_list": { "default": "mdi:format-list-checks" }
+    },
+    "todo": {
+      "shopping_list": { "default": "mdi:cart" }
+    }
+  },
+  "services": {
+    "talk": { "service": "mdi:message-text" }
+  }
+}

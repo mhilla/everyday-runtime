@@ -1,0 +1,64 @@
+# Checks the Home Assistant integration in custom_components/everyday_runtime:
+# its tests, Home Assistant's own validator (hassfest) and HACS validation.
+name: Home Assistant
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'custom_components/**'
+      - 'integrations/home-assistant/**'
+      - 'hacs.json'
+      - '.github/workflows/home-assistant.yml'
+  pull_request:
+    paths:
+      - 'custom_components/**'
+      - 'integrations/home-assistant/**'
+      - 'hacs.json'
+      - '.github/workflows/home-assistant.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: integrations/home-assistant/requirements-test.txt
+
+      - name: Install test dependencies
+        run: pip install -r integrations/home-assistant/requirements-test.txt
+
+      - name: Run tests
+        working-directory: integrations/home-assistant
+        run: pytest -q
+
+  hassfest:
+    name: hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate with hassfest
+        uses: home-assistant/actions/hassfest@58bff37c8947f690ace498be413a9b78d6f30f93 # master, 2026-09-26
+
+  hacs:
+    name: HACS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate for HACS
+        uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main, 2026-09-26
+        with:
+          category: integration
+          # Brand icons are submitted to home-assistant/brands separately.
+          ignore: brands

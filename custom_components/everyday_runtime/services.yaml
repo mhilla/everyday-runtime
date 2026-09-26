@@ -1,0 +1,11 @@
+talk:
+  fields:
+    text:
+      required: true
+      example: "Milch ist leer"
+      selector:
+        text:
+    config_entry_id:
+      selector:
+        config_entry:
+          integration: everyday_runtime

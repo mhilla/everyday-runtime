@@ -1,0 +1,40 @@
+# Home Assistant package: moves everything added to Alexa's own shopping list
+# ("Alexa, put milk on my shopping list") into Everyday Runtime.
+#
+# Amazon closed the official Alexa list API on 1 July 2024, so Alexa's list
+# first has to appear in Home Assistant as a to-do list. Community integrations
+# such as "Alexa Shopping List Sync" (ocean90/alexa_shopping_sync) do that
+# through unofficial Amazon interfaces. Review and install one yourself, then
+# set ALEXA_LIST below to its entity.
+#
+# Copy to config/packages/alexa_list_to_everyday.yaml and restart.
+automation:
+  - id: everyday_alexa_list_to_everyday
+    alias: "Move Alexa shopping list items to Everyday"
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: todo.alexa_shopping_list # ALEXA_LIST
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state | int(0) > 0 }}"
+    actions:
+      - action: todo.get_items
+        target:
+          entity_id: todo.alexa_shopping_list # ALEXA_LIST
+        data:
+          status: needs_action
+        response_variable: alexa
+      - repeat:
+          for_each: "{{ alexa['todo.alexa_shopping_list']['items'] | map(attribute='summary') | list }}"
+          sequence:
+            - action: todo.add_item
+              target:
+                entity_id: todo.everyday_shopping_list
+              data:
+                item: "{{ repeat.item }}"
+            - action: todo.remove_item
+              target:
+                entity_id: todo.alexa_shopping_list # ALEXA_LIST
+              data:
+                item: "{{ repeat.item }}"
