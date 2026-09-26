@@ -8,9 +8,25 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Quantity-aware estimates** (#2): purchase quantities give a typical use per
+  day; a bulk purchase lasts longer, a small one runs out sooner. Reported
+  consumption with a quantity moves the expected run-out by the share used.
+- **Learning from corrections** (#3): earlier “Empty” and late “Still have it”
+  reports adjust how long a product is expected to last (bounded to 0.5–2×, a
+  single report counts half), explained in “Why?”.
+- Product details show “Lasts about”, the typical use per day and a “Learned from
+  your corrections” hint.
+
 - Governance: CODE_OF_CONDUCT (Contributor Covenant 2.1), SUPPORT, MAINTAINERS.
 - Dependabot configuration (grouped monthly updates) and a dependency review
   check on pull requests; CodeQL default setup enabled for the repository.
+
+### Fixed
+
+- Switching tabs kept the scroll position; on phones the Products tab opened
+  below its search field. Each tab now starts at the top.
+- Accessibility (axe): no `tabpanel` role on `<main>`, no heading-level jump in
+  product details.
 
 ### Changed
 

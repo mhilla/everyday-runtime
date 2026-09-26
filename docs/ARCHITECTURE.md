@@ -65,6 +65,9 @@ Notes:
 | `basis` | Which rule produced the result (for UI and tests) |
 | `reason` | One line, e.g. “Last purchased 6 days ago · usual interval ~5 days” |
 | `factors` | Ordered explanation lines for the “Why?” panel |
+| `expectedDurationDays` | How long the current purchase should last (after quantities and learned corrections) |
+| `consumptionRatePerDay` | Typical use per day, when quantities are known |
+| `calibrationFactor` | Multiplier learned from earlier corrections, or `null` |
 
 Rules, applied in this order (all numbers live in `INFERENCE_CONFIG`):
 
@@ -86,17 +89,34 @@ Rules, applied in this order (all numbers live in `INFERENCE_CONFIG`):
    - The usual interval is the **median** of the last 6 intervals, so one holiday
      does not distort it. With a single purchase a 14-day prior is used with low
      confidence.
-   - Expected run-out = last purchase + interval, pushed back to at least
-     *sighting + ½ interval* if the product was seen in stock since, and moved
-     earlier by 15% of an interval per CONSUMED report (max 50%).
-   - `needScore = sigmoid(6 · (daysPastRunOut / interval + 0.1))` — about 0.65 at the
+   - **Quantities (v0.2).** Quantities of one trip are added up. For every
+     completed cycle with a known quantity, *quantity ÷ days until the next trip*
+     is a consumption rate; the median of the recent rates is the typical use per
+     day. The current purchase then lasts *its quantity ÷ typical use*, bounded to
+     ¼–4× the buying rhythm. Without quantities the buying rhythm is used as
+     before.
+   - **Learning from corrections (v0.2).** In every *completed* cycle, the first
+     EMPTY report gives the real duration, and a SEEN_IN_STOCK report later than
+     expected gives a minimum duration. Each is divided by the duration expected
+     for that cycle. The median of the last 4 ratios becomes a multiplier
+     (one report counts half), bounded to 0.5–2×, ignored within ±10%. Reports in
+     the current cycle are not used here — rules 3–5 already handle them.
+   - Expected duration = quantity-based duration × learned multiplier.
+   - Expected run-out = last purchase + expected duration, pushed back to at least
+     *sighting + ½ duration* if the product was seen in stock since, and moved
+     earlier per CONSUMED report: by the used share of the last purchase when
+     both have quantities (max 90%), otherwise by 15% per report (max 50%).
+   - The reason line names the buying rhythm (“usual interval ~5 days”) unless
+     the expected duration differs from it by 15% or more (“3 l usually lasts ~2
+     weeks”, “usually lasts ~7 days”).
+   - `needScore = sigmoid(6 · (daysPastRunOut / duration + 0.1))` — about 0.65 at the
      expected run-out, 0.86 one fifth of an interval later.
    - Bought within 2 days, or seen within 1 day → `CONFIRMED`, need capped at
      0.05 / 0.10.
    - `confidence = sampleFactor × regularityFactor` with
      `sampleFactor = min(0.95, 1 − 0.5^intervals)` and
      `regularityFactor = 1 / (1 + 1.5 · coefficientOfVariation)`.
-   - **Staleness**: beyond 3 intervals since the last purchase, or 120 days since the
+   - **Staleness**: beyond 3 expected durations since the last purchase, or 120 days since the
      last evidence, confidence decays exponentially and the need drifts back to 0.5.
 7. Scores are clamped to 0–1 and rounded to two decimals.
 

@@ -99,6 +99,8 @@ result. In short:
 | **Bought** in the last 2 days | Confirmed in stock, need ≤ 5% |
 | **Seen in stock** in the last day | Confirmed in stock, need ≤ 10% |
 | Regular purchases | Need rises around the usual interval (median of recent intervals) |
+| Purchase quantities | 3 l last longer than 1 l — based on your typical use per day |
+| Earlier “Empty” / “Still have it” reports | The expected duration is adjusted (bounded, explained) |
 | Irregular purchases / only one purchase | Same idea, lower confidence → “possible” |
 | “Used some” since the last purchase | Expected run-out moves earlier |
 | “Empty” then “still have it” within a day | Conflict → “Unclear — please check” |

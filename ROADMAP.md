@@ -4,7 +4,7 @@ This roadmap describes direction, not promises. Priorities change with feedback
 from real households — open an issue if something here matters to you (or does
 not).
 
-## v0.1 — Smart shopping core (current)
+## v0.1 — Smart shopping core (released as 0.1.0)
 
 - [x] Data model: Product, Observation, ShoppingItem, Purchase
 - [x] Deterministic, explainable inference engine with unit tests
@@ -15,11 +15,17 @@ not).
 
 ## v0.2 — Better estimates, real households
 
-- [ ] Better consumption intervals: use purchase quantities (2 l lasts longer than 1 l)
-- [ ] Learn from “Still have it” / “Empty” corrections (per-product calibration)
-- [ ] Households with several people: who added what, per-person views
-- [ ] Better activity history: filters, undo, edit/delete an observation
-- [ ] Server-side aggregation instead of loading the whole history into the browser
+Shipped in 0.2.0:
+
+- [x] Better consumption intervals: use purchase quantities (2 l lasts longer than 1 l) — #2
+- [x] Learn from “Still have it” / “Empty” corrections (per-product calibration) — #3
+
+Still open:
+
+- [ ] Households with several people: who added what, per-person views — #4
+- [ ] Better activity history: filters, undo, edit/delete an observation — #5
+- [ ] Server-side aggregation instead of loading the whole history into the browser — #6
+- [ ] German translation and i18n groundwork — #11
 
 ## v0.3 — Less typing
 
