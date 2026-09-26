@@ -1,6 +1,6 @@
 pytest-homeassistant-custom-component==0.13.366
 # Assist (conversation) for tests/test_voice_examples.py; versions match that Home Assistant release.
-gazetteer-matcher==1.1.0
+gazetteer-matcher==1.2.0
 hassil==3.12.1
 home-assistant-intents==2026.8.28
 # Local To-do stands in for the Alexa list in tests/test_alexa_list_example.py.
