@@ -1,13 +1,30 @@
 {
   "name": "everyday-runtime",
   "version": "0.2.0",
+  "description": "Self-hosted shopping assistant for Twenty that infers what a household probably needs, with confidence and a plain-language reason.",
   "license": "MIT",
+  "keywords": [
+    "twenty-app",
+    "twenty",
+    "self-hosted",
+    "shopping-list",
+    "household",
+    "grocery",
+    "privacy"
+  ],
+  "homepage": "https://github.com/micha16372/everyday-runtime#readme",
+  "bugs": {
+    "url": "https://github.com/micha16372/everyday-runtime/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micha16372/everyday-runtime.git"
+  },
   "engines": {
     "node": "^24.5.0",
     "npm": "please-use-yarn",
     "yarn": ">=4.0.2"
   },
-  "keywords": [],
   "packageManager": "yarn@4.13.0",
   "scripts": {
     "twenty": "twenty",

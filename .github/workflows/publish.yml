@@ -4,6 +4,10 @@
 # 1. On npmjs.com open your package > Settings > Trusted Publisher and register
 #    this repository and this workflow file (publish.yml).
 #    See https://docs.npmjs.com/trusted-publishers
+#    npm only offers this for packages that already exist. For the very first
+#    release add a granular npm access token as the NPM_TOKEN repository secret,
+#    run the workflow once, then register the trusted publisher and delete the
+#    secret.
 # 2. Run the workflow manually from the Actions tab.
 #    (It is deliberately not triggered by version tags: GitHub releases of this
 #    repository do not imply an npm release until trusted publishing is set up.)
@@ -50,4 +54,7 @@ jobs:
         # OIDC provenance for private repos
         # env:
         #   TWENTY_APP_PUBLISH_DISABLE_PROVENANCE: 'true'
+        env:
+          # Only needed for the first release (see above); empty afterwards.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn twenty app:publish
