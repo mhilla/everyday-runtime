@@ -6,6 +6,8 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+## 0.2.0 — 2026-09-26
+
 ### Added
 
 - **Quantity-aware estimates** (#2): purchase quantities give a typical use per
@@ -16,7 +18,7 @@ project uses [Semantic Versioning](https://semver.org/).
   single report counts half), explained in “Why?”.
 - Product details show “Lasts about”, the typical use per day and a “Learned from
   your corrections” hint.
-
+- DEMO.md: a three-minute walkthrough of the workflow, with updated screenshots.
 - Governance: CODE_OF_CONDUCT (Contributor Covenant 2.1), SUPPORT, MAINTAINERS.
 - Dependabot configuration (grouped monthly updates) and a dependency review
   check on pull requests; CodeQL default setup enabled for the repository.
@@ -25,18 +27,22 @@ project uses [Semantic Versioning](https://semver.org/).
 
 - Switching tabs kept the scroll position; on phones the Products tab opened
   below its search field. Each tab now starts at the top.
+- “Use per day” is rounded coarsely (e.g. ~0.4 l instead of ~0.41 l).
 - Accessibility (axe): no `tabpanel` role on `<main>`, no heading-level jump in
   product details.
 
 ### Changed
 
+- Tooling: oxlint 1.85, GitHub Actions `checkout`/`setup-node` v7 and
+  `dependency-review-action` v5 (Dependabot); the test configs use Vite's built-in
+  `resolve.tsconfigPaths` instead of the `vite-tsconfig-paths` plugin.
 - CONTRIBUTING describes branches, the pull request workflow, commit expectations
   and scope.
 - The npm publish workflow runs on demand only (it no longer starts on version
   tags) and enables Corepack.
 - Actions from `twentyhq/twenty` are pinned to a commit SHA instead of `main`.
 
-## 0.1.0
+## 0.1.0 — 2026-09-26
 
 First usable version of the smart shopping workflow.
 
