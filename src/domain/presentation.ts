@@ -120,6 +120,18 @@ export const summarizeCount = (count: number): string => {
   return `${count} things probably needed`;
 };
 
+// Coarse on purpose: a rate derived from a few purchases is an estimate.
+export const formatRate = (ratePerDay: number, unit: string | null) => {
+  const rounded =
+    ratePerDay >= 10
+      ? Math.round(ratePerDay)
+      : ratePerDay >= 0.1
+        ? Math.round(ratePerDay * 10) / 10
+        : Math.round(ratePerDay * 100) / 100;
+
+  return unit ? `~${rounded} ${unit}` : `~${rounded}`;
+};
+
 export const formatQuantity = (quantity: number, unit: string | null) => {
   const rounded = Math.round(quantity * 100) / 100;
 

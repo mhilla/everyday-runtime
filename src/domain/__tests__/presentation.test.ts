@@ -6,6 +6,7 @@ import {
   describeNeed,
   formatPercent,
   formatQuantity,
+  formatRate,
   greetingForHour,
   summarizeCount,
 } from 'src/domain/presentation';
@@ -87,6 +88,12 @@ describe('formatting', () => {
     expect(formatInterval(14)).toBe('~2 weeks');
     expect(formatInterval(33)).toBe('~5 weeks');
     expect(formatInterval(60)).toBe('~2 months');
+  });
+
+  it('formats consumption rates coarsely', () => {
+    expect(formatRate(0.4133, 'l')).toBe('~0.4 l');
+    expect(formatRate(0.043, 'pack')).toBe('~0.04 pack');
+    expect(formatRate(12.6, null)).toBe('~13');
   });
 
   it('formats quantities with units', () => {

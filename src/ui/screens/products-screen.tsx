@@ -5,7 +5,7 @@ import {
   describeConfidence,
   describeNeed,
   formatPercent,
-  formatQuantity,
+  formatRate,
   OBSERVATION_LABELS,
 } from 'src/domain/presentation';
 import { sortProductsForBrowsing } from 'src/domain/shopping';
@@ -55,7 +55,7 @@ const ProductDetail = ({
         {assessment.consumptionRatePerDay !== null ? (
           <div className="er-fact">
             <dt>Use per day</dt>
-            <dd>~{formatQuantity(assessment.consumptionRatePerDay, product.defaultUnit)}</dd>
+            <dd>{formatRate(assessment.consumptionRatePerDay, product.defaultUnit)}</dd>
           </div>
         ) : (
           <div className="er-fact">
