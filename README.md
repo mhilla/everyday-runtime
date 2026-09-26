@@ -127,6 +127,8 @@ Open <http://localhost:2020>, sign in with the development account
 `tim@apple.dev` / `tim@apple.dev`, choose **Everyday Runtime** in the sidebar and
 press **Load demo household**.
 
+New here? [DEMO.md](DEMO.md) walks through the whole workflow in three minutes.
+
 The first start of the Twenty container takes a few minutes. If `yarn twenty apply`
 fails with `ECONNRESET` right after `docker:start`, the server is still warming up —
 wait a minute and run it again. More in [SETUP.md](SETUP.md).
