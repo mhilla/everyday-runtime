@@ -72,9 +72,13 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
 - **Talk to your list** — “Milch ist leer”, “2 Kaffee auf die Liste”, “Was brauchen
   wir?”: understood for free and offline in German and English; optional AI tools
   for Twenty's AI chat ([docs/AI.md](docs/AI.md)).
+- **Home Assistant** — the list as a to-do list (checking off counts as a purchase),
+  “probably needed” sensors, Assist voice sentences in German and English; installable
+  via HACS ([docs/HOME_ASSISTANT.md](docs/HOME_ASSISTANT.md)).
+- **Alexa** — your own private skill: “Alexa, sage mein Vorrat, Milch ist leer”, plus a
+  bridge that moves Alexa's own shopping list into Everyday ([docs/ALEXA.md](docs/ALEXA.md)).
 - **Integrations** — MCP for any AI assistant, `POST /s/talk` for Siri shortcuts,
-  Home Assistant, n8n and bots, Twenty workflow actions
-  ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
+  n8n and bots, Twenty workflow actions ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
 - **Active questions** — “Still enough coffee?”: one tap where it helps most.
 - **Price radar** — usual price, recent low, “great / good / usual / expensive”
   while you type a price, price alerts and a stock-up recommendation with the
@@ -191,7 +195,7 @@ See [docs/PRIVACY.md](docs/PRIVACY.md) for what is stored and how to delete it.
 - **v0.4** — talk to your list (free sentence understanding, AI tools for Twenty's AI chat) ✅
 - **v0.5** — households with several people, care mode for relatives, shared-flat mode
 - **v0.6** — capture by barcode, photo, receipt
-- **v0.7** — Home Assistant, Alexa skill, webhooks, appliance adapters, one-tap ordering (confirmed)
+- **v0.7** — webhooks, appliance adapters, one-tap ordering (confirmed); Home Assistant and Alexa arrived early ✅
 - **v1.0** — stable self-hosted workflow, upgrade docs, documented privacy model
 
 Full list: [ROADMAP.md](ROADMAP.md) · where it is heading: [VISION.md](docs/VISION.md) ([Deutsch](docs/VISION.de.md)).

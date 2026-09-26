@@ -26,7 +26,9 @@ importantly — a framework-independent inference engine.
 | `src/data` | `domain`, a minimal REST transport | Maps Twenty records to domain types and back. `household-actions.ts` is the only place that decides *what* gets written for a user action. |
 | `src/ui` | `domain`, `data`, React, `twenty-sdk/front-component` | Screens and components. Reads a snapshot, derives everything with the domain layer, calls actions, reloads. |
 | `src/objects`, `src/page-layouts`, … | `twenty-sdk/define` | Declarative Twenty metadata. |
-| `src/logic-functions` | `domain`, `data` | `GET /s/needs` and the health check. |
+| `src/logic-functions` | `domain`, `data` | HTTP routes (`/s/needs`, `/s/talk`, `/s/list`, `/s/list/items`, `/s/community-prices`), AI tools and the health check. |
+| `custom_components/everyday_runtime` | HTTP routes only | Home Assistant integration (Python, own tests in `integrations/home-assistant`). |
+| `integrations/alexa` | `POST /s/talk` only | Alexa skill: interaction models and a dependency-free Lambda handler. |
 
 The domain layer has no imports from Twenty or React. That keeps the engine easy to
 test, easy to read and portable (a CLI, a Home Assistant add-on or a different

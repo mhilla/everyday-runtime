@@ -57,8 +57,9 @@ How we compare with other list and pantry apps: [docs/MARKET.md](docs/MARKET.md)
 
 ## v0.7 — Integrations and actions
 
-- [ ] Home Assistant: sensors, to-do list, automations (#34)
-- [ ] Alexa skill (own invocation name) (#35)
+- [x] Home Assistant: sensors, to-do list, Assist sentences, automations (#34) — arrived early
+- [x] Alexa's own shopping list → Everyday via Home Assistant
+- [x] Alexa skill (own invocation name, private/dev mode) (#35) — arrived early
 - [ ] Recipe ingredients from self-hosted Mealie or KitchenOwl (#48)
 - [ ] Webhooks; export to Bring!/Todoist
 - [ ] Appliance adapters: Home Connect, Miele, Samsung Family Hub (experimental)

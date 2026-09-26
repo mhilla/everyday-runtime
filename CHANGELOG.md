@@ -6,6 +6,27 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+### Added
+
+- **Home Assistant integration** (`custom_components/everyday_runtime`, installable via HACS):
+  the shopping list as a to-do list (checking off records a purchase; unchecking reopens),
+  sensors *Probably needed* and *On the list* with details as attributes, the action
+  `everyday_runtime.talk` with a response, re-authentication, English and German.
+  Tested with Home Assistant's own test harness (25 tests), hassfest and HACS validation in CI.
+- **Assist voice examples** in German and English (“Milch ist leer”, “was brauchen wir”),
+  tested against Home Assistant's conversation engine.
+- **Alexa's own shopping list → Everyday**: a Home Assistant automation that moves items
+  from Alexa's list (via a community integration) into Everyday.
+- **Alexa skill** (`integrations/alexa`): a private custom skill (“Alexa, sage mein Vorrat,
+  Milch ist leer”, “Alexa, ask everyday list what do we need”) with German and English
+  interaction models and a dependency-free handler for Alexa-hosted skills or AWS Lambda.
+  Every sample is tested against the sentence parser.
+- `GET /s/list` and `POST /s/list/items`: the shopping list for external to-do lists.
+
+### Fixed
+
+- Pack sizes like “a case of”, “bags of” or “eine Tüte” are no longer part of the product name.
+
 ## 0.4.1 — 2026-09-26
 
 ### Changed

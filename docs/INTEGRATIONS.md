@@ -9,7 +9,9 @@ them.
 | Door | For | Endpoint |
 | --- | --- | --- |
 | **MCP** | AI assistants (Claude, ChatGPT connectors, Cursor, any MCP client) | `https://<your-twenty>/mcp` — the tools `app_everyday_needs`, `app_everyday_product`, `app_everyday_update` |
-| **HTTP** | Shortcuts, Home Assistant, n8n/Node-RED, bots, NFC tags | `POST /s/talk` (one sentence), `GET /s/needs` (JSON), `GET /s/community-prices` |
+| **Home Assistant** | To-do list, sensors, Assist voice, automations | the integration in `custom_components/everyday_runtime` — see [HOME_ASSISTANT.md](HOME_ASSISTANT.md) |
+| **Alexa** | “Alexa, sage mein Vorrat, Milch ist leer”; Alexa's own list → Everyday | [ALEXA.md](ALEXA.md) |
+| **HTTP** | Shortcuts, n8n/Node-RED, bots, NFC tags | `POST /s/talk` (one sentence), `GET /s/needs` (JSON), `GET /s/list` and `POST /s/list/items` (the list), `GET /s/community-prices` |
 | **Twenty workflows** | Scheduled or event-driven automations inside Twenty | actions “Everyday: what do we need?” and “Everyday: record what happened” |
 
 You need an API key: Twenty **Settings → APIs & Webhooks → Create key**. Treat it
@@ -51,13 +53,18 @@ curl -X POST https://your-twenty.example.com/s/talk \
 
 `GET /s/needs` returns what is probably needed as JSON (for dashboards).
 
+`GET /s/list` returns the shopping list: open items, then items checked off in the last 7 days.
+`POST /s/list/items` changes one item: `{"action": "add", "name": "2 Milch"}` or
+`{"action": "complete" | "reopen" | "remove", "id": "…"}`. Completing an item records a purchase.
+The answer contains the updated list.
+
 ## Automation ideas
 
 | Idea | How |
 | --- | --- |
 | **“Hey Siri, Einkauf”** | iOS Shortcut: *Dictate text* → *Get contents of URL* (`POST /s/talk`, JSON `{"text": …}`) → *Speak* the `reply`. Android: HTTP Shortcuts or Tasker. |
 | **NFC tag on the coffee jar** | Scanning the tag runs a shortcut/automation that posts `{"text": "Kaffee ist leer"}`. |
-| **Home Assistant** | `rest_command` posting to `/s/talk` (buttons, NFC, Assist); a `rest` sensor on `/s/needs` for dashboards and notifications (“leaving work and milk is probably low”). |
+| **Home Assistant** | Use the integration ([HOME_ASSISTANT.md](HOME_ASSISTANT.md)): notify near the supermarket, NFC tag → `everyday_runtime.talk`, Assist sentences. |
 | **Weekly list by email or Telegram** | Twenty workflow (schedule trigger) → “Everyday: what do we need?” → send email; or n8n/Node-RED → `GET /s/needs` → Telegram. |
 | **Chat bot** | A Telegram/Signal bot forwards messages to `/s/talk` and replies with `reply`. |
 | **Care for parents** | A relative's phone gets the weekly needs of the parents' household (planned care mode, v0.5). |
@@ -69,6 +76,10 @@ curl -X POST https://your-twenty.example.com/s/talk \
 - **MCP:** Jede KI mit MCP-Unterstützung kann über `https://<dein-twenty>/mcp` die
   Einkaufsliste lesen und Meldungen machen (Werkzeuge `app_everyday_needs`,
   `app_everyday_product`, `app_everyday_update`). Beispielkonfiguration oben.
+- **Home Assistant:** eigene Integration mit Einkaufsliste, Sensoren und Sprachsätzen,
+  siehe [HOME_ASSISTANT.md](HOME_ASSISTANT.md).
+- **Alexa:** eigener privater Skill „Mein Vorrat“ und Übernahme von Alexas Einkaufsliste,
+  siehe [ALEXA.md](ALEXA.md).
 - **HTTP:** `POST /s/talk` mit `{"text": "Milch ist leer"}` versteht einen Satz und
   antwortet — ideal für Siri-Kurzbefehle, Home Assistant, n8n, Telegram-Bots und
   NFC-Tags. `GET /s/needs` liefert den Bedarf als JSON.
