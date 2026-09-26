@@ -6,6 +6,11 @@
 
 **Website:** https://micha16372.github.io/everyday-runtime/ · **Try it in three minutes:** [DEMO.md](DEMO.md)
 
+> 🇩🇪 **Auf Deutsch:** Everyday Runtime ist ein selbst gehosteter Einkaufsassistent, der
+> erkennt, was ein Haushalt *wahrscheinlich* braucht — mit Wahrscheinlichkeit und Begründung,
+> ohne exakte Vorratshaltung. Wohin es geht (Familien, WGs, Fürsorge für Eltern,
+> Preis-Radar, Alexa, Hausgeräte, Fotos): **[Vision auf Deutsch](docs/VISION.de.md)**.
+
 <p align="center">
   <img src="docs/screenshots/now-desktop.png" alt="The Now screen: 4 things probably needed — Apples (empty, confirmed, 95%), Milk (probably low, 89%, last purchased 6 days ago, usual interval about 5 days), Paper towels and Coffee" width="720">
 </p>
@@ -162,13 +167,13 @@ See [docs/PRIVACY.md](docs/PRIVACY.md) for what is stored and how to delete it.
 
 ## Roadmap
 
-- **v0.2** — better consumption intervals, households with several people, richer activity history
-- **v0.3** — barcodes, receipt import, import/export
-- **v0.4** — webhooks, Home Assistant, Telegram capture
-- **v0.5** — stores, offers, price observations, price per unit, offer rating, smart stock-up purchases
-- **v1.0** — a stable self-hosted shopping workflow, upgrade docs, a documented privacy model, feedback from real households
+- **v0.3** — German UI, active questions (“still enough coffee?”), price radar with deal detection and stock-up planning
+- **v0.4** — households with several people, care mode for relatives, shared-flat mode
+- **v0.5** — capture by barcode, photo, receipt and natural language
+- **v0.6** — Home Assistant, Alexa skill, webhooks, appliance adapters, one-tap ordering (confirmed)
+- **v1.0** — stable self-hosted workflow, upgrade docs, documented privacy model
 
-Full list: [ROADMAP.md](ROADMAP.md).
+Full list: [ROADMAP.md](ROADMAP.md) · where it is heading: [VISION.md](docs/VISION.md) ([Deutsch](docs/VISION.de.md)).
 
 ## Contributing
 
