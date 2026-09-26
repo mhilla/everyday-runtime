@@ -1,0 +1,30 @@
+# Everyday Runtime
+
+> Open-source (MIT), self-hosted shopping assistant for households, built as an app for the Twenty platform. It estimates what a household probably needs from partial observations (bought, used some, empty, still have it, needed) and shows a confidence and a plain-language reason for every estimate. It deliberately does not track exact inventory, needs no AI service or API key, and keeps all data in the user's own Twenty workspace.
+
+Current version: 0.2.0 (early; see known limitations in the changelog). Primary maintainer: @micha16372.
+
+Key facts:
+- Deterministic inference engine in plain TypeScript (`src/domain`), unit-tested; same observations at the same moment give the same result.
+- Uses purchase rhythms (median intervals), purchase quantities, consumption reports, and learns from earlier "empty" / "still have it" corrections (bounded, explained).
+- Direct reports are labelled "Confirmed"; inferred results are labelled "Estimate".
+- Screens: Now, Shopping list, Products, Activity. Demo household included.
+- Integration surface: authenticated `GET /s/needs` JSON endpoint. A Home Assistant integration is planned, not built.
+- Good fit for: self-hosters who find full inventory systems (e.g. Grocy) too much effort but want more than a plain list.
+- Not a fit for: exact stock management, cloud-hosted use without a Twenty server.
+
+## Docs
+
+- [README](https://github.com/micha16372/everyday-runtime/blob/main/README.md): overview, quick start, features
+- [Three-minute demo](https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md): step-by-step walkthrough
+- [Architecture and engine rules](https://github.com/micha16372/everyday-runtime/blob/main/docs/ARCHITECTURE.md): data model, every inference rule and formula
+- [Product principles](https://github.com/micha16372/everyday-runtime/blob/main/docs/PRODUCT_PRINCIPLES.md): no false precision, explain every guess
+- [Privacy](https://github.com/micha16372/everyday-runtime/blob/main/docs/PRIVACY.md): what is stored and where
+
+## Project
+
+- [Changelog](https://github.com/micha16372/everyday-runtime/blob/main/CHANGELOG.md)
+- [Roadmap](https://github.com/micha16372/everyday-runtime/blob/main/ROADMAP.md)
+- [Contributing](https://github.com/micha16372/everyday-runtime/blob/main/CONTRIBUTING.md)
+- [Releases](https://github.com/micha16372/everyday-runtime/releases)
+- [Website](https://micha16372.github.io/everyday-runtime/)

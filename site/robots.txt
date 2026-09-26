@@ -1,0 +1,5 @@
+# Everyone, including search engines and AI assistants, is welcome to read this site.
+User-agent: *
+Allow: /
+
+Sitemap: https://micha16372.github.io/everyday-runtime/sitemap.xml

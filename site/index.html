@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Everyday Runtime — self-hosted shopping assistant that knows what you probably need</title>
+<meta name="description" content="Open-source, self-hosted shopping assistant for households. Estimates what is probably needed from partial information — with a confidence and a plain-language reason — instead of tracking exact inventory. MIT, runs on Twenty, no AI service required.">
+<link rel="canonical" href="https://micha16372.github.io/everyday-runtime/">
+<meta name="theme-color" content="#2d6a4f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Everyday Runtime — knows what your household probably needs">
+<meta property="og:description" content="Self-hosted, explainable shopping assistant. “Milk — probably low · 89% · bought 6 days ago, usually every ~5 days.” No exact inventory required.">
+<meta property="og:url" content="https://micha16372.github.io/everyday-runtime/">
+<meta property="og:image" content="https://micha16372.github.io/everyday-runtime/assets/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="text/plain" title="LLM summary" href="llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Everyday Runtime",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Self-hosted (Docker), web browser",
+      "description": "Open-source, self-hosted shopping assistant that estimates what a household probably needs, with a confidence and a plain-language reason, instead of tracking exact inventory.",
+      "url": "https://micha16372.github.io/everyday-runtime/",
+      "downloadUrl": "https://github.com/micha16372/everyday-runtime/releases",
+      "softwareVersion": "0.2.0",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "screenshot": "https://micha16372.github.io/everyday-runtime/screenshots/now-desktop.png"
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Everyday Runtime",
+      "codeRepository": "https://github.com/micha16372/everyday-runtime",
+      "programmingLanguage": "TypeScript",
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is Everyday Runtime an inventory app?", "acceptedAnswer": { "@type": "Answer", "text": "No. It never claims to know exact stock. It estimates how likely a product is needed from whatever you record — bought, used some, empty, still have it — and explains each estimate." } },
+        { "@type": "Question", "name": "Does it need an AI service or an API key?", "acceptedAnswer": { "@type": "Answer", "text": "No. The engine is deterministic TypeScript with unit tests. It makes no calls to AI providers or other third parties." } },
+        { "@type": "Question", "name": "Where is my data stored?", "acceptedAnswer": { "@type": "Answer", "text": "In your own self-hosted Twenty workspace. Everyday Runtime has no backend of its own and no telemetry." } },
+        { "@type": "Question", "name": "How is it different from Grocy?", "acceptedAnswer": { "@type": "Answer", "text": "Grocy is a full household inventory system that works best when stock is tracked precisely. Everyday Runtime targets households that will not track everything: it works with partial information and says how sure it is." } },
+        { "@type": "Question", "name": "Does it work with Home Assistant?", "acceptedAnswer": { "@type": "Answer", "text": "Not yet. An authenticated JSON endpoint (GET /s/needs) exists today; a Home Assistant integration is on the roadmap." } }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root { --bg:#f6f4ee; --surface:#fff; --text:#1c1f1a; --muted:#5b6057; --border:#e2ddd1; --accent:#2d6a4f; --accent-soft:#e3efe8; --high:#b9401a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121411; --surface:#1b1e1a; --text:#eceee8; --muted:#a3a89f; --border:#30352e; --accent:#74c69d; --accent-soft:#1f3a2c; --high:#ff8a65; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.6 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--accent); }
+  main, header, footer { max-width:960px; margin:0 auto; padding:0 20px; }
+  header { padding-top:56px; }
+  .eyebrow { font-size:13px; font-weight:700; letter-spacing:.12em; color:var(--accent); text-transform:uppercase; }
+  h1 { font-size:clamp(34px,6vw,56px); line-height:1.05; letter-spacing:-.02em; margin:.3em 0 .2em; }
+  .lead { font-size:clamp(19px,2.4vw,23px); color:var(--muted); max-width:720px; margin:0; }
+  .cta { display:flex; flex-wrap:wrap; gap:12px; margin:28px 0 8px; }
+  .btn { display:inline-block; padding:12px 20px; border-radius:12px; font-weight:650; text-decoration:none; border:1px solid var(--border); background:var(--surface); color:var(--text); }
+  .btn.primary { background:var(--accent); color:var(--bg); border-color:transparent; }
+  .shot { width:100%; height:auto; border-radius:16px; border:1px solid var(--border); margin:36px 0 8px; box-shadow:0 10px 40px rgba(0,0,0,.08); }
+  section { margin:56px 0; }
+  h2 { font-size:28px; letter-spacing:-.01em; margin:0 0 14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:18px; }
+  .card p { margin:0; color:var(--muted); }
+  .pipeline { font:15px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 18px; overflow-x:auto; white-space:nowrap; }
+  table { width:100%; border-collapse:collapse; background:var(--surface); border-radius:12px; overflow:hidden; }
+  th, td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:12px; }
+  pre { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; overflow-x:auto; font-size:14px; }
+  details { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 18px; margin:10px 0; }
+  summary { font-weight:650; cursor:pointer; }
+  footer { padding:40px 20px 60px; color:var(--muted); font-size:15px; border-top:1px solid var(--border); }
+  .phones { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+  .phones img { width:100%; height:auto; border-radius:16px; border:1px solid var(--border); }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Open source · Self-hosted · MIT</div>
+  <h1>Everyday Runtime</h1>
+  <p class="lead">A shopping assistant that learns what your household <strong>probably</strong> needs — and tells you why. No barcode scanning of every item, no fake stock counts.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/micha16372/everyday-runtime#quick-start">Get started</a>
+    <a class="btn" href="https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md">Three-minute demo</a>
+    <a class="btn" href="https://github.com/micha16372/everyday-runtime">View on GitHub</a>
+  </div>
+  <img class="shot" src="screenshots/now-desktop.png" alt="The Now screen: 4 things probably needed — Apples (empty, confirmed, 95%), Milk (probably low, 89%), Paper towels and Coffee, each with a reason" width="1040" height="752">
+</header>
+<main>
+  <section>
+    <h2>The problem</h2>
+    <p>Plain shopping lists only know what someone remembered to write down. Inventory apps promise exact stock — if you scan everything in and out, which nobody keeps up for long. Real households have partial information: a receipt, a “we're out of coffee”, a glance into the pantry.</p>
+    <p>Everyday Runtime is built for exactly that. It turns scattered observations into an honest estimate:</p>
+    <div class="pipeline">Product → Observation → Estimated state → Confidence → Need → Shopping action → Purchase</div>
+  </section>
+
+  <section>
+    <h2>What it does</h2>
+    <div class="grid">
+      <div class="card"><h3>Explains every suggestion</h3><p>Each estimate has a percentage, a plain headline and a “Why?”: purchases, rhythm, expected run-out, conflicts, stale data.</p></div>
+      <div class="card"><h3>Facts vs. estimates</h3><p>What someone reported is “Confirmed”; what the app inferred is visibly an “Estimate”. One tap corrects it.</p></div>
+      <div class="card"><h3>Learns from you</h3><p>Uses purchase quantities (3&nbsp;l last longer than 1&nbsp;l) and earlier “empty” / “still have it” reports — bounded and explained.</p></div>
+      <div class="card"><h3>Private by design</h3><p>Runs on your own Twenty server. No backend of its own, no telemetry, no AI service, no third-party calls.</p></div>
+      <div class="card"><h3>Deterministic engine</h3><p>Plain TypeScript with unit tests: same observations, same moment, same answer. Every rule is documented.</p></div>
+      <div class="card"><h3>Integration-ready</h3><p>An authenticated JSON endpoint (<code>GET /s/needs</code>) returns the same results for dashboards and automations.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>On your phone</h2>
+    <div class="phones">
+      <img src="screenshots/now-mobile.png" alt="Now screen on a phone" loading="lazy">
+      <img src="screenshots/list-mobile.png" alt="Shopping list on a phone with items added by a person and suggested items" loading="lazy">
+      <img src="screenshots/products-mobile-dark.png" alt="Product details for Milk in dark mode: lasts about 5 days, use per day about 0.4 litres" loading="lazy">
+    </div>
+  </section>
+
+  <section>
+    <h2>How it compares</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th>Plain shopping list</th><th>Inventory tracker</th><th>Everyday Runtime</th></tr></thead>
+      <tbody>
+        <tr><th>You record</th><td>Items to buy</td><td>Every item in and out</td><td>Whatever you happen to know</td></tr>
+        <tr><th>It knows</th><td>Only what's written</td><td>An exact count, if kept up</td><td>A probability with a reason</td></tr>
+        <tr><th>Missing data</th><td>Silent</td><td>Wrong</td><td>Says it is unsure</td></tr>
+        <tr><th>Suggestions</th><td>No</td><td>Rules you configure</td><td>Yes, explained</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Quick start</h2>
+    <p>Needs Node.js 24, Yarn (via Corepack) and Docker.</p>
+<pre><code>git clone https://github.com/micha16372/everyday-runtime.git
+cd everyday-runtime
+corepack enable &amp;&amp; yarn install
+yarn twenty docker:start
+yarn twenty apply</code></pre>
+    <p>Open <code>http://localhost:2020</code>, sign in with the local development account, choose <strong>Everyday Runtime</strong> and press <strong>Load demo household</strong>. Details: <a href="https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md">DEMO.md</a>.</p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <details><summary>Is it an inventory app?</summary><p>No. It never claims to know exact stock. It estimates how likely a product is needed from whatever you record and explains each estimate.</p></details>
+    <details><summary>Does it need an AI service or an API key?</summary><p>No. The engine is deterministic TypeScript with unit tests and makes no calls to AI providers or other third parties.</p></details>
+    <details><summary>Where is my data stored?</summary><p>In your own self-hosted Twenty workspace. See <a href="https://github.com/micha16372/everyday-runtime/blob/main/docs/PRIVACY.md">PRIVACY.md</a>.</p></details>
+    <details><summary>How is it different from Grocy?</summary><p>Grocy is a full household inventory system that works best when stock is tracked precisely. Everyday Runtime targets households that will not track everything: it works with partial information and says how sure it is.</p></details>
+    <details><summary>Does it work with Home Assistant?</summary><p>Not yet. A JSON endpoint exists today; a Home Assistant integration is on the <a href="https://github.com/micha16372/everyday-runtime/blob/main/ROADMAP.md">roadmap</a> — <a href="https://github.com/micha16372/everyday-runtime/discussions/22">tell us what you would use</a>.</p></details>
+    <details><summary>Is it production-ready?</summary><p>It is early (v0.2). The core workflow is tested end to end, but there are known limitations listed in the changelog. Real-world feedback is very welcome.</p></details>
+  </section>
+
+  <section>
+    <h2>Help shape it</h2>
+    <p>The project is looking for real-world feedback. Tried it? Tell us what worked in the <a href="https://github.com/micha16372/everyday-runtime/discussions/19">feedback discussion</a>, or report a suggestion that felt wrong. Want to contribute? Start with a <a href="https://github.com/micha16372/everyday-runtime/labels/good%20first%20issue">good first issue</a> and <a href="https://github.com/micha16372/everyday-runtime/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+  </section>
+</main>
+<footer>
+  Everyday Runtime · MIT License · <a href="https://github.com/micha16372/everyday-runtime">Source on GitHub</a> · <a href="https://github.com/micha16372/everyday-runtime/releases">Releases</a> · <a href="llms.txt">llms.txt</a>
+</footer>
+</body>
+</html>

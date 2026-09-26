@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use or refer to Everyday Runtime, please cite it as below."
+title: "Everyday Runtime: explainable, self-hosted shopping needs inference"
+type: software
+authors:
+  - alias: "micha16372"
+repository-code: "https://github.com/micha16372/everyday-runtime"
+url: "https://micha16372.github.io/everyday-runtime/"
+license: MIT
+version: 0.2.0
+date-released: "2026-09-26"
+keywords:
+  - self-hosted
+  - shopping list
+  - household
+  - explainable inference
+  - privacy
+  - Twenty

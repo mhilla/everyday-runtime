@@ -4,6 +4,8 @@
 
 [![CI](https://github.com/micha16372/everyday-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/micha16372/everyday-runtime/actions/workflows/ci.yml)
 
+**Website:** https://micha16372.github.io/everyday-runtime/ · **Try it in three minutes:** [DEMO.md](DEMO.md)
+
 <p align="center">
   <img src="docs/screenshots/now-desktop.png" alt="The Now screen: 4 things probably needed — Apples (empty, confirmed, 95%), Milk (probably low, 89%, last purchased 6 days ago, usual interval about 5 days), Paper towels and Coffee" width="720">
 </p>
