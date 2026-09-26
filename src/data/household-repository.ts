@@ -1,6 +1,8 @@
 import {
   mapObservation,
+  mapPriceObservation,
   mapProduct,
+  mapPurchase,
   mapShoppingItem,
 } from 'src/data/record-mappers';
 import type { RawRecord } from 'src/data/record-mappers';
@@ -8,6 +10,9 @@ import type { HouseholdSnapshot } from 'src/domain/shopping';
 import type {
   Observation,
   ObservationSource,
+  PriceObservation,
+  PriceObservationSource,
+  Purchase,
   ObservationType,
   Product,
   ProductCategory,
@@ -39,6 +44,7 @@ const PAGE_SIZE = 200;
 // unbounded growth until server-side aggregation exists (see ROADMAP.md).
 const MAX_OBSERVATIONS = 2000;
 const MAX_SHOPPING_ITEMS = 1000;
+const MAX_PRICE_RECORDS = 1000;
 
 const listAll = async (
   transport: RestTransport,
@@ -89,6 +95,7 @@ export type NewProduct = {
   category?: ProductCategory | null;
   defaultUnit?: string | null;
   typicalPurchaseQuantity?: number | null;
+  shelfLifeDays?: number | null;
 };
 
 export type NewObservation = {
@@ -139,7 +146,7 @@ const observationBody = (input: NewObservation) => ({
 
 export const createHouseholdRepository = (transport: RestTransport) => ({
   async loadSnapshot(): Promise<HouseholdSnapshot> {
-    const [products, observations, shoppingItems] = await Promise.all([
+    const [products, observations, shoppingItems, purchases, priceObservations] = await Promise.all([
       listAll(transport, 'products', 'name[AscNullsLast]', 1000),
       listAll(
         transport,
@@ -153,6 +160,8 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
         'createdAt[DescNullsLast]',
         MAX_SHOPPING_ITEMS,
       ),
+      listAll(transport, 'purchases', 'purchasedAt[DescNullsLast]', MAX_PRICE_RECORDS),
+      listAll(transport, 'priceObservations', 'observedAt[DescNullsLast]', MAX_PRICE_RECORDS),
     ]);
 
     return {
@@ -161,6 +170,12 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
         .map(mapObservation)
         .filter((observation): observation is Observation => observation !== null),
       shoppingItems: shoppingItems.map(mapShoppingItem),
+      purchases: purchases
+        .map(mapPurchase)
+        .filter((purchase): purchase is Purchase => purchase !== null),
+      priceObservations: priceObservations
+        .map(mapPriceObservation)
+        .filter((price): price is PriceObservation => price !== null),
     };
   },
 
@@ -170,6 +185,7 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
       category: input.category ?? 'OTHER',
       defaultUnit: input.defaultUnit ?? null,
       typicalPurchaseQuantity: input.typicalPurchaseQuantity ?? null,
+      shelfLifeDays: input.shelfLifeDays ?? null,
       archived: false,
     });
 
@@ -178,7 +194,19 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
 
   async updateProduct(
     productId: string,
-    changes: Partial<Pick<Product, 'archived' | 'name' | 'category' | 'defaultUnit'>>,
+    changes: Partial<
+      Pick<
+        Product,
+        | 'archived'
+        | 'name'
+        | 'category'
+        | 'defaultUnit'
+        | 'barcode'
+        | 'shelfLifeDays'
+        | 'priceAlertUnitPrice'
+        | 'typicalPurchaseQuantity'
+      >
+    >,
   ): Promise<void> {
     await transport.patch(`/rest/products/${productId}`, changes);
   },
@@ -234,6 +262,29 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
         changes.dismissedAt === undefined
           ? undefined
           : (changes.dismissedAt?.toISOString() ?? null),
+    });
+  },
+
+  async createPriceObservation(input: {
+    product: Pick<Product, 'id' | 'name'>;
+    priceAmount: number;
+    priceCurrency?: string;
+    packQuantity: number;
+    store?: string | null;
+    observedAt: Date;
+    source: PriceObservationSource;
+  }): Promise<void> {
+    await transport.post('/rest/priceObservations', {
+      name: `${input.product.name} — ${input.priceAmount.toFixed(2)}`,
+      productId: input.product.id,
+      price: {
+        amountMicros: Math.round(input.priceAmount * 1_000_000),
+        currencyCode: input.priceCurrency ?? 'EUR',
+      },
+      packQuantity: input.packQuantity,
+      store: input.store?.trim() || null,
+      observedAt: input.observedAt.toISOString(),
+      source: input.source,
     });
   },
 

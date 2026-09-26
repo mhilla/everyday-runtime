@@ -50,6 +50,8 @@ export type Product = {
   barcode: string | null;
   typicalPurchaseQuantity: number | null;
   archived: boolean;
+  shelfLifeDays: number | null;
+  priceAlertUnitPrice: number | null;
 };
 
 export type Observation = {
@@ -74,6 +76,21 @@ export type ShoppingItem = {
   createdAt: Date;
   purchasedAt: Date | null;
   dismissedAt: Date | null;
+};
+
+export type PriceObservationSource = 'MANUAL' | 'RECEIPT' | 'OPEN_PRICES';
+
+// A price seen somewhere (store shelf, flyer, receipt, community data).
+export type PriceObservation = {
+  id: string;
+  productId: string;
+  priceAmount: number;
+  priceCurrency: string;
+  // Quantity in the product's unit that the price is for.
+  packQuantity: number;
+  store: string | null;
+  observedAt: Date;
+  source: PriceObservationSource;
 };
 
 export type Purchase = {

@@ -43,6 +43,8 @@ export const product = (overrides: Partial<Product> = {}): Product => ({
   barcode: null,
   typicalPurchaseQuantity: 2,
   archived: false,
+  shelfLifeDays: null,
+  priceAlertUnitPrice: null,
   ...overrides,
 });
 

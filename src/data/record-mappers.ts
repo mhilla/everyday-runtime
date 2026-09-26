@@ -7,6 +7,7 @@ import {
 } from 'src/domain/types';
 import type {
   Observation,
+  PriceObservation,
   Product,
   Purchase,
   ShoppingItem,
@@ -48,7 +49,35 @@ export const mapProduct = (record: RawRecord): Product => ({
   barcode: text(record.barcode),
   typicalPurchaseQuantity: numberOrNull(record.typicalPurchaseQuantity),
   archived: record.archived === true,
+  shelfLifeDays: numberOrNull(record.shelfLifeDays),
+  priceAlertUnitPrice: numberOrNull(record.priceAlertUnitPrice),
 });
+
+export const mapPriceObservation = (record: RawRecord): PriceObservation | null => {
+  const productId = text(record.productId);
+  const observedAt = dateOrNull(record.observedAt);
+  const price =
+    typeof record.price === 'object' && record.price !== null
+      ? (record.price as RawRecord)
+      : null;
+  const amountMicros = numberOrNull(price?.amountMicros);
+  const packQuantity = numberOrNull(record.packQuantity) ?? 1;
+
+  if (productId === null || observedAt === null || amountMicros === null || packQuantity <= 0) {
+    return null;
+  }
+
+  return {
+    id: String(record.id),
+    productId,
+    priceAmount: amountMicros / 1_000_000,
+    priceCurrency: text(price?.currencyCode) ?? 'EUR',
+    packQuantity,
+    store: text(record.store),
+    observedAt,
+    source: oneOf(['MANUAL', 'RECEIPT', 'OPEN_PRICES'] as const, record.source) ?? 'MANUAL',
+  };
+};
 
 // Observations with an unknown type or no product cannot be reasoned about
 // and are dropped rather than guessed.

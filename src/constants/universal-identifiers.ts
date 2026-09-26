@@ -19,6 +19,8 @@ export const MAIN_PAGE_NAVIGATION_MENU_ITEM_UNIVERSAL_IDENTIFIER =
   'e485a0d8-258b-44d0-ad3f-1a7ef4876fb6';
 
 // Logic functions
+export const COMMUNITY_PRICES_ROUTE_LOGIC_FUNCTION_UNIVERSAL_IDENTIFIER =
+  '4ef81d3a-f162-4608-959d-19895cd7fd6f';
 export const NEEDS_ROUTE_LOGIC_FUNCTION_UNIVERSAL_IDENTIFIER =
   'da370b5e-fe9e-4a24-8960-237ca3a371b6';
 
@@ -34,6 +36,9 @@ export const PRODUCT_FIELD_IDS = {
   observations: '13173c0d-3e16-44d8-bf96-c055d53a4d4d',
   shoppingItems: '50bb6892-6618-4745-b95e-8a9419d8ea3c',
   purchases: '799cca92-d514-4d44-86ee-441f768a8257',
+  shelfLifeDays: '144878ae-a3a2-4711-a14f-5af80fb290f1',
+  priceAlertUnitPrice: 'f9f524f0-69f8-42df-9ade-b6f6bdc0c9a5',
+  priceObservations: 'b0e8828a-2eb0-4a7b-8bdb-56aadc735c3d',
 } as const;
 
 // Observation
@@ -71,4 +76,16 @@ export const PURCHASE_FIELD_IDS = {
   purchasedAt: '25c92895-8a93-4f38-978d-68eb6761700e',
   price: 'd8ca0393-d2e0-4620-a1e6-d01d5b78a02e',
   store: '7cc69a85-cae1-407d-8860-17c2ed2d5a8a',
+} as const;
+
+// Price observation (a price seen somewhere, not necessarily bought)
+export const PRICE_OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER = 'e8583b27-45be-4a01-8c4a-ebfb6f7b5588';
+export const PRICE_OBSERVATION_FIELD_IDS = {
+  name: '659bf760-c921-4f48-8faa-07e666ee6f54',
+  product: 'b60b41d1-1408-43ad-994a-375065dc0806',
+  price: 'eb666ff9-039e-4028-84c6-c4a992ceff3c',
+  packQuantity: '8f47a63d-7fbc-4248-9a10-65bd60a8827a',
+  store: '7ff50699-5eea-43df-b51b-595cce741da4',
+  observedAt: '2fc7745f-1ffa-4f0d-8595-311332bf30d8',
+  source: 'f0cc6fac-bba0-4a1e-bcd9-899ec11b5619',
 } as const;

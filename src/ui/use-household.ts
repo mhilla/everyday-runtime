@@ -5,6 +5,7 @@ import { enqueueSnackbar } from 'twenty-sdk/front-component';
 import { createHouseholdActions } from 'src/data/household-actions';
 import type { HouseholdActions } from 'src/data/household-actions';
 import { createHouseholdRepository } from 'src/data/household-repository';
+import { pricesByProduct, toPricePoints } from 'src/domain/deals';
 import { buildOverview } from 'src/domain/shopping';
 import type { HouseholdSnapshot, ProductOverview } from 'src/domain/shopping';
 
@@ -104,9 +105,19 @@ export const useHousehold = () => {
     [snapshot, now],
   );
 
+  const prices = useMemo(
+    () =>
+      pricesByProduct(
+        toPricePoints(snapshot?.purchases ?? [], snapshot?.priceObservations ?? []),
+        now,
+      ),
+    [snapshot, now],
+  );
+
   return {
     snapshot,
     overview,
+    prices,
     now,
     loadState,
     loadError,

@@ -3,7 +3,9 @@ import type { InferenceConfig } from 'src/domain/inference';
 import type {
   NeedAssessment,
   Observation,
+  PriceObservation,
   Product,
+  Purchase,
   ShoppingItem,
 } from 'src/domain/types';
 
@@ -21,6 +23,8 @@ export type HouseholdSnapshot = {
   products: Product[];
   observations: Observation[];
   shoppingItems: ShoppingItem[];
+  purchases?: Purchase[];
+  priceObservations?: PriceObservation[];
 };
 
 const groupByProduct = <T extends { productId: string | null }>(items: T[]) => {

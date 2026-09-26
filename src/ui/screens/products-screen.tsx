@@ -12,6 +12,7 @@ import { sortProductsForBrowsing } from 'src/domain/shopping';
 import type { ProductOverview } from 'src/domain/shopping';
 import { formatAgo, formatInterval } from 'src/domain/time';
 import { ariaBool, BuyPanel, EmptyState, EvidenceChip, NeedMeter, QuickAddForm, WhyPanel } from 'src/ui/components';
+import { PriceSection } from 'src/ui/price-section';
 import { WelcomeState } from 'src/ui/screens/now-screen';
 import type { Household } from 'src/ui/use-household';
 
@@ -116,6 +117,7 @@ const ProductDetail = ({
         />
       )}
       <WhyPanel assessment={assessment} id={`er-product-why-${product.id}`} />
+      <PriceSection entry={entry} prices={household.prices.get(product.id)} household={household} />
       {history.length > 0 && (
         <>
           <h3 className="er-section-title">Recent activity</h3>

@@ -11,6 +11,7 @@ export type DemoProduct = {
   category: ProductCategory;
   defaultUnit: string;
   typicalPurchaseQuantity: number;
+  shelfLifeDays: number | null;
 };
 
 export type DemoObservation = {
@@ -28,18 +29,27 @@ export type DemoShoppingItem = {
   explanation: string;
 };
 
+export type DemoPrice = {
+  productKey: string;
+  priceAmount: number;
+  packQuantity: number;
+  store: string;
+  observedAt: Date;
+};
+
 export type DemoHousehold = {
   products: DemoProduct[];
   observations: DemoObservation[];
   shoppingItems: DemoShoppingItem[];
+  prices: DemoPrice[];
 };
 
 export const DEMO_PRODUCTS: DemoProduct[] = [
-  { key: 'milk', name: 'Milk', category: 'DAIRY', defaultUnit: 'l', typicalPurchaseQuantity: 2 },
-  { key: 'coffee', name: 'Coffee', category: 'BEVERAGES', defaultUnit: 'pack', typicalPurchaseQuantity: 1 },
-  { key: 'paper-towels', name: 'Paper towels', category: 'HOUSEHOLD', defaultUnit: 'pack', typicalPurchaseQuantity: 1 },
-  { key: 'pasta', name: 'Pasta', category: 'PANTRY', defaultUnit: 'pack', typicalPurchaseQuantity: 2 },
-  { key: 'apples', name: 'Apples', category: 'PRODUCE', defaultUnit: 'kg', typicalPurchaseQuantity: 1 },
+  { key: 'milk', name: 'Milk', category: 'DAIRY', defaultUnit: 'l', typicalPurchaseQuantity: 2, shelfLifeDays: 7 },
+  { key: 'coffee', name: 'Coffee', category: 'BEVERAGES', defaultUnit: 'pack', typicalPurchaseQuantity: 1, shelfLifeDays: 180 },
+  { key: 'paper-towels', name: 'Paper towels', category: 'HOUSEHOLD', defaultUnit: 'pack', typicalPurchaseQuantity: 1, shelfLifeDays: null },
+  { key: 'pasta', name: 'Pasta', category: 'PANTRY', defaultUnit: 'pack', typicalPurchaseQuantity: 2, shelfLifeDays: 365 },
+  { key: 'apples', name: 'Apples', category: 'PRODUCE', defaultUnit: 'kg', typicalPurchaseQuantity: 1, shelfLifeDays: 14 },
 ];
 
 // [productKey, type, days before `now`, quantity, note]
@@ -71,6 +81,21 @@ const DEMO_EVENTS: DemoEvent[] = [
   ['apples', 'EMPTY', 1, null, null],
 ];
 
+// [productKey, price, pack size, store, days before now]
+type DemoPriceEvent = [string, number, number, string, number];
+
+// Coffee: usually ~6.80 € a pack; a discounter has it for 4.99 € right now —
+// the price radar should suggest stocking up. Milk: a stable price history.
+const DEMO_PRICE_EVENTS: DemoPriceEvent[] = [
+  ['coffee', 6.99, 1, 'Supermarket', 35],
+  ['coffee', 6.79, 1, 'Supermarket', 23],
+  ['coffee', 6.49, 1, 'Drugstore', 11],
+  ['coffee', 4.99, 1, 'Discounter', 1],
+  ['milk', 2.18, 2, 'Supermarket', 21],
+  ['milk', 2.18, 2, 'Supermarket', 11],
+  ['milk', 1.98, 2, 'Discounter', 6],
+];
+
 const DEMO_ITEMS: DemoShoppingItem[] = [
   {
     productKey: 'apples',
@@ -97,4 +122,11 @@ export const buildDemoHousehold = (now: Date): DemoHousehold => ({
     note,
   })),
   shoppingItems: DEMO_ITEMS,
+  prices: DEMO_PRICE_EVENTS.map(([productKey, priceAmount, packQuantity, store, daysAgo]) => ({
+    productKey,
+    priceAmount,
+    packQuantity,
+    store,
+    observedAt: addDays(now, -daysAgo),
+  })),
 });

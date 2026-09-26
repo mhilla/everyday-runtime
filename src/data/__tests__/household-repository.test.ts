@@ -30,6 +30,8 @@ describe('record mappers', () => {
       barcode: null,
       typicalPurchaseQuantity: null,
       archived: false,
+      shelfLifeDays: null,
+      priceAlertUnitPrice: null,
     });
   });
 

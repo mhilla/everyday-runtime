@@ -12,6 +12,7 @@ const singular: Record<string, string> = {
   observations: 'Observation',
   shoppingItems: 'ShoppingItem',
   purchases: 'Purchase',
+  priceObservations: 'PriceObservation',
 };
 
 // In-memory stand-in for Twenty's REST API: answers creates with the posted

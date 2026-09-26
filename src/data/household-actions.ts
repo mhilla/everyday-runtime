@@ -204,6 +204,65 @@ export const createHouseholdActions = (
       });
     },
 
+    // "Saw it for 2.99 € (6 × 1 l) at Corner shop".
+    async logPrice(
+      product: Product,
+      details: { priceAmount: number; packQuantity: number; store: string | null },
+    ) {
+      if (!(details.priceAmount > 0) || !(details.packQuantity > 0)) {
+        throw new Error('Enter a price and a pack size above zero.');
+      }
+
+      await repository.createPriceObservation({
+        product,
+        priceAmount: details.priceAmount,
+        packQuantity: details.packQuantity,
+        store: details.store,
+        observedAt: clock(),
+        source: 'MANUAL',
+      });
+    },
+
+    // Stores community prices (Open Prices) as price observations; entries
+    // without a comparable pack size are skipped.
+    async importCommunityPrices(
+      product: Product,
+      prices: {
+        price: number;
+        currency: string;
+        date: string;
+        store: string | null;
+        packQuantity: number | null;
+      }[],
+    ) {
+      const usable = prices.filter((p) => p.packQuantity !== null && p.packQuantity > 0);
+
+      for (const price of usable) {
+        await repository.createPriceObservation({
+          product,
+          priceAmount: price.price,
+          priceCurrency: price.currency,
+          packQuantity: price.packQuantity as number,
+          store: price.store,
+          observedAt: new Date(`${price.date}T12:00:00Z`),
+          source: 'OPEN_PRICES',
+        });
+      }
+
+      return usable.length;
+    },
+
+    async updateProductSettings(
+      product: Product,
+      settings: {
+        priceAlertUnitPrice?: number | null;
+        shelfLifeDays?: number | null;
+        barcode?: string | null;
+      },
+    ) {
+      await repository.updateProduct(product.id, settings);
+    },
+
     async archiveProduct(overview: ProductOverview) {
       await repository.updateProduct(overview.product.id, { archived: true });
 
@@ -230,6 +289,7 @@ export const createHouseholdActions = (
             category: demoProduct.category,
             defaultUnit: demoProduct.defaultUnit,
             typicalPurchaseQuantity: demoProduct.typicalPurchaseQuantity,
+            shelfLifeDays: demoProduct.shelfLifeDays,
           }));
 
         if (existing?.archived) {
@@ -258,6 +318,17 @@ export const createHouseholdActions = (
           note: observation.note,
         })),
       );
+
+      for (const price of demo.prices) {
+        await repository.createPriceObservation({
+          product: productFor(price.productKey),
+          priceAmount: price.priceAmount,
+          packQuantity: price.packQuantity,
+          store: price.store,
+          observedAt: price.observedAt,
+          source: 'MANUAL',
+        });
+      }
 
       for (const item of demo.shoppingItems) {
         await repository.createShoppingItem({

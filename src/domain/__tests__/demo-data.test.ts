@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { buildDemoHousehold } from 'src/domain/demo-data';
 import { describeNeed } from 'src/domain/presentation';
+import { pricesByProduct, selectDeals, toPricePoints } from 'src/domain/deals';
+import { selectQuestions } from 'src/domain/questions';
 import { buildOverview, selectProbablyNeeded } from 'src/domain/shopping';
 import type { HouseholdSnapshot } from 'src/domain/shopping';
 
@@ -20,6 +22,8 @@ const toSnapshot = (now: Date): HouseholdSnapshot => {
       barcode: null,
       typicalPurchaseQuantity: product.typicalPurchaseQuantity,
       archived: false,
+      shelfLifeDays: product.shelfLifeDays,
+      priceAlertUnitPrice: null,
     })),
     observations: demo.observations.map((observation, index) => ({
       id: `demo-${index}`,
@@ -29,6 +33,16 @@ const toSnapshot = (now: Date): HouseholdSnapshot => {
       observedAt: observation.observedAt,
       source: 'DEMO',
       note: observation.note,
+    })),
+    priceObservations: demo.prices.map((price, index) => ({
+      id: `demo-price-${index}`,
+      productId: price.productKey,
+      priceAmount: price.priceAmount,
+      priceCurrency: 'EUR',
+      packQuantity: price.packQuantity,
+      store: price.store,
+      observedAt: price.observedAt,
+      source: 'MANUAL' as const,
     })),
     shoppingItems: demo.shoppingItems.map((item, index) => ({
       id: `demo-item-${index}`,
@@ -89,5 +103,22 @@ describe('demo household', () => {
     expect(
       selectProbablyNeeded(overview).map((entry) => entry.product.name),
     ).toEqual(['Apples', 'Milk', 'Paper towels', 'Coffee']);
+  });
+
+  it('shows the price radar and asks sensible questions', () => {
+    const snapshot = toSnapshot(NOW);
+    const overview = buildOverview(snapshot, NOW);
+    const prices = pricesByProduct(toPricePoints([], snapshot.priceObservations ?? []), NOW);
+    const deals = selectDeals(overview, prices, NOW);
+
+    expect(deals.map((d) => d.overview.product.name)).toEqual(['Coffee']);
+    expect(deals[0].judgement.verdict).toBe('GREAT');
+    expect(deals[0].point.store).toBe('Discounter');
+    expect(deals[0].plan?.reason).toMatch(/^Good price: buy 4 packs — lasts about \d+ days, saves about/);
+
+    const questions = selectQuestions(overview, NOW).map((q) => q.overview.product.name);
+
+    expect(questions).toContain('Paper towels');
+    expect(questions).not.toContain('Apples');
   });
 });

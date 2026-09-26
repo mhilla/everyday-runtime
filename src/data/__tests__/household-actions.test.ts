@@ -202,4 +202,64 @@ describe('household actions', () => {
       ),
     ).toBe(true);
   });
+
+  it('logs a seen price with pack size and store', async () => {
+    const { actions, calls } = setup();
+
+    await actions.logPrice(product(), { priceAmount: 2.99, packQuantity: 6, store: ' Discounter ' });
+
+    expect(writes(calls)).toEqual(['POST /rest/priceObservations']);
+    expect(calls[0].body).toMatchObject({
+      name: 'Milk — 2.99',
+      price: { amountMicros: 2_990_000, currencyCode: 'EUR' },
+      packQuantity: 6,
+      store: 'Discounter',
+      source: 'MANUAL',
+      observedAt: NOW.toISOString(),
+    });
+  });
+
+  it('rejects a price or pack size of zero', async () => {
+    const { actions } = setup();
+
+    await expect(
+      actions.logPrice(product(), { priceAmount: 0, packQuantity: 6, store: null }),
+    ).rejects.toThrow('Enter a price and a pack size above zero.');
+  });
+
+  it('saves price alert, shelf life and barcode', async () => {
+    const { actions, calls } = setup();
+
+    await actions.updateProductSettings(product(), {
+      priceAlertUnitPrice: 0.5,
+      shelfLifeDays: 365,
+      barcode: '3057640257773',
+    });
+
+    expect(calls[0]).toMatchObject({
+      method: 'PATCH',
+      path: '/rest/products/milk',
+      body: { priceAlertUnitPrice: 0.5, shelfLifeDays: 365, barcode: '3057640257773' },
+    });
+  });
+});
+
+
+describe('community prices', () => {
+  it('imports only prices with a comparable pack size', async () => {
+    const { actions, calls } = setup();
+
+    const count = await actions.importCommunityPrices(product(), [
+      { price: 0.64, currency: 'EUR', date: '2026-02-18', store: 'Carrefour City (Clichy, France)', packQuantity: 1.5 },
+      { price: 3, currency: 'EUR', date: '2026-02-01', store: null, packQuantity: null },
+    ]);
+
+    expect(count).toBe(1);
+    expect(calls[0].body).toMatchObject({
+      packQuantity: 1.5,
+      source: 'OPEN_PRICES',
+      observedAt: '2026-02-18T12:00:00.000Z',
+      price: { amountMicros: 640_000, currencyCode: 'EUR' },
+    });
+  });
 });

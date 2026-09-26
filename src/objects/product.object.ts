@@ -6,6 +6,8 @@ import {
 } from 'twenty-sdk/define';
 
 import {
+  PRICE_OBSERVATION_FIELD_IDS,
+  PRICE_OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER,
   OBSERVATION_FIELD_IDS,
   OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER,
   PRODUCT_FIELD_IDS,
@@ -81,6 +83,28 @@ export default defineObject({
       universalSettings: { dataType: NumberDataType.FLOAT, decimals: 2 },
     },
     {
+      universalIdentifier: PRODUCT_FIELD_IDS.shelfLifeDays,
+      type: FieldType.NUMBER,
+      name: 'shelfLifeDays',
+      label: 'Shelf life (days)',
+      description: 'How long an unopened pack keeps; limits stock-up suggestions.',
+      icon: 'IconHourglass',
+      isNullable: true,
+      defaultValue: null,
+      universalSettings: { dataType: NumberDataType.INT },
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.priceAlertUnitPrice,
+      type: FieldType.NUMBER,
+      name: 'priceAlertUnitPrice',
+      label: 'Price alert (per unit)',
+      description: 'Tell me when a price per unit at or below this is seen.',
+      icon: 'IconBell',
+      isNullable: true,
+      defaultValue: null,
+      universalSettings: { dataType: NumberDataType.FLOAT, decimals: 2 },
+    },
+    {
       universalIdentifier: PRODUCT_FIELD_IDS.archived,
       type: FieldType.BOOLEAN,
       name: 'archived',
@@ -122,6 +146,18 @@ export default defineObject({
       relationTargetObjectMetadataUniversalIdentifier:
         PURCHASE_OBJECT_UNIVERSAL_IDENTIFIER,
       relationTargetFieldMetadataUniversalIdentifier: PURCHASE_FIELD_IDS.product,
+      universalSettings: { relationType: RelationType.ONE_TO_MANY },
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.priceObservations,
+      type: FieldType.RELATION,
+      name: 'priceObservations',
+      label: 'Price observations',
+      icon: 'IconTag',
+      relationTargetObjectMetadataUniversalIdentifier:
+        PRICE_OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER,
+      relationTargetFieldMetadataUniversalIdentifier:
+        PRICE_OBSERVATION_FIELD_IDS.product,
       universalSettings: { relationType: RelationType.ONE_TO_MANY },
     },
   ],
