@@ -1,0 +1,375 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "mein vorrat",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "EmptyIntent",
+          "samples": [
+            "{item} ist leer",
+            "{item} ist alle",
+            "{item} ist aus",
+            "{item} sind leer",
+            "{item} sind alle",
+            "wir haben keine {item} mehr",
+            "wir haben kein {item} mehr",
+            "wir haben keinen {item} mehr",
+            "kein {item} mehr da",
+            "keine {item} mehr da",
+            "{item} ist aufgebraucht",
+            "{item} geht zur Neige"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "AddIntent",
+          "samples": [
+            "setz {item} auf die Liste",
+            "schreib {item} auf die Liste",
+            "{item} auf die Liste",
+            "pack {item} auf die Einkaufsliste",
+            "füge {item} hinzu",
+            "wir brauchen {item}",
+            "ich brauche {item}",
+            "{item} muss gekauft werden"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "BoughtIntent",
+          "samples": [
+            "ich habe {item} gekauft",
+            "ich hab {item} gekauft",
+            "hab {item} gekauft",
+            "{item} gekauft",
+            "{item} ist gekauft",
+            "ich habe {item} geholt",
+            "{item} ist besorgt",
+            "habe {item} mitgebracht"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "InStockIntent",
+          "samples": [
+            "wir haben noch {item}",
+            "{item} ist noch da",
+            "es ist noch {item} da",
+            "es gibt noch {item}",
+            "genug {item} da",
+            "{item} reicht noch"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "StockQuestionIntent",
+          "samples": [
+            "haben wir noch {item}",
+            "ist noch {item} da",
+            "sind noch {item} da",
+            "brauchen wir {item}",
+            "müssen wir {item} kaufen",
+            "reicht {item} noch"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "PriceIntent",
+          "samples": [
+            "was kostet {item}",
+            "wie teuer ist {item}",
+            "ist {item} gerade günstig",
+            "ist {item} im Angebot",
+            "lohnt sich {item} gerade"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "NeedsIntent",
+          "samples": [
+            "was brauchen wir",
+            "was fehlt",
+            "was fehlt uns",
+            "was muss ich kaufen",
+            "was soll ich einkaufen",
+            "was steht auf der Liste",
+            "was steht auf der Einkaufsliste",
+            "lies die Einkaufsliste vor",
+            "Einkaufsliste",
+            "was müssen wir einkaufen"
+          ]
+        },
+        {
+          "name": "TalkIntent",
+          "slots": [
+            {
+              "name": "text",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "notiere {text}",
+            "merk dir {text}",
+            "trag ein {text}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "EVERYDAY_ITEM",
+          "values": [
+            {
+              "name": {
+                "value": "Milch"
+              }
+            },
+            {
+              "name": {
+                "value": "Kaffee"
+              }
+            },
+            {
+              "name": {
+                "value": "Brot"
+              }
+            },
+            {
+              "name": {
+                "value": "Butter"
+              }
+            },
+            {
+              "name": {
+                "value": "Eier"
+              }
+            },
+            {
+              "name": {
+                "value": "Käse"
+              }
+            },
+            {
+              "name": {
+                "value": "Joghurt"
+              }
+            },
+            {
+              "name": {
+                "value": "Nudeln"
+              }
+            },
+            {
+              "name": {
+                "value": "Reis"
+              }
+            },
+            {
+              "name": {
+                "value": "Äpfel"
+              }
+            },
+            {
+              "name": {
+                "value": "Bananen"
+              }
+            },
+            {
+              "name": {
+                "value": "Tomaten"
+              }
+            },
+            {
+              "name": {
+                "value": "Kartoffeln"
+              }
+            },
+            {
+              "name": {
+                "value": "Zwiebeln"
+              }
+            },
+            {
+              "name": {
+                "value": "Mehl"
+              }
+            },
+            {
+              "name": {
+                "value": "Zucker"
+              }
+            },
+            {
+              "name": {
+                "value": "Salz"
+              }
+            },
+            {
+              "name": {
+                "value": "Öl"
+              }
+            },
+            {
+              "name": {
+                "value": "Wasser"
+              }
+            },
+            {
+              "name": {
+                "value": "Mineralwasser"
+              }
+            },
+            {
+              "name": {
+                "value": "Saft"
+              }
+            },
+            {
+              "name": {
+                "value": "Bier"
+              }
+            },
+            {
+              "name": {
+                "value": "Tee"
+              }
+            },
+            {
+              "name": {
+                "value": "Müsli"
+              }
+            },
+            {
+              "name": {
+                "value": "Haferflocken"
+              }
+            },
+            {
+              "name": {
+                "value": "Küchenrolle"
+              }
+            },
+            {
+              "name": {
+                "value": "Klopapier"
+              }
+            },
+            {
+              "name": {
+                "value": "Toilettenpapier"
+              }
+            },
+            {
+              "name": {
+                "value": "Spülmittel"
+              }
+            },
+            {
+              "name": {
+                "value": "Waschmittel"
+              }
+            },
+            {
+              "name": {
+                "value": "Zahnpasta"
+              }
+            },
+            {
+              "name": {
+                "value": "Duschgel"
+              }
+            },
+            {
+              "name": {
+                "value": "Shampoo"
+              }
+            },
+            {
+              "name": {
+                "value": "Windeln"
+              }
+            },
+            {
+              "name": {
+                "value": "Katzenfutter"
+              }
+            },
+            {
+              "name": {
+                "value": "Hundefutter"
+              }
+            },
+            {
+              "name": {
+                "value": "zwei Packungen Kaffee"
+              }
+            },
+            {
+              "name": {
+                "value": "eine Kiste Wasser"
+              }
+            },
+            {
+              "name": {
+                "value": "sechs Eier"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

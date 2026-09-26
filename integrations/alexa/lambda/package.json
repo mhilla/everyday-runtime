@@ -1,0 +1,12 @@
+{
+  "name": "everyday-runtime-alexa",
+  "version": "0.4.1",
+  "private": true,
+  "description": "Alexa skill for Everyday Runtime: forwards what you say to POST /s/talk.",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  }
+}

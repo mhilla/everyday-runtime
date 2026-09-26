@@ -1,0 +1,365 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "everyday list",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "EmptyIntent",
+          "samples": [
+            "we're out of {item}",
+            "we are out of {item}",
+            "{item} is empty",
+            "{item} is gone",
+            "{item} ran out",
+            "we ran out of {item}",
+            "no more {item}",
+            "there is no {item} left",
+            "we have no {item} left",
+            "{item} is finished"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "AddIntent",
+          "samples": [
+            "add {item} to the list",
+            "add {item} to my list",
+            "add {item}",
+            "put {item} on the list",
+            "put {item} on the shopping list",
+            "we need {item}",
+            "I need {item}"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "BoughtIntent",
+          "samples": [
+            "I bought {item}",
+            "bought {item}",
+            "I got {item}",
+            "got {item}",
+            "I picked up {item}",
+            "picked up {item}",
+            "{item} is bought"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "InStockIntent",
+          "samples": [
+            "we still have {item}",
+            "there is still {item}",
+            "we have enough {item}",
+            "{item} is still there",
+            "enough {item} left",
+            "we have {item}"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "StockQuestionIntent",
+          "samples": [
+            "do we have {item}",
+            "do we still have {item}",
+            "do we need {item}",
+            "is there any {item} left",
+            "is there still {item}",
+            "should I buy {item}"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "PriceIntent",
+          "samples": [
+            "what does {item} cost",
+            "how much is {item}",
+            "price of {item}",
+            "is {item} cheap right now",
+            "is {item} on sale"
+          ],
+          "slots": [
+            {
+              "name": "item",
+              "type": "EVERYDAY_ITEM"
+            }
+          ]
+        },
+        {
+          "name": "NeedsIntent",
+          "samples": [
+            "what do we need",
+            "what do I need",
+            "what do I need to buy",
+            "what is on the list",
+            "what's on the list",
+            "what's on the shopping list",
+            "read the shopping list",
+            "shopping list",
+            "what should I buy"
+          ]
+        },
+        {
+          "name": "TalkIntent",
+          "slots": [
+            {
+              "name": "text",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "note {text}",
+            "remember {text}",
+            "write down {text}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "EVERYDAY_ITEM",
+          "values": [
+            {
+              "name": {
+                "value": "milk"
+              }
+            },
+            {
+              "name": {
+                "value": "coffee"
+              }
+            },
+            {
+              "name": {
+                "value": "bread"
+              }
+            },
+            {
+              "name": {
+                "value": "butter"
+              }
+            },
+            {
+              "name": {
+                "value": "eggs"
+              }
+            },
+            {
+              "name": {
+                "value": "cheese"
+              }
+            },
+            {
+              "name": {
+                "value": "yogurt"
+              }
+            },
+            {
+              "name": {
+                "value": "pasta"
+              }
+            },
+            {
+              "name": {
+                "value": "rice"
+              }
+            },
+            {
+              "name": {
+                "value": "apples"
+              }
+            },
+            {
+              "name": {
+                "value": "bananas"
+              }
+            },
+            {
+              "name": {
+                "value": "tomatoes"
+              }
+            },
+            {
+              "name": {
+                "value": "potatoes"
+              }
+            },
+            {
+              "name": {
+                "value": "onions"
+              }
+            },
+            {
+              "name": {
+                "value": "flour"
+              }
+            },
+            {
+              "name": {
+                "value": "sugar"
+              }
+            },
+            {
+              "name": {
+                "value": "salt"
+              }
+            },
+            {
+              "name": {
+                "value": "oil"
+              }
+            },
+            {
+              "name": {
+                "value": "water"
+              }
+            },
+            {
+              "name": {
+                "value": "sparkling water"
+              }
+            },
+            {
+              "name": {
+                "value": "juice"
+              }
+            },
+            {
+              "name": {
+                "value": "beer"
+              }
+            },
+            {
+              "name": {
+                "value": "tea"
+              }
+            },
+            {
+              "name": {
+                "value": "cereal"
+              }
+            },
+            {
+              "name": {
+                "value": "oats"
+              }
+            },
+            {
+              "name": {
+                "value": "paper towels"
+              }
+            },
+            {
+              "name": {
+                "value": "toilet paper"
+              }
+            },
+            {
+              "name": {
+                "value": "dish soap"
+              }
+            },
+            {
+              "name": {
+                "value": "laundry detergent"
+              }
+            },
+            {
+              "name": {
+                "value": "toothpaste"
+              }
+            },
+            {
+              "name": {
+                "value": "shower gel"
+              }
+            },
+            {
+              "name": {
+                "value": "shampoo"
+              }
+            },
+            {
+              "name": {
+                "value": "diapers"
+              }
+            },
+            {
+              "name": {
+                "value": "cat food"
+              }
+            },
+            {
+              "name": {
+                "value": "dog food"
+              }
+            },
+            {
+              "name": {
+                "value": "two packs of coffee"
+              }
+            },
+            {
+              "name": {
+                "value": "a case of water"
+              }
+            },
+            {
+              "name": {
+                "value": "six eggs"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

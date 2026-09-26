@@ -7,6 +7,10 @@ import { parseCommand } from 'src/domain/commands';
 const cases: [string, string, [string, number | null][], Partial<{ price: number; store: string; lang: string }>?][] = [
   // German — empty
   ['Milch ist leer', 'EMPTY', [['Milch', null]]],
+  // pack sizes are not part of the name (phrasings from the Alexa skill)
+  ['Bought a case of water', 'BOUGHT', [['Water', 1]]],
+  ['Add two bags of rice to the list', 'ADD', [['Rice', 2]]],
+  ['Eine Tüte Äpfel gekauft', 'BOUGHT', [['Äpfel', 1]]],
   ['Die Milch ist alle', 'EMPTY', [['Milch', null]]],
   ['Kein Kaffee mehr', 'EMPTY', [['Kaffee', null]]],
   ['keine Eier mehr da', 'EMPTY', [['Eier', null]]],

@@ -1,0 +1,66 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "de-DE": {
+          "name": "Mein Vorrat (Everyday Runtime)",
+          "summary": "Deine selbst gehostete Einkaufsliste mit Vorratsgedächtnis.",
+          "description": "Sag, was leer ist, was du gekauft hast oder was auf die Liste soll, und frag, was ihr wahrscheinlich braucht. Die Daten bleiben in deinem eigenen Twenty-Workspace mit Everyday Runtime.",
+          "examplePhrases": [
+            "Alexa, sage mein vorrat Milch ist leer",
+            "Alexa, frag mein vorrat was brauchen wir",
+            "Alexa, öffne mein vorrat"
+          ],
+          "keywords": [
+            "Einkaufsliste",
+            "Vorrat",
+            "Haushalt"
+          ]
+        },
+        "en-US": {
+          "name": "Everyday List (Everyday Runtime)",
+          "summary": "Your self-hosted shopping list that remembers what runs out.",
+          "description": "Say what ran out, what you bought or what goes on the list, and ask what you probably need. Your data stays in your own Twenty workspace running Everyday Runtime.",
+          "examplePhrases": [
+            "Alexa, tell everyday list we're out of milk",
+            "Alexa, ask everyday list what do we need",
+            "Alexa, open everyday list"
+          ],
+          "keywords": [
+            "shopping list",
+            "pantry",
+            "household"
+          ]
+        }
+      },
+      "isAvailableWorldwide": false,
+      "distributionCountries": [
+        "DE",
+        "AT",
+        "CH",
+        "US"
+      ],
+      "category": "ORGANIZERS_AND_ASSISTANTS",
+      "testingInstructions": "Needs a Twenty workspace with Everyday Runtime installed; see docs/ALEXA.md."
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:eu-west-1:000000000000:function:everyday-runtime-alexa"
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "de-DE": {},
+        "en-US": {}
+      }
+    }
+  }
+}

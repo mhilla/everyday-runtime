@@ -46,6 +46,8 @@ const UNITS = new Set([
   'x', '×', 'stück', 'stk', 'packung', 'packungen', 'pck', 'pack', 'packs', 'flasche', 'flaschen',
   'kiste', 'kisten', 'dose', 'dosen', 'bottle', 'bottles', 'crate', 'crates', 'can', 'cans',
   'liter', 'l', 'kg', 'g', 'gramm', 'kilo', 'rolle', 'rollen', 'roll', 'rolls', 'glas', 'gläser',
+  'tüte', 'tüten', 'beutel', 'karton', 'kartons', 'becher', 'netz', 'bund', 'case', 'cases', 'box',
+  'boxes', 'bag', 'bags', 'jar', 'jars', 'carton', 'cartons', 'tub', 'tubs', 'bunch', 'loaf', 'loaves',
 ]);
 
 const normalize = (text: string) =>
