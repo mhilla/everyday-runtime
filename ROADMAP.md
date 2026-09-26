@@ -32,26 +32,34 @@ households — open an issue or join the [discussions](https://github.com/micha1
 - [x] `POST /s/talk` and Twenty workflow actions for automations ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md))
 - [ ] More phrasings and languages from the community
 
+How we compare with other list and pantry apps: [docs/MARKET.md](docs/MARKET.md).
+
 ## v0.5 — Households together
 
 - [ ] Several people per household, who reported what (#4)
-- [ ] Care mode: relatives look after a second household (e.g. parents), with consent
-- [ ] Shared-flat mode: shared vs. private products, rota, cost split
+- [ ] Care mode: relatives look after a second household (e.g. parents), with consent (#31)
+- [ ] Shared-flat mode: shared vs. private products, rota, cost split (#32)
+- [ ] Shopping mode sorted by store and aisle (#43)
+- [ ] Multiple lists, per store or occasion (#46)
+- [ ] CSV import and export (#49)
 - [ ] Better activity history: filters, undo, edit/delete (#5)
 - [ ] Server-side aggregation for long histories (#6)
 
 ## v0.6 — Capture without effort
 
-- [ ] Barcode scan and packaging photo → product
-- [ ] Receipt import (vision model, local or cloud, opt-in)
+- [ ] Camera barcode scan → product (#44); packaging photo → product (#33)
+- [ ] Best-before dates and “use soon” hints (#47)
+- [ ] Installable web app: home-screen shortcut, offline queue (#45)
+- [ ] Receipt import (vision model, local or cloud, opt-in) (#33)
 - [ ] Natural-language capture via Telegram/Signal (“we’re out of milk”)
-- [ ] NFC tags for “empty”, import/export (CSV, JSON)
+- [ ] NFC tags for “empty”
 - [ ] Contribute prices back to Open Prices (opt-in)
 
 ## v0.7 — Integrations and actions
 
-- [ ] Home Assistant: sensors, to-do list, automations
-- [ ] Alexa skill (own invocation name)
+- [ ] Home Assistant: sensors, to-do list, automations (#34)
+- [ ] Alexa skill (own invocation name) (#35)
+- [ ] Recipe ingredients from self-hosted Mealie or KitchenOwl (#48)
 - [ ] Webhooks; export to Bring!/Todoist
 - [ ] Appliance adapters: Home Connect, Miele, Samsung Family Hub (experimental)
 - [ ] Keepa (own key) for Amazon price history; one-tap cart links, always confirmed by a person
