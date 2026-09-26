@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { parseCommand } from '../../../src/domain/commands';
-import { createHandler, languageOf, SENTENCES, sentenceFor, toSpeech } from '../lambda/index.js';
+import { createHandler, languageOf, loadConfig, SENTENCES, sentenceFor, toSpeech } from '../lambda/index.js';
 
 const model = (locale) =>
   JSON.parse(
@@ -81,6 +81,12 @@ describe('Alexa sentences', () => {
     ).toBe(
       'Das braucht ihr wahrscheinlich (2). Kaffee, Leer (95 %), steht auf der Liste. Milch, Wahrscheinlich knapp (86 %), üblicher Abstand etwa 5 Tage.',
     );
+  });
+});
+
+describe('Alexa configuration', () => {
+  it('trims trailing slashes from the Twenty address', () => {
+    expect(loadConfig({ TWENTY_URL: 'https://crm.example.com///', TWENTY_API_KEY: 'k' }).url).toBe('https://crm.example.com');
   });
 });
 

@@ -69,8 +69,14 @@ export const loadConfig = (env = process.env) => {
     // No config.json: environment variables only.
   }
 
+  let url = String(env.TWENTY_URL ?? file.twentyUrl ?? '').trim();
+
+  while (url.endsWith('/')) {
+    url = url.slice(0, -1);
+  }
+
   return {
-    url: (env.TWENTY_URL ?? file.twentyUrl ?? '').replace(/\/+$/, ''),
+    url,
     apiKey: env.TWENTY_API_KEY ?? file.twentyApiKey ?? '',
     skillId: env.ALEXA_SKILL_ID ?? file.alexaSkillId ?? '',
   };
@@ -83,9 +89,14 @@ export const toSpeech = (reply, lang) =>
     .map((line) => line.trim().replace(/[.:!?]$/, ''))
     .filter(Boolean)
     .join('. ')
-    .replace(/\s+—\s+/g, ', ')
-    .replace(/\s*·\s*/g, ', ')
-    .replace(/~\s?/g, lang === 'de' ? 'etwa ' : 'about ')
+    .split(/[ \t]/)
+    .filter(Boolean)
+    .join(' ')
+    .replaceAll(' — ', ', ')
+    .replaceAll(' · ', ', ')
+    .replaceAll('·', ',')
+    .replaceAll('~ ', '~')
+    .replaceAll('~', lang === 'de' ? 'etwa ' : 'about ')
     .replace(/[“”„"]/g, '')
     .concat('.');
 

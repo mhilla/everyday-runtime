@@ -9,7 +9,7 @@
           "api_key": "API-Schlüssel"
         },
         "data_description": {
-          "url": "Die Adresse, unter der du Twenty öffnest, z. B. https://crm.example.com",
+          "url": "Die Adresse, unter der du Twenty im Browser öffnest",
           "api_key": "Ein Twenty-API-Schlüssel des Workspaces, in dem Everyday Runtime installiert ist"
         }
       },

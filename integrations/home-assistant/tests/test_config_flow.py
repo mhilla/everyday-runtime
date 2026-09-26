@@ -49,9 +49,12 @@ async def test_same_workspace_only_once(hass: HomeAssistant, server, entry) -> N
 
 
 async def test_reauth(hass: HomeAssistant, server, entry) -> None:
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
     result = await entry.start_reauth_flow(hass)
     assert result["step_id"] == "reauth_confirm"
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {CONF_API_KEY: "new"})
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reauth_successful"
     assert entry.data[CONF_API_KEY] == "new"
+    await hass.async_block_till_done()
