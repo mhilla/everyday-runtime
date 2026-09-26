@@ -5,6 +5,7 @@ import {
   describeConfidence,
   describeNeed,
   formatPercent,
+  formatQuantity,
   OBSERVATION_LABELS,
 } from 'src/domain/presentation';
 import { sortProductsForBrowsing } from 'src/domain/shopping';
@@ -36,6 +37,11 @@ const ProductDetail = ({
       <NeedMeter assessment={assessment} />
       <div className="er-chips">
         <EvidenceChip overview={entry} />
+        {assessment.calibrationFactor !== null && (
+          <span className="er-chip er-chip-muted" title="Adjusted using your earlier Empty / Still have it reports">
+            Learned from your corrections
+          </span>
+        )}
       </div>
       <dl className="er-facts">
         <div className="er-fact">
@@ -43,13 +49,20 @@ const ProductDetail = ({
           <dd>{assessment.lastPurchasedAt ? formatAgo(assessment.lastPurchasedAt, now) : '—'}</dd>
         </div>
         <div className="er-fact">
-          <dt>Usual interval</dt>
-          <dd>{assessment.typicalIntervalDays ? formatInterval(assessment.typicalIntervalDays) : 'not yet known'}</dd>
+          <dt>Lasts about</dt>
+          <dd>{assessment.expectedDurationDays ? formatInterval(assessment.expectedDurationDays) : 'not yet known'}</dd>
         </div>
-        <div className="er-fact">
-          <dt>Purchases</dt>
-          <dd>{assessment.purchaseCount}</dd>
-        </div>
+        {assessment.consumptionRatePerDay !== null ? (
+          <div className="er-fact">
+            <dt>Use per day</dt>
+            <dd>~{formatQuantity(assessment.consumptionRatePerDay, product.defaultUnit)}</dd>
+          </div>
+        ) : (
+          <div className="er-fact">
+            <dt>Purchases</dt>
+            <dd>{assessment.purchaseCount}</dd>
+          </div>
+        )}
         <div className="er-fact">
           <dt>Confidence</dt>
           <dd>{describeConfidence(assessment.confidence)}</dd>
@@ -105,7 +118,7 @@ const ProductDetail = ({
       <WhyPanel assessment={assessment} id={`er-product-why-${product.id}`} />
       {history.length > 0 && (
         <>
-          <h4 className="er-section-title">Recent activity</h4>
+          <h3 className="er-section-title">Recent activity</h3>
           <ul className="er-timeline">
             {history.map((observation) => (
               <li key={observation.id}>
@@ -147,6 +160,7 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
 
   return (
     <div className="er-stack">
+      <h2 className="er-visually-hidden">Products</h2>
       <QuickAddForm
         label="Find or add a product"
         placeholder="Find or add a product…"
