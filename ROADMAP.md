@@ -16,16 +16,23 @@ households — open an issue or join the [discussions](https://github.com/micha1
 - [x] Purchase quantities: 3 l last longer than 1 l (#2)
 - [x] Learning from “Empty” / “Still have it” corrections (#3)
 
-## v0.3 — German, active questions, price radar
+## v0.3 — German, active questions, price radar ✅ (0.3.0)
 
-- [ ] German user interface and i18n groundwork (#11)
-- [ ] Active questions: the app asks where an answer helps most (“Still enough coffee?”)
-- [ ] Price observations from purchases; price history per product
-- [ ] Deal detection (“lowest price in 90 days”) and price alerts
-- [ ] Stock-up planning: use per day × shelf life × storage × discount
-- [ ] Open Food Facts barcode lookup and Open Prices as an open price source (read)
+- [x] German user interface and i18n groundwork (#11)
+- [x] Active questions: the app asks where an answer helps most (“Still enough coffee?”)
+- [x] Price observations from purchases; price history per product
+- [x] Deal detection (“lowest price in 90 days”) and price alerts
+- [x] Stock-up planning: use per day × shelf life × storage × discount
+- [x] Open Food Facts barcode lookup and Open Prices as an open price source (read)
 
-## v0.4 — Households together
+## v0.4 — Talk to your list
+
+- [x] Free, offline sentence understanding in German and English (“Milch ist leer”, “Was brauchen wir?”)
+- [x] AI tools and a skill for Twenty's AI chat / MCP — the model talks, the engine decides ([docs/AI.md](docs/AI.md))
+- [x] `POST /s/talk` and Twenty workflow actions for automations ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md))
+- [ ] More phrasings and languages from the community
+
+## v0.5 — Households together
 
 - [ ] Several people per household, who reported what (#4)
 - [ ] Care mode: relatives look after a second household (e.g. parents), with consent
@@ -33,7 +40,7 @@ households — open an issue or join the [discussions](https://github.com/micha1
 - [ ] Better activity history: filters, undo, edit/delete (#5)
 - [ ] Server-side aggregation for long histories (#6)
 
-## v0.5 — Capture without effort
+## v0.6 — Capture without effort
 
 - [ ] Barcode scan and packaging photo → product
 - [ ] Receipt import (vision model, local or cloud, opt-in)
@@ -41,7 +48,7 @@ households — open an issue or join the [discussions](https://github.com/micha1
 - [ ] NFC tags for “empty”, import/export (CSV, JSON)
 - [ ] Contribute prices back to Open Prices (opt-in)
 
-## v0.6 — Integrations and actions
+## v0.7 — Integrations and actions
 
 - [ ] Home Assistant: sensors, to-do list, automations
 - [ ] Alexa skill (own invocation name)

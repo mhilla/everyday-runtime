@@ -169,6 +169,19 @@ unchanged. UI text uses gettext-style keys in `src/ui/i18n.tsx`; a unit test fai
 if any `t('…')` text lacks a German translation. The language follows the Twenty
 user's locale, with a DE/EN switch in the app.
 
+## Talking to the list (v0.4)
+
+- `src/domain/commands.ts` parses a sentence into an intent (EMPTY, IN_STOCK, ADD,
+  BOUGHT, ASK_NEEDS, ASK_PRODUCT, ASK_PRICE, UNKNOWN) with items, quantities, price
+  and store — ordered regex patterns for German and English, no AI.
+- `src/domain/talk.ts` matches product names tolerantly (case, plural endings, one
+  typo per five letters) and answers questions as messages.
+- `src/data/command-executor.ts` runs a command with the regular household actions;
+  the in-app talk box and the `everyday-update` AI tool share it.
+- `src/logic-functions/everyday-*.tool.ts` expose read/write tools to Twenty's AI
+  (`toolTriggerSettings` with JSON Schema); `src/skills/shopping-assistant.skill.ts`
+  tells the model to rely on the tools and never guess stock. See docs/AI.md.
+
 ## Front component constraints
 
 Twenty renders front components from a Web Worker via Remote DOM. Things that

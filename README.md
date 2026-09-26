@@ -69,6 +69,12 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
   *Bought*, *Add to list*, *Archive*.
 - **Activity** — every observation, grouped by day. This is exactly the evidence the
   engine uses.
+- **Talk to your list** — “Milch ist leer”, “2 Kaffee auf die Liste”, “Was brauchen
+  wir?”: understood for free and offline in German and English; optional AI tools
+  for Twenty's AI chat ([docs/AI.md](docs/AI.md)).
+- **Integrations** — MCP for any AI assistant, `POST /s/talk` for Siri shortcuts,
+  Home Assistant, n8n and bots, Twenty workflow actions
+  ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
 - **Active questions** — “Still enough coffee?”: one tap where it helps most.
 - **Price radar** — usual price, recent low, “great / good / usual / expensive”
   while you type a price, price alerts and a stock-up recommendation with the
@@ -84,6 +90,10 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
 
 <p align="center">
   <img src="docs/screenshots/now-desktop-de.png" alt="German Now screen: good prices for you (coffee 4,99 € instead of about 6,79 €, buy 4 packs, saves about 7,20 €), quick questions and probably needed products" width="640">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/talk-mobile-de.png" alt="Talk to your list on a phone, in German: “Hab 2 Milch für 1,98 gekauft beim Discounter” is recorded; “Was brauchen wir?” lists four products with likelihood" width="300">
 </p>
 
 | Now (phone) | Shopping list (phone) | Product details (dark) |
@@ -177,10 +187,11 @@ See [docs/PRIVACY.md](docs/PRIVACY.md) for what is stored and how to delete it.
 
 ## Roadmap
 
-- **v0.3** — German UI, active questions (“still enough coffee?”), price radar with deal detection and stock-up planning
-- **v0.4** — households with several people, care mode for relatives, shared-flat mode
-- **v0.5** — capture by barcode, photo, receipt and natural language
-- **v0.6** — Home Assistant, Alexa skill, webhooks, appliance adapters, one-tap ordering (confirmed)
+- **v0.3** — German UI, active questions, price radar ✅
+- **v0.4** — talk to your list (free sentence understanding, AI tools for Twenty's AI chat) ✅
+- **v0.5** — households with several people, care mode for relatives, shared-flat mode
+- **v0.6** — capture by barcode, photo, receipt
+- **v0.7** — Home Assistant, Alexa skill, webhooks, appliance adapters, one-tap ordering (confirmed)
 - **v1.0** — stable self-hosted workflow, upgrade docs, documented privacy model
 
 Full list: [ROADMAP.md](ROADMAP.md) · where it is heading: [VISION.md](docs/VISION.md) ([Deutsch](docs/VISION.de.md)).

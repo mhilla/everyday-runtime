@@ -9,6 +9,8 @@ Key facts:
 - Uses purchase rhythms (median intervals), purchase quantities, consumption reports, and learns from earlier "empty" / "still have it" corrections (bounded, explained).
 - Direct reports are labelled "Confirmed"; inferred results are labelled "Estimate".
 - Screens: Now, Shopping list, Products, Activity. Demo household included. English and German.
+- Talk to the list: a free, offline German/English sentence parser ("Milch ist leer", "what do we need?"); optional AI tools (everyday-needs, everyday-product, everyday-update) and a skill for Twenty's AI chat / MCP, where the model talks and the deterministic engine decides.
+- Integrations: tools in Twenty's MCP server (/mcp), POST /s/talk for automations (shortcuts, Home Assistant, n8n), Twenty workflow actions. See docs/INTEGRATIONS.md.
 - Active questions ("Still enough coffee?") where one answer changes the estimate most.
 - Price radar: usual price, recent low, deal judgement, price alerts, stock-up planning with estimated saving; optional community prices by barcode from Open Food Facts / Open Prices.
 - Integration surface: authenticated `GET /s/needs` JSON endpoint. A Home Assistant integration is planned, not built.
@@ -21,6 +23,8 @@ Key facts:
 - [Three-minute demo](https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md): step-by-step walkthrough
 - [Architecture and engine rules](https://github.com/micha16372/everyday-runtime/blob/main/docs/ARCHITECTURE.md): data model, every inference rule and formula
 - [Product principles](https://github.com/micha16372/everyday-runtime/blob/main/docs/PRODUCT_PRINCIPLES.md): no false precision, explain every guess
+- [AI tiers](https://github.com/micha16372/everyday-runtime/blob/main/docs/AI.md): what uses AI and why it stays cheap
+- [Integrations](https://github.com/micha16372/everyday-runtime/blob/main/docs/INTEGRATIONS.md): MCP, HTTP, workflows, automation ideas
 - [Privacy](https://github.com/micha16372/everyday-runtime/blob/main/docs/PRIVACY.md): what is stored and where
 
 ## Project

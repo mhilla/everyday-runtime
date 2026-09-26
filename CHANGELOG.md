@@ -6,6 +6,25 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+### Added
+
+- **Talk to your list**: a free, offline German/English sentence parser on Now —
+  “Milch ist leer”, “2 Kaffee auf die Liste”, “Hab 2 Milch für 1,98 gekauft beim
+  Discounter”, “Was brauchen wir?”, “Ist Kaffee gerade günstig?”. Answers come from
+  the engine, in the language you use; voice via the phone keyboard microphone.
+- **AI tools for Twenty's AI chat / MCP**: `everyday-needs`, `everyday-product`,
+  `everyday-update` and the `everyday-shopping` skill. The model talks, the engine
+  decides — small models and few tokens are enough.
+- docs/AI.md (English and German): the AI tiers and why they stay cheap.
+- **MCP**: the tools appear in Twenty's own MCP server (`/mcp`) as
+  `app_everyday_needs`, `app_everyday_product`, `app_everyday_update`, so any MCP
+  client (Claude, ChatGPT connectors, Cursor …) can read and update the list.
+- **`POST /s/talk`**: one sentence in, answer out — for phone shortcuts, Home
+  Assistant, n8n, chat bots and NFC tags.
+- **Twenty workflow actions** “Everyday: what do we need?” and “Everyday: record what
+  happened” (e.g. a weekly list by email).
+- docs/INTEGRATIONS.md (English and German) with ready-to-use examples.
+
 ## 0.3.0 — 2026-09-26
 
 ### Added
