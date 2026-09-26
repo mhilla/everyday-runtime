@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! Please do not include personal data from your household.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Load the demo household
+        2. Open "List"
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Everyday Runtime version or commit
+      placeholder: 0.1.0 / abc1234
+  - type: input
+    id: twenty-version
+    attributes:
+      label: Twenty version
+      description: Shown by `yarn twenty docker:status` or in Twenty's settings.
+  - type: dropdown
+    id: device
+    attributes:
+      label: Where did it happen?
+      options:
+        - Desktop browser
+        - Phone browser
+        - Tablet
+        - API (/s/needs)
+        - CLI / setup
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: text

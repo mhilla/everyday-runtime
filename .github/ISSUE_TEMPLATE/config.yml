@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/mhilla/everyday-runtime/security/advisories/new
+    about: Please report security issues privately, not as a public issue.
+  - name: Twenty platform questions
+    url: https://docs.twenty.com/developers/extend/apps/getting-started/quick-start
+    about: Questions about Twenty itself are best answered by the Twenty docs and community.

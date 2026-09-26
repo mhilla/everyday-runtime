@@ -9,16 +9,45 @@ on:
 permissions:
   contents: read
 
-env:
-  TWENTY_VERSION: latest
-
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  checks:
+    name: Lint, typecheck and unit tests
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Unit tests
+        run: yarn test
+
+  integration:
+    name: Integration tests (Twenty)
+    runs-on: ubuntu-latest
+    needs: checks
+    env:
+      TWENTY_VERSION: latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,17 +70,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Lint
-        run: yarn lint
-
-      - name: Typecheck
-        run: yarn typecheck
-
-      - name: Unit tests
-        run: yarn test:unit
-
       - name: Run integration tests
-        run: yarn test
+        run: yarn test:integration
         env:
           TWENTY_API_URL: ${{ steps.twenty.outputs.server-url }}
           TWENTY_API_KEY: ${{ steps.twenty.outputs.api-key }}

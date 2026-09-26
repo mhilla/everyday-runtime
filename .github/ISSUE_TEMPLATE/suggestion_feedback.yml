@@ -1,0 +1,39 @@
+name: Suggestion felt wrong
+description: The app suggested something you did not need — or missed something you did.
+labels: [inference-feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This feedback directly improves the engine. Open "Why?" on the suggestion and paste
+        what it says. Please leave out anything you consider private.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong?
+      options:
+        - Suggested, but we did not need it
+        - Needed, but it was not suggested
+        - The percentage or wording felt misleading
+        - The explanation was hard to understand
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: The "Why?" text
+      description: Copy the reason and the explanation lines.
+    validations:
+      required: true
+  - type: textarea
+    id: reality
+    attributes:
+      label: What was actually true?
+      placeholder: We had two bottles left; we buy milk every ~10 days since the kids moved out.
+    validations:
+      required: true
+  - type: textarea
+    id: history
+    attributes:
+      label: Relevant history (optional)
+      description: Roughly when it was bought, marked empty, seen, etc. — from the Activity screen.
