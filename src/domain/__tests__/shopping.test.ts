@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { buildNeedsReport } from 'src/domain/needs-report';
 import {
   buildOverview,
   selectProbablyNeeded,
@@ -133,5 +134,50 @@ describe('selectProbablyNeeded', () => {
       'Coffee',
       'Milk',
     ]);
+  });
+});
+
+describe('buildNeedsReport', () => {
+  it('serializes what is probably needed for integrations', () => {
+    const report = buildNeedsReport(
+      buildOverview(
+        {
+          products: [milk, coffee, pasta],
+          observations: [...overdueMilk, ...emptyCoffee],
+          shoppingItems: [shoppingItem({ productId: 'coffee', name: 'Coffee' })],
+        },
+        NOW,
+      ),
+      NOW,
+    );
+
+    expect(report).toEqual({
+      generatedAt: NOW.toISOString(),
+      count: 2,
+      needed: [
+        {
+          productId: 'coffee',
+          name: 'Coffee',
+          state: 'CONFIRMED',
+          needScore: 0.95,
+          confidence: 0.95,
+          label: 'Empty',
+          isEstimate: false,
+          reason: 'Marked empty today',
+          onList: true,
+        },
+        {
+          productId: 'milk',
+          name: 'Milk',
+          state: 'LIKELY',
+          needScore: 0.86,
+          confidence: 0.94,
+          label: 'Probably low',
+          isEstimate: true,
+          reason: 'Last purchased 6 days ago · usual interval ~5 days',
+          onList: false,
+        },
+      ],
+    });
   });
 });
