@@ -37,7 +37,7 @@
     "test:integration": "vitest run --config vitest.config.ts"
   },
   "devDependencies": {
-    "@tabler/icons-react": "3.47.0",
+    "@tabler/icons-react": "3.48.0",
     "@types/node": "^24.7.2",
     "@types/react": "^19.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20260116.1",

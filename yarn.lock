@@ -1084,7 +1084,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons-react@npm:3.47.0, @tabler/icons-react@npm:^3.31.0":
+"@tabler/icons-react@npm:3.48.0":
+  version: 3.48.0
+  resolution: "@tabler/icons-react@npm:3.48.0"
+  dependencies:
+    "@tabler/icons": "npm:3.48.0"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 10c0/49c314159da3d19cbb4e4791928a4edd78a02805ac262702b0a177fccbf2b8f3b7ace1ca81e1df873237ef86266dce5bf5547758803e83d24d5887af99716240
+  languageName: node
+  linkType: hard
+
+"@tabler/icons-react@npm:^3.31.0":
   version: 3.47.0
   resolution: "@tabler/icons-react@npm:3.47.0"
   dependencies:
@@ -1099,6 +1110,13 @@ __metadata:
   version: 3.47.0
   resolution: "@tabler/icons@npm:3.47.0"
   checksum: 10c0/168be8925522fd04892f722957e4cb7ef134f58e6a78940a01da042f55d2e9b62f333b0c0cf7199decd4df17a8a076188c82f24a8a0e961a19b7e7bf29b61c51
+  languageName: node
+  linkType: hard
+
+"@tabler/icons@npm:3.48.0":
+  version: 3.48.0
+  resolution: "@tabler/icons@npm:3.48.0"
+  checksum: 10c0/52c4e582dede13508c6cf34b73c23f80449dde042ee487cb2ef082e92b50cb644f61072871a95f6a0ebb11b117d7f10581455906bb74ed0fa0a9924170876e80
   languageName: node
   linkType: hard
 
@@ -1802,7 +1820,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "everyday-runtime@workspace:."
   dependencies:
-    "@tabler/icons-react": "npm:3.47.0"
+    "@tabler/icons-react": "npm:3.48.0"
     "@types/node": "npm:^24.7.2"
     "@types/react": "npm:^19.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260116.1"
