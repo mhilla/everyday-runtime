@@ -1,0 +1,128 @@
+import {
+  defineObject,
+  FieldType,
+  NumberDataType,
+  RelationType,
+} from 'twenty-sdk/define';
+
+import {
+  OBSERVATION_FIELD_IDS,
+  OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER,
+  PRODUCT_FIELD_IDS,
+  PRODUCT_OBJECT_UNIVERSAL_IDENTIFIER,
+  PURCHASE_FIELD_IDS,
+  PURCHASE_OBJECT_UNIVERSAL_IDENTIFIER,
+  SHOPPING_ITEM_FIELD_IDS,
+  SHOPPING_ITEM_OBJECT_UNIVERSAL_IDENTIFIER,
+} from 'src/constants/universal-identifiers';
+
+export default defineObject({
+  universalIdentifier: PRODUCT_OBJECT_UNIVERSAL_IDENTIFIER,
+  nameSingular: 'product',
+  namePlural: 'products',
+  labelSingular: 'Product',
+  labelPlural: 'Products',
+  description: 'Something the household buys again and again.',
+  icon: 'IconBasket',
+  labelIdentifierFieldMetadataUniversalIdentifier: PRODUCT_FIELD_IDS.name,
+  fields: [
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.name,
+      type: FieldType.TEXT,
+      name: 'name',
+      label: 'Name',
+      icon: 'IconAbc',
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.category,
+      type: FieldType.SELECT,
+      name: 'category',
+      label: 'Category',
+      icon: 'IconCategory',
+      isNullable: true,
+      defaultValue: `'OTHER'`,
+      options: [
+        { id: 'e126c2fd-929c-4ac5-8239-a31658d58a2e', value: 'DAIRY', label: 'Dairy', position: 0, color: 'sky' },
+        { id: 'a0d27147-a086-4049-bdee-b506bbf302f8', value: 'BAKERY', label: 'Bakery', position: 1, color: 'amber' },
+        { id: 'abd1f053-d19a-4493-9f56-e8eb06a267ec', value: 'PRODUCE', label: 'Fruit & vegetables', position: 2, color: 'green' },
+        { id: '3a120b0a-cc81-45e0-b37b-e2aa8d7a734e', value: 'PANTRY', label: 'Pantry', position: 3, color: 'orange' },
+        { id: 'e73c260e-938c-4e67-973c-329a49155b11', value: 'BEVERAGES', label: 'Beverages', position: 4, color: 'brown' },
+        { id: 'd77993df-1acc-4f5b-8833-c172793afca5', value: 'FROZEN', label: 'Frozen', position: 5, color: 'cyan' },
+        { id: '31a19c93-3a84-40ec-923a-ed54a15db9f2', value: 'HOUSEHOLD', label: 'Household', position: 6, color: 'violet' },
+        { id: 'f0546e0b-8dbe-4f03-b445-54cff397dd30', value: 'PERSONAL_CARE', label: 'Personal care', position: 7, color: 'pink' },
+        { id: '8bb3ba0c-d4d6-4cd2-a496-b08b17c5b0a5', value: 'OTHER', label: 'Other', position: 8, color: 'gray' },
+      ],
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.defaultUnit,
+      type: FieldType.TEXT,
+      name: 'defaultUnit',
+      label: 'Default unit',
+      description: 'e.g. "l", "pack", "kg", "roll"',
+      icon: 'IconRuler',
+      isNullable: true,
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.barcode,
+      type: FieldType.TEXT,
+      name: 'barcode',
+      label: 'Barcode',
+      icon: 'IconBarcode',
+      isNullable: true,
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.typicalPurchaseQuantity,
+      type: FieldType.NUMBER,
+      name: 'typicalPurchaseQuantity',
+      label: 'Typical purchase quantity',
+      icon: 'IconNumbers',
+      isNullable: true,
+      defaultValue: null,
+      universalSettings: { dataType: NumberDataType.FLOAT, decimals: 2 },
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.archived,
+      type: FieldType.BOOLEAN,
+      name: 'archived',
+      label: 'Archived',
+      description: 'Archived products are hidden and never suggested.',
+      icon: 'IconArchive',
+      defaultValue: false,
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.observations,
+      type: FieldType.RELATION,
+      name: 'observations',
+      label: 'Observations',
+      icon: 'IconEye',
+      relationTargetObjectMetadataUniversalIdentifier:
+        OBSERVATION_OBJECT_UNIVERSAL_IDENTIFIER,
+      relationTargetFieldMetadataUniversalIdentifier:
+        OBSERVATION_FIELD_IDS.product,
+      universalSettings: { relationType: RelationType.ONE_TO_MANY },
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.shoppingItems,
+      type: FieldType.RELATION,
+      name: 'shoppingItems',
+      label: 'Shopping items',
+      icon: 'IconShoppingCart',
+      relationTargetObjectMetadataUniversalIdentifier:
+        SHOPPING_ITEM_OBJECT_UNIVERSAL_IDENTIFIER,
+      relationTargetFieldMetadataUniversalIdentifier:
+        SHOPPING_ITEM_FIELD_IDS.product,
+      universalSettings: { relationType: RelationType.ONE_TO_MANY },
+    },
+    {
+      universalIdentifier: PRODUCT_FIELD_IDS.purchases,
+      type: FieldType.RELATION,
+      name: 'purchases',
+      label: 'Purchases',
+      icon: 'IconReceipt',
+      relationTargetObjectMetadataUniversalIdentifier:
+        PURCHASE_OBJECT_UNIVERSAL_IDENTIFIER,
+      relationTargetFieldMetadataUniversalIdentifier: PURCHASE_FIELD_IDS.product,
+      universalSettings: { relationType: RelationType.ONE_TO_MANY },
+    },
+  ],
+});
