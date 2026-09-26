@@ -66,7 +66,7 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
   that show every rule of the engine within a minute.
 - **`GET /s/needs`** — an authenticated JSON endpoint with the same results, for
   dashboards and future integrations.
-- Mobile-friendly, light and dark mode, keyboard and screen-reader friendly.
+- Mobile-friendly layout, light and dark mode, real buttons with labels and large tap targets (see the known accessibility limitation in [CHANGELOG.md](CHANGELOG.md)).
 
 ## Screenshots
 

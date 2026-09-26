@@ -44,3 +44,15 @@ First usable version of the smart shopping workflow.
 
 - “Page layout widget uses a deprecated vertical-list position”: the main widget
   no longer sets `position` and uses `heightBehavior: TAB_VIEWPORT` (twenty-sdk 2.42).
+
+### Known limitations
+
+- The whole household history (up to 2,000 observations and 1,000 list items) is
+  loaded into the browser.
+- Purchase quantities are stored but not yet used for the estimate.
+- One household per Twenty workspace; the UI does not show who reported what.
+- English UI only.
+- Twenty renders the app inside a container marked `aria-disabled="true"`. Clicks
+  and keyboard work, but some screen readers may announce the region as disabled.
+- `GET /s/needs` without a token is answered with HTTP 500 by the Twenty server
+  instead of 401.
