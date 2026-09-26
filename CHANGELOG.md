@@ -6,6 +6,8 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-26
+
 ### Added
 
 - **German user interface** (#11): all screens, explanations, prices and questions
