@@ -114,4 +114,11 @@ export type NeedAssessment = {
   lastPurchasedAt: Date | null;
   typicalIntervalDays: number | null;
   purchaseCount: number;
+  // How long the current purchase is expected to last, in days (after
+  // quantities and learned corrections). Null without a purchase rhythm.
+  expectedDurationDays: number | null;
+  // Typical use per day in the product's unit, when quantities are known.
+  consumptionRatePerDay: number | null;
+  // Multiplier learned from past "Empty" / "Still have it" reports, if any.
+  calibrationFactor: number | null;
 };

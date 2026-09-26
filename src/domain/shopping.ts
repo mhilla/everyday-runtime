@@ -85,7 +85,9 @@ export const buildOverview = (
 
       return {
         product,
-        assessment: assessProduct(observations, now, config),
+        assessment: assessProduct(observations, now, config, {
+          unit: product.defaultUnit,
+        }),
         openItem,
         isSuggestionSuppressed: isSuggestionSuppressed(items, latest),
         lastObservation: latest,

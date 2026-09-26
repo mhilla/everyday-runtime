@@ -53,6 +53,21 @@ export const INFERENCE_CONFIG = {
   curveMidpoint: 0.9,
   // Observations dated further in the future than this are ignored.
   futureToleranceMinutes: 5,
+  // Quantity-aware durations stay within these multiples of the buying rhythm.
+  minQuantityDurationFactor: 0.25,
+  maxQuantityDurationFactor: 4,
+  // Reported consumption with quantities can move the run-out up to this share.
+  maxQuantityConsumptionAdvance: 0.9,
+  // Learning from corrections: how many past reports count, how many give
+  // full weight, the allowed range and the dead band around "no change".
+  maxCalibrationSignals: 4,
+  calibrationFullWeightSignals: 2,
+  minCalibrationFactor: 0.5,
+  maxCalibrationFactor: 2,
+  calibrationDeadband: 0.1,
+  // The reason line mentions the expected duration instead of the buying
+  // rhythm once they differ by at least this share.
+  reasonDurationDifference: 0.15,
 } as const;
 
 export type InferenceConfig = typeof INFERENCE_CONFIG;
@@ -87,10 +102,17 @@ export const stateFromConfidence = (confidence: number): NeedState => {
 
 type PurchaseHistory = {
   trips: Date[];
+  // Total quantity bought per trip; null when any purchase lacked a quantity.
+  tripQuantities: (number | null)[];
   intervals: number[];
   typicalIntervalDays: number | null;
   variation: number | null;
+  // Median of quantity bought / days until the next trip, over recent trips.
+  typicalRatePerDay: number | null;
 };
+
+const addQuantities = (a: number | null, b: number | null) =>
+  a === null || b === null ? null : a + b;
 
 // Groups PURCHASED observations into shopping trips and derives the recent
 // buying rhythm. Median + coefficient of variation keep single outliers
@@ -100,6 +122,7 @@ export const analysePurchases = (
   config: InferenceConfig = INFERENCE_CONFIG,
 ): PurchaseHistory => {
   const trips: Date[] = [];
+  const tripQuantities: (number | null)[] = [];
   let tripStart: Date | null = null;
 
   for (const observation of sortedObservations) {
@@ -114,26 +137,127 @@ export const analysePurchases = (
 
     if (isSameTrip) {
       trips[trips.length - 1] = observation.observedAt;
+      tripQuantities[tripQuantities.length - 1] = addQuantities(
+        tripQuantities[tripQuantities.length - 1],
+        observation.quantity,
+      );
     } else {
       tripStart = observation.observedAt;
       trips.push(observation.observedAt);
+      tripQuantities.push(observation.quantity);
     }
   }
 
   const intervals: number[] = [];
+  const rates: number[] = [];
 
   for (let index = 1; index < trips.length; index++) {
-    intervals.push(daysBetween(trips[index - 1], trips[index]));
+    const days = daysBetween(trips[index - 1], trips[index]);
+    const quantity = tripQuantities[index - 1];
+
+    intervals.push(days);
+    if (quantity !== null && quantity > 0 && days >= 0.5) {
+      rates.push(quantity / days);
+    }
   }
 
   const recentIntervals = intervals.slice(-config.maxIntervalsConsidered);
 
   return {
     trips,
+    tripQuantities,
     intervals: recentIntervals,
     typicalIntervalDays: median(recentIntervals),
     variation: coefficientOfVariation(recentIntervals),
+    typicalRatePerDay: median(rates.slice(-config.maxIntervalsConsidered)),
   };
+};
+
+// How long one purchase is expected to last. With quantities and a known
+// consumption rate, 3 l last three times as long as 1 l; otherwise the buying
+// rhythm is used. Bounded so a single odd quantity cannot run away.
+export const expectedDurationFor = (
+  quantity: number | null,
+  history: PurchaseHistory,
+  rhythmDays: number,
+  config: InferenceConfig = INFERENCE_CONFIG,
+): number => {
+  if (quantity === null || quantity <= 0 || history.typicalRatePerDay === null) {
+    return rhythmDays;
+  }
+
+  return clamp(
+    quantity / history.typicalRatePerDay,
+    rhythmDays * config.minQuantityDurationFactor,
+    rhythmDays * config.maxQuantityDurationFactor,
+  );
+};
+
+export type Calibration = {
+  // Multiplier applied to the expected duration (1 = no change).
+  factor: number;
+  signalCount: number;
+};
+
+// Learns from past corrections. In every completed purchase cycle, an "Empty"
+// report tells how long the purchase really lasted, and a "Still have it"
+// report later than expected tells it lasted at least that long. The median
+// ratio of actual to expected duration becomes a bounded multiplier; a
+// single report counts half. The current cycle is never used here — its
+// reports are handled directly by the main rules.
+export const estimateCalibration = (
+  sortedObservations: Observation[],
+  history: PurchaseHistory,
+  rhythmDays: number,
+  config: InferenceConfig = INFERENCE_CONFIG,
+): Calibration | null => {
+  const ratios: number[] = [];
+
+  for (let index = 0; index + 1 < history.trips.length; index++) {
+    const start = history.trips[index];
+    const end = history.trips[index + 1];
+    const expected = expectedDurationFor(
+      history.tripQuantities[index],
+      history,
+      rhythmDays,
+      config,
+    );
+    const inCycle = sortedObservations.filter(
+      (o) => o.observedAt > start && o.observedAt <= end && o.type !== 'PURCHASED',
+    );
+    const empty = inCycle.find((o) => o.type === 'EMPTY');
+
+    if (empty) {
+      ratios.push(daysBetween(start, empty.observedAt) / expected);
+      continue;
+    }
+
+    const lastSighting = lastOf(inCycle, ['SEEN_IN_STOCK']);
+
+    if (lastSighting && daysBetween(start, lastSighting.observedAt) > expected) {
+      ratios.push(daysBetween(start, lastSighting.observedAt) / expected);
+    }
+  }
+
+  const recent = ratios.slice(-config.maxCalibrationSignals);
+  const typical = median(recent);
+
+  if (typical === null) {
+    return null;
+  }
+
+  const weight = Math.min(1, recent.length / config.calibrationFullWeightSignals);
+  const factor = clamp(
+    1 + (typical - 1) * weight,
+    config.minCalibrationFactor,
+    config.maxCalibrationFactor,
+  );
+
+  if (Math.abs(factor - 1) < config.calibrationDeadband) {
+    return null;
+  }
+
+  return { factor: round2(factor), signalCount: recent.length };
 };
 
 const sortObservations = (observations: Observation[]) =>
@@ -164,6 +288,11 @@ type Draft = {
   needScore: number;
   reason: string;
   factors: string[];
+  duration?: {
+    expectedDurationDays: number;
+    consumptionRatePerDay: number | null;
+    calibrationFactor: number | null;
+  };
 };
 
 const finalize = (
@@ -196,7 +325,27 @@ const finalize = (
         ? null
         : round2(history.typicalIntervalDays),
     purchaseCount: history.trips.length,
+    expectedDurationDays: draft.duration
+      ? round2(draft.duration.expectedDurationDays)
+      : null,
+    consumptionRatePerDay:
+      draft.duration?.consumptionRatePerDay === null ||
+      draft.duration?.consumptionRatePerDay === undefined
+        ? null
+        : Math.round(draft.duration.consumptionRatePerDay * 1000) / 1000,
+    calibrationFactor: draft.duration?.calibrationFactor ?? null,
   };
+};
+
+const formatAmount = (value: number, unit: string | null) => {
+  const rounded =
+    value >= 10
+      ? Math.round(value)
+      : value >= 0.1
+        ? Math.round(value * 10) / 10
+        : Math.round(value * 100) / 100;
+
+  return unit ? `${rounded} ${unit}` : `${rounded}`;
 };
 
 const describeRegularity = (history: PurchaseHistory): string | null => {
@@ -218,11 +367,18 @@ const describeRegularity = (history: PurchaseHistory): string | null => {
 
 // Estimates whether one product needs to be bought, from its observations
 // only. Pure and deterministic: same input, same output — `now` is explicit.
+export type AssessmentContext = {
+  // Unit of the product ("l", "pack"), only used in explanations.
+  unit?: string | null;
+};
+
 export const assessProduct = (
   observations: Observation[],
   now: Date,
   config: InferenceConfig = INFERENCE_CONFIG,
+  context: AssessmentContext = {},
 ): NeedAssessment => {
+  const unit = context.unit ?? null;
   const futureLimit = now.getTime() + config.futureToleranceMinutes * 60_000;
   const valid = sortObservations(
     observations.filter((o) => o.observedAt.getTime() <= futureLimit),
@@ -401,10 +557,31 @@ export const assessProduct = (
   const purchaseAge = daysBetween(lastPurchase, now);
   const purchaseAgo = formatAgo(lastPurchase, now);
   const hasPattern = history.typicalIntervalDays !== null;
-  const interval = Math.max(
+  const rhythm = Math.max(
     1,
     history.typicalIntervalDays ?? config.defaultIntervalDays,
   );
+  const lastQuantity = lastItem(history.tripQuantities);
+  const usesQuantity =
+    hasPattern &&
+    lastQuantity !== null &&
+    lastQuantity > 0 &&
+    history.typicalRatePerDay !== null;
+  const quantityDuration = hasPattern
+    ? expectedDurationFor(lastQuantity, history, rhythm, config)
+    : rhythm;
+  const calibration = hasPattern
+    ? estimateCalibration(valid, history, rhythm, config)
+    : null;
+  // Expected duration of the current purchase; everything below uses it.
+  const interval = Math.max(1, quantityDuration * (calibration?.factor ?? 1));
+  const durationDiffers =
+    Math.abs(interval - rhythm) / rhythm >= config.reasonDurationDifference;
+  const durationPhrase = !durationDiffers
+    ? `usual interval ${formatInterval(rhythm)}`
+    : usesQuantity && lastQuantity !== null
+      ? `${formatAmount(lastQuantity, unit)} usually lasts ${formatInterval(interval)}`
+      : `usually lasts ${formatInterval(interval)}`;
   const factors: string[] = [];
 
   if (hasPattern) {
@@ -419,6 +596,24 @@ export const assessProduct = (
   } else {
     factors.push(
       `Only one purchase so far (${purchaseAgo}); assuming a typical rhythm of ${formatInterval(config.defaultIntervalDays)} until there is more history.`,
+    );
+  }
+
+  if (usesQuantity && lastQuantity !== null && history.typicalRatePerDay !== null) {
+    factors.push(
+      `Bought ${formatAmount(lastQuantity, unit)} last time and you use about ${formatAmount(history.typicalRatePerDay, unit)} per day, so it should last ${formatInterval(quantityDuration)}.`,
+    );
+  }
+
+  if (calibration) {
+    const percent = Math.round(Math.abs(calibration.factor - 1) * 100);
+    const reports =
+      calibration.signalCount === 1
+        ? 'one earlier “Empty”/“Still have it” report'
+        : `${calibration.signalCount} earlier “Empty”/“Still have it” reports`;
+
+    factors.push(
+      `Learned from ${reports}: it usually lasts about ${percent}% ${calibration.factor < 1 ? 'less' : 'longer'} than expected, so the estimate is adjusted to ${formatInterval(interval)}.`,
     );
   }
 
@@ -442,21 +637,43 @@ export const assessProduct = (
     );
   }
 
-  const consumedSincePurchase = valid.filter(
+  const consumptions = valid.filter(
     (o) => o.type === 'CONSUMED' && o.observedAt > lastPurchase,
-  ).length;
+  );
+  const consumedSincePurchase = consumptions.length;
+  // With quantities on both sides the share used is known exactly;
+  // otherwise each report counts as a fixed share of an interval.
+  const consumedQuantity =
+    lastQuantity !== null &&
+    lastQuantity > 0 &&
+    consumptions.every((o) => o.quantity !== null)
+      ? consumptions.reduce((sum, o) => sum + (o.quantity ?? 0), 0)
+      : null;
 
   if (consumedSincePurchase > 0) {
-    const advance = Math.min(
-      config.maxConsumptionAdvance,
-      consumedSincePurchase * config.consumptionAdvanceFraction,
-    );
+    const advance =
+      consumedQuantity !== null && lastQuantity !== null
+        ? Math.min(config.maxQuantityConsumptionAdvance, consumedQuantity / lastQuantity)
+        : Math.min(
+            config.maxConsumptionAdvance,
+            consumedSincePurchase * config.consumptionAdvanceFraction,
+          );
 
     expectedRunOut = addDays(expectedRunOut, -advance * interval);
     factors.push(
-      `Used ${consumedSincePurchase === 1 ? 'once' : `${consumedSincePurchase} times`} since the last purchase, so it may run out sooner.`,
+      consumedQuantity !== null && lastQuantity !== null
+        ? `Used ${formatAmount(consumedQuantity, unit)} of ${formatAmount(lastQuantity, unit)} since the last purchase, so it may run out sooner.`
+        : `Used ${consumedSincePurchase === 1 ? 'once' : `${consumedSincePurchase} times`} since the last purchase, so it may run out sooner.`,
     );
   }
+
+  const duration = hasPattern
+    ? {
+        expectedDurationDays: interval,
+        consumptionRatePerDay: usesQuantity ? history.typicalRatePerDay : null,
+        calibrationFactor: calibration?.factor ?? null,
+      }
+    : undefined;
 
   const daysPastRunOut = daysBetween(expectedRunOut, now);
 
@@ -479,10 +696,9 @@ export const assessProduct = (
         state: 'CONFIRMED',
         confidence: 0.9,
         needScore: Math.min(curveNeed, 0.05),
-        reason: hasPattern
-          ? `Bought ${purchaseAgo} · usual interval ${formatInterval(interval)}`
-          : `Bought ${purchaseAgo}`,
+        reason: hasPattern ? `Bought ${purchaseAgo} · ${durationPhrase}` : `Bought ${purchaseAgo}`,
         factors,
+        duration,
       },
       history,
       ignoredFutureCount,
@@ -502,6 +718,7 @@ export const assessProduct = (
         needScore: Math.min(curveNeed, 0.1),
         reason: `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)} · last purchased ${purchaseAgo}`,
         factors,
+        duration,
       },
       history,
       ignoredFutureCount,
@@ -555,9 +772,9 @@ export const assessProduct = (
   const reason = isStale
     ? `Last purchased ${purchaseAgo} · pattern may be out of date`
     : sightingAfterPurchase
-      ? `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)} · usual interval ${formatInterval(interval)}`
+      ? `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)} · ${durationPhrase}`
       : hasPattern
-        ? `Last purchased ${purchaseAgo} · usual interval ${formatInterval(interval)}`
+        ? `Last purchased ${purchaseAgo} · ${durationPhrase}`
         : `Last purchased ${purchaseAgo} · only one purchase so far`;
 
   return finalize(
@@ -568,6 +785,7 @@ export const assessProduct = (
       needScore,
       reason,
       factors,
+      duration,
     },
     history,
     ignoredFutureCount,

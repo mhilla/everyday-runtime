@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { analysePurchases, assessProduct, INFERENCE_CONFIG } from 'src/domain/inference';
+import {
+  analysePurchases,
+  assessProduct,
+  estimateCalibration,
+  expectedDurationFor,
+  INFERENCE_CONFIG,
+} from 'src/domain/inference';
 import { addDays } from 'src/domain/time';
 
 import { NOW, observation, purchases } from './fixtures';
+
+// Purchases with quantities: [daysAgo, quantity][]
+const bought = (...entries: [number, number][]) =>
+  entries.map(([age, quantity]) => observation('PURCHASED', age, { quantity }));
 
 describe('assessProduct', () => {
   describe('without history', () => {
@@ -46,7 +56,9 @@ describe('assessProduct', () => {
 
       expect(result.basis).toBe('RECENT_PURCHASE');
       expect(result.needScore).toBeLessThanOrEqual(0.05);
-      expect(result.reason).toBe('Bought yesterday · usual interval ~5 days');
+      // The completed cycle ran 12 days until "empty" (rhythm: 5), which the
+      // engine learns from with half weight (one report): ~8.5 days.
+      expect(result.reason).toBe('Bought yesterday · usually lasts ~9 days');
     });
 
     it('treats a purchase recorded at the same moment as an EMPTY report as coming after it', () => {
@@ -358,6 +370,139 @@ describe('assessProduct', () => {
           expect(Math.round(value * 100) / 100).toBe(value);
         }
       }
+    });
+  });
+
+  describe('purchase quantities', () => {
+    it('lets a bulk purchase last longer', () => {
+      const bulk = assessProduct(bought([20, 1], [15, 1], [10, 1], [6, 3]), NOW, INFERENCE_CONFIG, {
+        unit: 'l',
+      });
+      const usual = assessProduct(bought([20, 1], [15, 1], [10, 1], [6, 1]), NOW);
+
+      expect(bulk.consumptionRatePerDay).toBe(0.2);
+      expect(bulk.expectedDurationDays).toBe(15);
+      expect(bulk.needScore).toBeLessThan(0.2);
+      expect(bulk.needsShopping).toBe(false);
+      expect(bulk.reason).toBe('Last purchased 6 days ago · 3 l usually lasts ~2 weeks');
+      expect(bulk.factors).toContain(
+        'Bought 3 l last time and you use about 0.2 l per day, so it should last ~2 weeks.',
+      );
+      expect(usual.needsShopping).toBe(true);
+    });
+
+    it('lets a small purchase run out sooner', () => {
+      const small = assessProduct(bought([24, 2], [18, 2], [12, 2], [4, 1]), NOW);
+      const usual = assessProduct(bought([24, 2], [18, 2], [12, 2], [4, 2]), NOW);
+
+      expect(small.expectedDurationDays).toBe(3);
+      expect(small.needScore).toBeGreaterThan(usual.needScore);
+      expect(small.needsShopping).toBe(true);
+    });
+
+    it('keeps the buying rhythm when quantities are missing', () => {
+      const result = assessProduct(purchases(26, 21, 16, 11, 6), NOW);
+
+      expect(result.consumptionRatePerDay).toBeNull();
+      expect(result.expectedDurationDays).toBe(5);
+      expect(result.reason).toBe('Last purchased 6 days ago · usual interval ~5 days');
+    });
+
+    it('keeps the wording when quantities do not change the estimate', () => {
+      const result = assessProduct(bought([26, 2], [21, 2], [16, 2], [11, 2], [6, 2]), NOW);
+
+      expect(result.expectedDurationDays).toBe(5);
+      expect(result.reason).toBe('Last purchased 6 days ago · usual interval ~5 days');
+    });
+
+    it('uses reported amounts to move the run-out precisely', () => {
+      const history = bought([20, 2], [10, 2], [4, 2]);
+      const half = assessProduct([...history, observation('CONSUMED', 1, { quantity: 1 })], NOW, INFERENCE_CONFIG, { unit: 'l' });
+      const most = assessProduct([...history, observation('CONSUMED', 1, { quantity: 1.8 })], NOW);
+
+      expect(most.needScore).toBeGreaterThan(half.needScore);
+      expect(half.factors).toContain('Used 1 l of 2 l since the last purchase, so it may run out sooner.');
+    });
+
+    it('bounds odd quantities to a multiple of the buying rhythm', () => {
+      const history = analysePurchases(bought([15, 1], [10, 1], [5, 1]), INFERENCE_CONFIG);
+
+      expect(expectedDurationFor(100, history, 5)).toBe(20);
+      expect(expectedDurationFor(0.01, history, 5)).toBe(1.25);
+      expect(expectedDurationFor(null, history, 5)).toBe(5);
+    });
+
+    it('adds up purchases within one shopping trip', () => {
+      const history = analysePurchases(
+        [observation('PURCHASED', 5, { quantity: 1 }), observation('PURCHASED', 5 - 1 / 24, { quantity: 2 })],
+        INFERENCE_CONFIG,
+      );
+
+      expect(history.tripQuantities).toEqual([3]);
+    });
+  });
+
+  describe('learning from corrections', () => {
+    // Rhythm: every 10 days. In both completed cycles it was empty after 7.
+    const emptiesEarly = [
+      ...purchases(26, 16, 6),
+      observation('EMPTY', 19),
+      observation('EMPTY', 9),
+    ];
+
+    it('learns that a product runs out sooner than the buying rhythm', () => {
+      const learned = assessProduct(emptiesEarly, NOW);
+      const plain = assessProduct(purchases(26, 16, 6), NOW);
+
+      expect(learned.calibrationFactor).toBe(0.7);
+      expect(learned.expectedDurationDays).toBe(7);
+      expect(learned.needScore).toBeGreaterThan(plain.needScore);
+      expect(learned.reason).toBe('Last purchased 6 days ago · usually lasts ~7 days');
+      expect(learned.factors).toContain(
+        'Learned from 2 earlier “Empty”/“Still have it” reports: it usually lasts about 30% less than expected, so the estimate is adjusted to ~7 days.',
+      );
+    });
+
+    it('learns that a product lasts longer from a late "still have it"', () => {
+      // Rhythm 10 days; one cycle lasted 16 days and it was still there after 13.
+      const history = [...purchases(40, 30, 20, 4), observation('SEEN_IN_STOCK', 7)];
+      const learned = assessProduct(history, NOW);
+
+      expect(learned.calibrationFactor).toBe(1.15);
+      expect(learned.needScore).toBeLessThan(assessProduct(purchases(40, 30, 20, 4), NOW).needScore);
+    });
+
+    it('gives a single report only half the weight', () => {
+      const calibration = estimateCalibration(
+        [...purchases(26, 16, 6), observation('EMPTY', 19)],
+        analysePurchases(purchases(26, 16, 6), INFERENCE_CONFIG),
+        10,
+      );
+
+      expect(calibration).toEqual({ factor: 0.85, signalCount: 1 });
+    });
+
+    it('stays within bounds after extreme reports', () => {
+      const history = [
+        ...purchases(40, 30, 20, 10),
+        observation('EMPTY', 39.9),
+        observation('EMPTY', 29.9),
+        observation('EMPTY', 19.9),
+      ];
+
+      expect(assessProduct(history, NOW).calibrationFactor).toBe(0.5);
+    });
+
+    it('ignores small deviations', () => {
+      const history = [...purchases(26, 16, 6), observation('EMPTY', 16.5), observation('EMPTY', 6.5)];
+
+      expect(assessProduct(history, NOW).calibrationFactor).toBeNull();
+    });
+
+    it('does not learn from the current cycle', () => {
+      const result = assessProduct([...purchases(26, 16, 6), observation('SEEN_IN_STOCK', 3)], NOW);
+
+      expect(result.calibrationFactor).toBeNull();
     });
   });
 });
