@@ -222,6 +222,11 @@ export const APP_STYLES = `
 .er-verdict-expensive { background: var(--er-high-soft); color: var(--er-high); }
 .er-verdict-plan { display: block; margin-top: 4px; color: var(--er-text); }
 .er-deal { border-left: 4px solid var(--er-low); }
+.er-talk { padding: 16px; }
+.er-talk .er-section-title { margin-top: 0; }
+.er-talk-log { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.er-talk-said { margin: 0 0 4px auto; max-width: 85%; width: fit-content; padding: 8px 12px; border-radius: 14px 14px 4px 14px; background: var(--er-accent); color: var(--er-on-accent); }
+.er-talk-reply { margin: 0 0 4px; max-width: 90%; width: fit-content; padding: 8px 12px; border-radius: 14px 14px 14px 4px; background: var(--er-surface-2); white-space: pre-line; }
 .er-question { border-left: 4px solid var(--er-confirmed); }
 .er-why { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--er-surface-2); font-size: 14px; }
 .er-why ul { margin: 6px 0 0; padding-left: 18px; }

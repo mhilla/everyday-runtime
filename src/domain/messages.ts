@@ -211,6 +211,24 @@ const EN = {
   'question.conflict': () => 'Reports disagree — one answer settles it.',
   'question.probablyNeeded': (v) => `Probably needed (${v.percent}%), but the estimate is uncertain.`,
   'question.mightBeNeeded': (v) => `Might be needed soon (${v.percent}%) — a quick check avoids a surprise.`,
+  // talk (conversation replies)
+  'talk.notUnderstood': () =>
+    'Sorry, I did not get that. Try “milk is empty”, “add 2 coffee”, “bought milk for 1.19”, “what do we need?” or “is coffee cheap?”.',
+  'talk.needsNone': () => 'Nothing looks low right now.',
+  'talk.needsIntro': (v, n) => `${n.count === 1 ? 'One thing is' : `${v.count} things are`} probably needed:`,
+  'talk.needsLine': (v) => `${v.name} — ${v.label} (${v.percent}%)${v.onList}`,
+  'talk.onList': () => ', on the list',
+  'talk.unknownProduct': (v) => `I don't know “${v.name}” yet.`,
+  'talk.productStatus': (v) => `${v.name}: ${v.label} (${v.percent}%). ${v.reason}.`,
+  'talk.priceNone': (v) => `No prices for ${v.name} yet. Log one when you see it.`,
+  'talk.priceStatus': (v, n) =>
+    `${v.name} usually costs ${v.usual}${v.per}${n.hasLow === 1 ? `; lowest in 90 days: ${v.low}${v.per}${v.lowStore ? ` at ${v.lowStore}` : ''}` : ''}.`,
+  'talk.markedEmpty': (v) => `Noted: ${v.name} is empty — it's on the list.`,
+  'talk.inStock': (v) => `Noted: you still have ${v.name}.`,
+  'talk.added': (v) => `${v.name} is on the list.`,
+  'talk.alreadyOnList': (v) => `${v.name} was already on the list.`,
+  'talk.bought': (v, n) =>
+    `Noted: bought ${v.amount}${n.hasPrice === 1 ? ` for ${v.price}` : ''}${v.store ? ` at ${v.store}` : ''}.`,
 } satisfies Record<string, Entry>;
 
 export type MessageKey = keyof typeof EN;
@@ -285,6 +303,23 @@ const DE: Record<MessageKey, Entry> = {
   'question.conflict': () => 'Die Meldungen widersprechen sich — eine Antwort klärt es.',
   'question.probablyNeeded': (v) => `Wahrscheinlich nötig (${v.percent} %), aber die Schätzung ist unsicher.`,
   'question.mightBeNeeded': (v) => `Bald nötig? (${v.percent} %) — ein kurzer Blick vermeidet Überraschungen.`,
+  'talk.notUnderstood': () =>
+    'Das habe ich nicht verstanden. Probier z. B. „Milch ist leer“, „2 Kaffee auf die Liste“, „Milch für 1,19 gekauft“, „Was brauchen wir?“ oder „Ist Kaffee günstig?“.',
+  'talk.needsNone': () => 'Gerade wird nichts knapp.',
+  'talk.needsIntro': (v, n) => `${n.count === 1 ? 'Eine Sache ist' : `${v.count} Sachen sind`} wahrscheinlich nötig:`,
+  'talk.needsLine': (v) => `${v.name} — ${v.label} (${v.percent} %)${v.onList}`,
+  'talk.onList': () => ', steht auf der Liste',
+  'talk.unknownProduct': (v) => `„${v.name}“ kenne ich noch nicht.`,
+  'talk.productStatus': (v) => `${v.name}: ${v.label} (${v.percent} %). ${v.reason}.`,
+  'talk.priceNone': (v) => `Für ${v.name} gibt es noch keine Preise. Trag einen ein, wenn du ihn siehst.`,
+  'talk.priceStatus': (v, n) =>
+    `${v.name} kostet üblicherweise ${v.usual}${v.per}${n.hasLow === 1 ? `; am günstigsten in 90 Tagen: ${v.low}${v.per}${v.lowStore ? ` bei ${v.lowStore}` : ''}` : ''}.`,
+  'talk.markedEmpty': (v) => `Notiert: ${v.name} ist leer — steht jetzt auf der Liste.`,
+  'talk.inStock': (v) => `Notiert: ${v.name} ist noch da.`,
+  'talk.added': (v) => `${v.name} steht auf der Liste.`,
+  'talk.alreadyOnList': (v) => `${v.name} stand schon auf der Liste.`,
+  'talk.bought': (v, n) =>
+    `Notiert: ${v.amount} gekauft${n.hasPrice === 1 ? ` für ${v.price}` : ''}${v.store ? ` bei ${v.store}` : ''}.`,
 };
 
 const CATALOGS: Record<Lang, Record<MessageKey, Entry>> = { en: EN, de: DE };

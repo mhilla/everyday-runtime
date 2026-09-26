@@ -6,6 +6,7 @@ import { summarizeCount } from 'src/domain/presentation';
 import { EmptyState, NeedCard, QuickAddForm } from 'src/ui/components';
 import type { Household } from 'src/ui/use-household';
 import { useI18n } from 'src/ui/i18n';
+import { TalkBox } from 'src/ui/talk-box';
 import { useSkippedQuestions } from 'src/ui/use-skipped-questions';
 
 export type Tab = 'now' | 'list' | 'products' | 'activity';
@@ -100,6 +101,8 @@ export const NowScreen = ({
           {t('Open shopping list')}
         </button>
       </section>
+
+      <TalkBox household={household} />
 
       {deals.length > 0 && (
         <section aria-labelledby="er-deals-title">

@@ -136,6 +136,14 @@ const DE: Record<string, string> = {
   'Demo data': 'Demo-Daten',
   Import: 'Import',
   API: 'API',
+  // talk
+  'Talk to your list': 'Sprich mit deiner Liste',
+  'What happened?': 'Was ist passiert?',
+  'e.g. “milk is empty” or “what do we need?”': 'z. B. „Milch ist leer“ oder „Was brauchen wir?“',
+  Send: 'Senden',
+  'Tip: use the microphone on your phone keyboard to speak.':
+    'Tipp: Mit dem Mikrofon deiner Handy-Tastatur kannst du einfach sprechen.',
+  Conversation: 'Gespräch',
   // prices
   Prices: 'Preise',
   Usual: 'Üblich',
