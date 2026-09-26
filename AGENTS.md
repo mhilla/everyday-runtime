@@ -68,3 +68,16 @@ It's highly recommended to create new app entities using `yarn twenty dev:add`. 
 | Connection provider  | `yarn twenty dev:add connectionProvider` | `src/connection-providers/<name>.ts`  |
 
 This helps automatically generate required IDs etc.
+
+## Project notes (Everyday Runtime)
+
+- Read `docs/ARCHITECTURE.md` and `docs/PRODUCT_PRINCIPLES.md` before changing behaviour.
+- `src/domain` is pure TypeScript: no imports from Twenty, React or anything with side effects; `now` is always passed in. Every engine rule needs a unit test; tunable numbers live in `INFERENCE_CONFIG`.
+- All writes go through `src/data/household-actions.ts`; the UI never calls the repository directly.
+- Data access uses `RestApiClient` (`twenty-client-sdk/rest`), not the generated GraphQL client, so `yarn typecheck` works without a running server.
+- `type` is a reserved field name in Twenty (the observation kind is `observationType`).
+- Front component CSS is injected unscoped into the host page: prefix classes with `er-`, use `:where()` for resets and `@container` instead of `@media`.
+- Remote DOM serializes boolean attributes as `""`: pass ARIA states as `'true'`/`'false'` strings (`ariaBool`).
+- Page layout widgets: no `position` (deprecated in twenty-sdk 2.42); order = array order, height via `heightBehavior`.
+- Checks: `yarn lint`, `yarn typecheck`, `yarn test` (unit), `yarn test:integration` (needs `yarn twenty docker:start`; it uninstalls the app afterwards, so run `yarn twenty apply` again).
+- Right after `yarn twenty docker:start`, `yarn twenty apply` may fail with `ECONNRESET` while the server warms up; wait and retry.
