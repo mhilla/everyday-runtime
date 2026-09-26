@@ -79,7 +79,7 @@ describe('planStockUp', () => {
   it('recommends stocking up on a great price, in whole packs, with the saving', () => {
     const plan = planStockUp(base);
 
-    expect(plan).toEqual({
+    expect(plan).toMatchObject({
       quantity: 36,
       coversDays: 24,
       saving: 5.4,

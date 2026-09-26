@@ -122,3 +122,17 @@ describe('demo household', () => {
     expect(questions).not.toContain('Apples');
   });
 });
+
+describe('German demo household', () => {
+  it('uses German names, units and notes with the same story', () => {
+    const demo = buildDemoHousehold(NOW, 'de');
+
+    expect(demo.products.map((p) => p.name)).toEqual(['Milch', 'Kaffee', 'Küchenrolle', 'Nudeln', 'Äpfel']);
+    expect(demo.products[1].defaultUnit).toBe('Pck.');
+    expect(demo.observations.find((o) => o.note)?.note).toBe('Letzte Packung angebrochen');
+    expect(demo.prices.map((p) => p.store)).toContain('Supermarkt');
+    expect(demo.observations.map((o) => o.observedAt)).toEqual(
+      buildDemoHousehold(NOW, 'en').observations.map((o) => o.observedAt),
+    );
+  });
+});

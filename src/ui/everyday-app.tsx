@@ -10,6 +10,7 @@ import { NowScreen } from 'src/ui/screens/now-screen';
 import type { Tab } from 'src/ui/screens/now-screen';
 import { ProductsScreen } from 'src/ui/screens/products-screen';
 import { APP_STYLES } from 'src/ui/styles';
+import { I18nProvider, useI18n } from 'src/ui/i18n';
 import { useHousehold } from 'src/ui/use-household';
 
 const TABS: { id: Tab; label: string }[] = [
@@ -19,8 +20,15 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'activity', label: 'Activity' },
 ];
 
-export const EverydayApp = () => {
+export const EverydayApp = () => (
+  <I18nProvider>
+    <EverydayAppContent />
+  </I18nProvider>
+);
+
+const EverydayAppContent = () => {
   const colorScheme = useColorScheme();
+  const { t, lang, setLang, locale } = useI18n();
   const household = useHousehold();
   const [tab, setTab] = useState<Tab>('now');
   const { loadState, loadError, now, snapshot, announcement } = household;
@@ -37,9 +45,22 @@ export const EverydayApp = () => {
       <style>{APP_STYLES}</style>
       <header className="er-header">
         <div className="er-header-inner">
-          <h1 className="er-greeting">{greetingForHour(now.getHours())}</h1>
+          <h1 className="er-greeting">{greetingForHour(now.getHours(), lang)}</h1>
+          <div className="er-lang" role="group" aria-label={t('Language')}>
+            {(['de', 'en'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={`er-lang-option${lang === option ? ' er-lang-active' : ''}`}
+                aria-pressed={ariaBool(lang === option)}
+                onClick={() => setLang(option)}
+              >
+                {option.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <p className="er-date">
-            {now.toLocaleDateString(undefined, {
+            {now.toLocaleDateString(locale, {
               weekday: 'long',
               day: 'numeric',
               month: 'long',
@@ -47,7 +68,7 @@ export const EverydayApp = () => {
           </p>
         </div>
       </header>
-      <nav className="er-nav" aria-label="Sections">
+      <nav className="er-nav" aria-label={t('Sections')}>
         <div className="er-nav-inner">
           <div className="er-tabs" role="tablist">
             {TABS.map((entry) => (
@@ -61,9 +82,9 @@ export const EverydayApp = () => {
                 className={`er-tab${tab === entry.id ? ' er-tab-active' : ''}`}
                 onClick={() => navigate(entry.id)}
               >
-                {entry.label}
+                {t(entry.label)}
                 {entry.id === 'list' && openCount > 0 && (
-                  <span className="er-tab-count" aria-label={`${openCount} open`}>
+                  <span className="er-tab-count" aria-label={t('{count} open', { count: openCount })}>
                     {openCount}
                   </span>
                 )}
@@ -79,14 +100,14 @@ export const EverydayApp = () => {
           <div className="er-visually-hidden" aria-live="polite">
             {announcement}
           </div>
-          {loadState === 'loading' && <div className="er-loading">Loading your household…</div>}
+          {loadState === 'loading' && <div className="er-loading">{t('Loading your household…')}</div>}
           {loadState === 'error' && (
             <div className="er-stack">
               <div className="er-banner" role="alert">
-                Could not load your household: {loadError}
+                {t('Could not load your household: {error}', { error: loadError ?? '' })}
               </div>
               <button type="button" className="er-btn" onClick={() => household.reload()}>
-                Try again
+                {t('Try again')}
               </button>
             </div>
           )}

@@ -1,19 +1,20 @@
 import { useState } from 'react';
 
 import {
-  CATEGORY_LABELS,
+  categoryLabel,
   describeConfidence,
   describeNeed,
   formatPercent,
   formatRate,
-  OBSERVATION_LABELS,
+  observationLabel,
 } from 'src/domain/presentation';
 import { sortProductsForBrowsing } from 'src/domain/shopping';
 import type { ProductOverview } from 'src/domain/shopping';
-import { formatAgo, formatInterval } from 'src/domain/time';
+import { agoText, intervalText, renderMessage } from 'src/domain/messages';
 import { ariaBool, BuyPanel, EmptyState, EvidenceChip, NeedMeter, QuickAddForm, WhyPanel } from 'src/ui/components';
 import { PriceSection } from 'src/ui/price-section';
 import { WelcomeState } from 'src/ui/screens/now-screen';
+import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
 const ProductDetail = ({
@@ -24,6 +25,7 @@ const ProductDetail = ({
   household: Household;
 }) => {
   const [isBuying, setIsBuying] = useState(false);
+  const { t, lang } = useI18n();
   const { run, busyKey, snapshot, now } = household;
   const { product, assessment } = entry;
   const busy = busyKey !== null;
@@ -34,39 +36,39 @@ const ProductDetail = ({
 
   return (
     <div id={`er-product-${product.id}`}>
-      <p className="er-reason">{assessment.reason}</p>
+      <p className="er-reason">{renderMessage(assessment.reasonMessage, lang)}</p>
       <NeedMeter assessment={assessment} />
       <div className="er-chips">
         <EvidenceChip overview={entry} />
         {assessment.calibrationFactor !== null && (
-          <span className="er-chip er-chip-muted" title="Adjusted using your earlier Empty / Still have it reports">
-            Learned from your corrections
+          <span className="er-chip er-chip-muted" title={t('Adjusted using your earlier Empty / Still have it reports')}>
+            {t('Learned from your corrections')}
           </span>
         )}
       </div>
       <dl className="er-facts">
         <div className="er-fact">
-          <dt>Last bought</dt>
-          <dd>{assessment.lastPurchasedAt ? formatAgo(assessment.lastPurchasedAt, now) : '—'}</dd>
+          <dt>{t('Last bought')}</dt>
+          <dd>{assessment.lastPurchasedAt ? agoText(assessment.lastPurchasedAt, now, lang) : '—'}</dd>
         </div>
         <div className="er-fact">
-          <dt>Lasts about</dt>
-          <dd>{assessment.expectedDurationDays ? formatInterval(assessment.expectedDurationDays) : 'not yet known'}</dd>
+          <dt>{t('Lasts about')}</dt>
+          <dd>{assessment.expectedDurationDays ? intervalText(assessment.expectedDurationDays, lang) : t('not yet known')}</dd>
         </div>
         {assessment.consumptionRatePerDay !== null ? (
           <div className="er-fact">
-            <dt>Use per day</dt>
+            <dt>{t('Use per day')}</dt>
             <dd>{formatRate(assessment.consumptionRatePerDay, product.defaultUnit)}</dd>
           </div>
         ) : (
           <div className="er-fact">
-            <dt>Purchases</dt>
+            <dt>{t('Purchases')}</dt>
             <dd>{assessment.purchaseCount}</dd>
           </div>
         )}
         <div className="er-fact">
-          <dt>Confidence</dt>
-          <dd>{describeConfidence(assessment.confidence)}</dd>
+          <dt>{t('Confidence')}</dt>
+          <dd>{describeConfidence(assessment.confidence, lang)}</dd>
         </div>
       </dl>
       <div className="er-actions">
@@ -74,17 +76,17 @@ const ProductDetail = ({
           type="button"
           className="er-btn er-btn-small"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.markEmpty(entry), `${product.name} marked empty`)}
+          onClick={() => run(product.id, (actions) => actions.markEmpty(entry), t('{name} marked empty', { name: product.name }))}
         >
-          It’s empty
+          {t('It’s empty')}
         </button>
         <button
           type="button"
           className="er-btn er-btn-small"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.markInStock(entry), `Noted: you still have ${product.name}`)}
+          onClick={() => run(product.id, (actions) => actions.markInStock(entry), t('Noted: you still have {name}', { name: product.name }))}
         >
-          Still have it
+          {t('Still have it')}
         </button>
         <button
           type="button"
@@ -92,16 +94,16 @@ const ProductDetail = ({
           aria-expanded={ariaBool(isBuying)}
           onClick={() => setIsBuying((value) => !value)}
         >
-          Bought
+          {t('Bought')}
         </button>
         {entry.openItem === null && (
           <button
             type="button"
             className="er-btn er-btn-primary er-btn-small"
             disabled={busy}
-            onClick={() => run(product.id, (actions) => actions.addManually(entry), `${product.name} added to your list`)}
+            onClick={() => run(product.id, (actions) => actions.addManually(entry), t('{name} added to your list', { name: product.name }))}
           >
-            Add to list
+            {t('Add to list')}
           </button>
         )}
       </div>
@@ -112,7 +114,7 @@ const ProductDetail = ({
           busy={busyKey === product.id}
           onCancel={() => setIsBuying(false)}
           onConfirm={(details) =>
-            run(product.id, (actions) => actions.markPurchased(entry.openItem, product, details), `${product.name} bought`)
+            run(product.id, (actions) => actions.markPurchased(entry.openItem, product, details), t('{name} bought', { name: product.name }))
           }
         />
       )}
@@ -120,15 +122,15 @@ const ProductDetail = ({
       <PriceSection entry={entry} prices={household.prices.get(product.id)} household={household} />
       {history.length > 0 && (
         <>
-          <h3 className="er-section-title">Recent activity</h3>
+          <h3 className="er-section-title">{t('Recent activity')}</h3>
           <ul className="er-timeline">
             {history.map((observation) => (
               <li key={observation.id}>
                 <div>
-                  <strong>{OBSERVATION_LABELS[observation.type]}</strong>
+                  <strong>{observationLabel(observation.type, lang)}</strong>
                   {observation.quantity !== null && ` · ${observation.quantity}`}
                   <div className="er-time">
-                    {formatAgo(observation.observedAt, now)}
+                    {agoText(observation.observedAt, now, lang)}
                     {observation.note ? ` · ${observation.note}` : ''}
                   </div>
                 </div>
@@ -142,9 +144,9 @@ const ProductDetail = ({
           type="button"
           className="er-btn er-btn-ghost er-btn-small er-btn-danger"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.archiveProduct(entry), `${product.name} archived`)}
+          onClick={() => run(product.id, (actions) => actions.archiveProduct(entry), t('{name} archived', { name: product.name }))}
         >
-          Archive product
+          {t('Archive product')}
         </button>
       </div>
     </div>
@@ -155,6 +157,7 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
   const [query, setQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { overview, busyKey, run, snapshot } = household;
+  const { t, lang } = useI18n();
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const visible = sortProductsForBrowsing(overview).filter((entry) =>
     entry.product.name.toLocaleLowerCase().includes(normalizedQuery),
@@ -162,29 +165,29 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
 
   return (
     <div className="er-stack">
-      <h2 className="er-visually-hidden">Products</h2>
+      <h2 className="er-visually-hidden">{t('Products')}</h2>
       <QuickAddForm
-        label="Find or add a product"
-        placeholder="Find or add a product…"
-        submitLabel="Add"
+        label={t('Find or add a product')}
+        placeholder={t('Find or add a product…')}
+        submitLabel={t('Add')}
         busy={busyKey !== null}
         value={query}
         onChange={setQuery}
         onSubmit={(value) =>
-          run('new-product', (actions) => actions.createProduct(value, snapshot?.products ?? []), 'Product saved')
+          run('new-product', (actions) => actions.createProduct(value, snapshot?.products ?? []), t('Product saved'))
         }
       />
 
       {overview.length === 0 ? (
         <WelcomeState household={household} />
       ) : visible.length === 0 ? (
-        <EmptyState title="No product with that name">
-          Press “Add” to create “{query.trim()}”.
+        <EmptyState title={t('No product with that name')}>
+          {t('Press “Add” to create “{name}”.', { name: query.trim() })}
         </EmptyState>
       ) : (
         <ul className="er-stack" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
           {visible.map((entry) => {
-            const headline = describeNeed(entry.assessment);
+            const headline = describeNeed(entry.assessment, lang);
             const isExpanded = expandedId === entry.product.id;
 
             return (
@@ -202,8 +205,8 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
                     <span className="er-product-meta" style={{ display: 'block' }}>
                       {headline.label}
                       {entry.assessment.state !== 'UNKNOWN' && ` · ${formatPercent(entry.assessment.needScore)}`}
-                      {entry.product.category && ` · ${CATEGORY_LABELS[entry.product.category]}`}
-                      {entry.openItem && ' · on your list'}
+                      {entry.product.category && ` · ${categoryLabel(entry.product.category, lang)}`}
+                      {entry.openItem && t(' · on your list')}
                     </span>
                   </span>
                   <span className="er-chevron" aria-hidden="true">

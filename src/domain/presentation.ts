@@ -1,3 +1,4 @@
+import type { Lang } from 'src/domain/messages';
 import type {
   NeedAssessment,
   ObservationType,
@@ -14,7 +15,27 @@ export type NeedHeadline = {
   isEstimate: boolean;
 };
 
-export const describeNeed = (assessment: NeedAssessment): NeedHeadline => {
+const HEADLINES_DE: Record<string, string> = {
+  'Not enough data yet': 'Noch zu wenig Daten',
+  Empty: 'Leer',
+  Needed: 'Benötigt',
+  'In stock': 'Vorhanden',
+  'Unclear — please check': 'Unklar — bitte nachsehen',
+  'Probably low': 'Wahrscheinlich knapp',
+  'Possibly low': 'Möglicherweise knapp',
+  'Likely getting low': 'Wird wahrscheinlich knapp',
+  'Possibly getting low': 'Wird möglicherweise knapp',
+  'Maybe soon': 'Vielleicht bald',
+  'Probably fine': 'Wahrscheinlich genug da',
+};
+
+export const describeNeed = (assessment: NeedAssessment, lang: Lang = 'en'): NeedHeadline => {
+  const headline = describeNeedEn(assessment);
+
+  return lang === 'de' ? { ...headline, label: HEADLINES_DE[headline.label] ?? headline.label } : headline;
+};
+
+const describeNeedEn = (assessment: NeedAssessment): NeedHeadline => {
   const { state, needScore, basis } = assessment;
 
   if (state === 'UNKNOWN') {
@@ -61,32 +82,42 @@ export const describeNeed = (assessment: NeedAssessment): NeedHeadline => {
 // suggest an accuracy the engine does not have.
 export const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
 
-export const describeConfidence = (confidence: number): string => {
+export const describeConfidence = (confidence: number, lang: Lang = 'en'): string => {
+  const [high, medium, low, none] =
+    lang === 'de'
+      ? ['hohe Sicherheit', 'mittlere Sicherheit', 'geringe Sicherheit', 'kaum Anhaltspunkte']
+      : ['high confidence', 'medium confidence', 'low confidence', 'very little evidence'];
+
   if (confidence >= 0.8) {
-    return 'high confidence';
+    return high;
   }
   if (confidence >= 0.55) {
-    return 'medium confidence';
+    return medium;
   }
   if (confidence >= 0.25) {
-    return 'low confidence';
+    return low;
   }
 
-  return 'very little evidence';
+  return none;
 };
 
-export const greetingForHour = (hour: number): string => {
+export const greetingForHour = (hour: number, lang: Lang = 'en'): string => {
+  const [night, morning, afternoon, evening] =
+    lang === 'de'
+      ? ['Gute Nacht', 'Guten Morgen', 'Guten Tag', 'Guten Abend']
+      : ['Good night', 'Good morning', 'Good afternoon', 'Good evening'];
+
   if (hour < 5) {
-    return 'Good night';
+    return night;
   }
   if (hour < 12) {
-    return 'Good morning';
+    return morning;
   }
   if (hour < 18) {
-    return 'Good afternoon';
+    return afternoon;
   }
 
-  return 'Good evening';
+  return evening;
 };
 
 export const OBSERVATION_LABELS: Record<ObservationType, string> = {
@@ -96,6 +127,32 @@ export const OBSERVATION_LABELS: Record<ObservationType, string> = {
   SEEN_IN_STOCK: 'Still have it',
   MANUAL_NEED: 'Added as needed',
 };
+
+export const OBSERVATION_LABELS_DE: Record<ObservationType, string> = {
+  PURCHASED: 'Gekauft',
+  CONSUMED: 'Etwas verbraucht',
+  EMPTY: 'Als leer gemeldet',
+  SEEN_IN_STOCK: 'Noch vorhanden',
+  MANUAL_NEED: 'Als benötigt gemeldet',
+};
+
+export const CATEGORY_LABELS_DE: Record<ProductCategory, string> = {
+  DAIRY: 'Milchprodukte',
+  BAKERY: 'Backwaren',
+  PRODUCE: 'Obst & Gemüse',
+  PANTRY: 'Vorrat',
+  BEVERAGES: 'Getränke',
+  FROZEN: 'Tiefkühl',
+  HOUSEHOLD: 'Haushalt',
+  PERSONAL_CARE: 'Körperpflege',
+  OTHER: 'Sonstiges',
+};
+
+export const observationLabel = (type: ObservationType, lang: Lang = 'en') =>
+  (lang === 'de' ? OBSERVATION_LABELS_DE : OBSERVATION_LABELS)[type];
+
+export const categoryLabel = (category: ProductCategory, lang: Lang = 'en') =>
+  (lang === 'de' ? CATEGORY_LABELS_DE : CATEGORY_LABELS)[category];
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   DAIRY: 'Dairy',
@@ -109,7 +166,14 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   OTHER: 'Other',
 };
 
-export const summarizeCount = (count: number): string => {
+export const summarizeCount = (count: number, lang: Lang = 'en'): string => {
+  if (lang === 'de') {
+    if (count === 0) {
+      return 'Gerade nichts nötig';
+    }
+
+    return count === 1 ? '1 Sache wahrscheinlich nötig' : `${count} Sachen wahrscheinlich nötig`;
+  }
   if (count === 0) {
     return 'Nothing needed right now';
   }

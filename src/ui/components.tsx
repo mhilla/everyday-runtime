@@ -8,7 +8,9 @@ import {
   formatQuantity,
 } from 'src/domain/presentation';
 import type { ProductOverview } from 'src/domain/shopping';
+import { renderMessage } from 'src/domain/messages';
 import type { NeedAssessment, Product } from 'src/domain/types';
+import { useI18n } from 'src/ui/i18n';
 
 // Remote DOM serializes boolean attributes as empty strings, which screen
 // readers read as "false"; ARIA states therefore get explicit strings.
@@ -16,6 +18,7 @@ export const ariaBool = (value: boolean): 'true' | 'false' =>
   value ? 'true' : 'false';
 
 export const NeedMeter = ({ assessment }: { assessment: NeedAssessment }) => {
+  const { t } = useI18n();
   const headline = describeNeed(assessment);
   const percent = Math.round(assessment.needScore * 100);
 
@@ -26,7 +29,7 @@ export const NeedMeter = ({ assessment }: { assessment: NeedAssessment }) => {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}
-      aria-label={`${headline.isEstimate ? 'Estimated' : 'Confirmed'} need ${percent}%`}
+      aria-label={t(headline.isEstimate ? 'Estimated need {percent}%' : 'Confirmed need {percent}%', { percent })}
     >
       <div
         className="er-meter-fill"
@@ -40,18 +43,19 @@ export const NeedMeter = ({ assessment }: { assessment: NeedAssessment }) => {
 
 // Shows at a glance whether a line is a fact someone reported or a guess.
 export const EvidenceChip = ({ overview }: { overview: ProductOverview }) => {
+  const { t } = useI18n();
   const headline = describeNeed(overview.assessment);
 
   return (
     <>
-      {overview.openItem && <span className="er-chip er-chip-list">On your list</span>}
+      {overview.openItem && <span className="er-chip er-chip-list">{t('On your list')}</span>}
       {headline.isEstimate ? (
-        <span className="er-chip er-chip-estimate" title="Estimated from past activity">
-          Estimate
+        <span className="er-chip er-chip-estimate" title={t('Estimated from past activity')}>
+          {t('Estimate')}
         </span>
       ) : (
-        <span className="er-chip er-chip-confirmed" title="Based on something you reported">
-          Confirmed
+        <span className="er-chip er-chip-confirmed" title={t('Based on something you reported')}>
+          {t('Confirmed')}
         </span>
       )}
     </>
@@ -64,25 +68,32 @@ export const WhyPanel = ({
 }: {
   assessment: NeedAssessment;
   id: string;
-}) => (
-  <div className="er-why" id={id}>
-    <p>
-      <strong>Why?</strong> {formatPercent(assessment.needScore)} likely needed ·{' '}
-      {describeConfidence(assessment.confidence)} ({formatPercent(assessment.confidence)})
-    </p>
-    <ul>
-      {assessment.factors.map((factor) => (
-        <li key={factor}>{factor}</li>
-      ))}
-    </ul>
-    {describeNeed(assessment).isEstimate && (
-      <p className="er-fine-print">
-        This is an estimate from past activity, not a stock count. Tap “Still have it” or
-        “Empty” to correct it.
+}) => {
+  const { t, lang } = useI18n();
+
+  return (
+    <div className="er-why" id={id}>
+      <p>
+        <strong>{t('Why?')}</strong>{' '}
+        {t('{need} likely needed · {confidence} ({confidencePercent})', {
+          need: formatPercent(assessment.needScore),
+          confidence: describeConfidence(assessment.confidence, lang),
+          confidencePercent: formatPercent(assessment.confidence),
+        })}
       </p>
-    )}
-  </div>
-);
+      <ul>
+        {assessment.factorMessages.map((factor, index) => (
+          <li key={index}>{renderMessage(factor, lang)}</li>
+        ))}
+      </ul>
+      {describeNeed(assessment).isEstimate && (
+        <p className="er-fine-print">
+          {t('This is an estimate from past activity, not a stock count. Tap “Still have it” or “Empty” to correct it.')}
+        </p>
+      )}
+    </div>
+  );
+};
 
 export const NeedCard = ({
   overview,
@@ -94,8 +105,9 @@ export const NeedCard = ({
   children?: ReactNode;
 }) => {
   const [showWhy, setShowWhy] = useState(false);
+  const { t, lang } = useI18n();
   const { product, assessment } = overview;
-  const headline = describeNeed(assessment);
+  const headline = describeNeed(assessment, lang);
   const whyId = `er-why-${product.id}`;
 
   return (
@@ -109,10 +121,10 @@ export const NeedCard = ({
           <span className={`er-percent er-tone-${headline.tone}`}>
             {formatPercent(assessment.needScore)}
           </span>
-          <span className="er-percent-label">likely needed</span>
+          <span className="er-percent-label">{t('likely needed')}</span>
         </div>
       </div>
-      <p className="er-reason">{assessment.reason}</p>
+      <p className="er-reason">{renderMessage(assessment.reasonMessage, lang)}</p>
       <NeedMeter assessment={assessment} />
       <div className="er-chips">
         <EvidenceChip overview={overview} />
@@ -126,7 +138,7 @@ export const NeedCard = ({
           aria-controls={whyId}
           onClick={() => setShowWhy((value) => !value)}
         >
-          {showWhy ? 'Hide reason' : 'Why?'}
+          {showWhy ? t('Hide reason') : t('Why?')}
         </button>
       </div>
       {showWhy && <WhyPanel assessment={assessment} id={whyId} />}
@@ -166,6 +178,7 @@ export const BuyPanel = ({
   onConfirm: (details: BuyDetails) => void;
   onCancel: () => void;
 }) => {
+  const { t } = useI18n();
   const [quantity, setQuantity] = useState(initialQuantity > 0 ? initialQuantity : 1);
   const [price, setPrice] = useState('');
   const [store, setStore] = useState('');
@@ -182,17 +195,17 @@ export const BuyPanel = ({
   };
 
   return (
-    <form className="er-buy" onSubmit={submit} aria-label={`Buy ${product.name}`}>
+    <form className="er-buy" onSubmit={submit} aria-label={t('Buy {name}', { name: product.name })}>
       <div className="er-buy-grid">
         <div>
           <span className="er-label" id={`${idPrefix}-qty`}>
-            Quantity{product.defaultUnit ? ` (${product.defaultUnit})` : ''}
+            {t('Quantity')}{product.defaultUnit ? ` (${product.defaultUnit})` : ''}
           </span>
           <div className="er-stepper" role="group" aria-labelledby={`${idPrefix}-qty`}>
             <button
               type="button"
               className="er-btn er-btn-small"
-              aria-label="Decrease quantity"
+              aria-label={t('Decrease quantity')}
               onClick={() => setQuantity((value) => Math.max(step, value - step))}
             >
               −
@@ -203,7 +216,7 @@ export const BuyPanel = ({
             <button
               type="button"
               className="er-btn er-btn-small"
-              aria-label="Increase quantity"
+              aria-label={t('Increase quantity')}
               onClick={() => setQuantity((value) => value + step)}
             >
               +
@@ -212,25 +225,25 @@ export const BuyPanel = ({
         </div>
         <div>
           <label className="er-label" htmlFor={`${idPrefix}-price`}>
-            Price (optional)
+            {t('Price (optional)')}
           </label>
           <input
             id={`${idPrefix}-price`}
             className="er-input"
             inputMode="decimal"
-            placeholder="e.g. 1.19"
+            placeholder={t('e.g. 1.19')}
             value={price}
             onChange={(event) => setPrice(event.target.value)}
           />
         </div>
         <div>
           <label className="er-label" htmlFor={`${idPrefix}-store`}>
-            Store (optional)
+            {t('Store (optional)')}
           </label>
           <input
             id={`${idPrefix}-store`}
             className="er-input"
-            placeholder="e.g. Corner shop"
+            placeholder={t('e.g. Corner shop')}
             value={store}
             onChange={(event) => setStore(event.target.value)}
           />
@@ -238,10 +251,10 @@ export const BuyPanel = ({
       </div>
       <div className="er-actions">
         <button type="submit" className="er-btn er-btn-primary" disabled={busy}>
-          {busy ? 'Saving…' : `Bought ${formatQuantity(quantity, product.defaultUnit)}`}
+          {busy ? t('Saving…') : t('Bought {amount}', { amount: formatQuantity(quantity, product.defaultUnit) })}
         </button>
         <button type="button" className="er-btn er-btn-ghost" onClick={onCancel}>
-          Cancel
+          {t('Cancel')}
         </button>
       </div>
     </form>

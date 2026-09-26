@@ -1,7 +1,9 @@
-import { OBSERVATION_LABELS } from 'src/domain/presentation';
+import { observationLabel } from 'src/domain/presentation';
 import type { NeedTone } from 'src/domain/presentation';
 import type { ObservationSource, ObservationType } from 'src/domain/types';
 import { EmptyState } from 'src/ui/components';
+import { useI18n } from 'src/ui/i18n';
+import type { Translate } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
 const MAX_ENTRIES = 150;
@@ -25,19 +27,19 @@ const SOURCE_LABELS: Record<ObservationSource, string> = {
 const dayKey = (date: Date) =>
   `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 
-const dayLabel = (date: Date, now: Date) => {
+const dayLabel = (date: Date, now: Date, t: Translate, locale: string) => {
   const yesterday = new Date(now);
 
   yesterday.setDate(now.getDate() - 1);
 
   if (dayKey(date) === dayKey(now)) {
-    return 'Today';
+    return t('Today');
   }
   if (dayKey(date) === dayKey(yesterday)) {
-    return 'Yesterday';
+    return t('Yesterday');
   }
 
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -46,6 +48,7 @@ const dayLabel = (date: Date, now: Date) => {
 
 export const ActivityScreen = ({ household }: { household: Household }) => {
   const { snapshot, now } = household;
+  const { t, lang, locale } = useI18n();
   const productsById = new Map((snapshot?.products ?? []).map((product) => [product.id, product]));
   const entries = [...(snapshot?.observations ?? [])]
     .sort((a, b) => b.observedAt.getTime() - a.observedAt.getTime())
@@ -53,9 +56,8 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
 
   if (entries.length === 0) {
     return (
-      <EmptyState title="No activity yet">
-        Everything you record — bought, empty, still there, needed — shows up here. This is
-        exactly the evidence the suggestions are based on.
+      <EmptyState title={t('No activity yet')}>
+        {t('Everything you record — bought, empty, still there, needed — shows up here. This is exactly the evidence the suggestions are based on.')}
       </EmptyState>
     );
   }
@@ -63,7 +65,7 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
   const groups: { label: string; entries: typeof entries }[] = [];
 
   for (const entry of entries) {
-    const label = dayLabel(entry.observedAt, now);
+    const label = dayLabel(entry.observedAt, now, t, locale);
     const group = groups[groups.length - 1];
 
     if (group && group.label === label) {
@@ -76,7 +78,7 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
   return (
     <div className="er-stack">
       <p className="er-reason" style={{ margin: 0 }}>
-        Everything the suggestions are based on, newest first.
+        {t('Everything the suggestions are based on, newest first.')}
       </p>
       {groups.map((group) => (
         <section key={group.label} aria-label={group.label}>
@@ -90,15 +92,15 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
                 <li key={entry.id}>
                   <span className="er-dot" data-tone={TYPE_TONE[entry.type]} aria-hidden="true" />
                   <div>
-                    <strong>{product?.name ?? 'Deleted product'}</strong> —{' '}
-                    {OBSERVATION_LABELS[entry.type].toLocaleLowerCase()}
+                    <strong>{product?.name ?? t('Deleted product')}</strong> —{' '}
+                    {observationLabel(entry.type, lang).toLocaleLowerCase(locale)}
                     {entry.quantity !== null && ` (${entry.quantity}${unit})`}
                     <div className="er-time">
-                      {entry.observedAt.toLocaleTimeString(undefined, {
+                      {entry.observedAt.toLocaleTimeString(locale, {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
-                      {entry.source && ` · ${SOURCE_LABELS[entry.source]}`}
+                      {entry.source && ` · ${t(SOURCE_LABELS[entry.source])}`}
                       {entry.note && ` · ${entry.note}`}
                     </div>
                   </div>

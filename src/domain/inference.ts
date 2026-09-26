@@ -3,12 +3,12 @@ import {
   clamp,
   coefficientOfVariation,
   daysBetween,
-  formatAgo,
-  formatInterval,
   lastItem,
   MS_PER_HOUR,
   median,
 } from 'src/domain/time';
+import { ago, amount, interval as intervalValue, msg, renderMessage } from 'src/domain/messages';
+import type { Message } from 'src/domain/messages';
 import type {
   AssessmentBasis,
   NeedAssessment,
@@ -286,8 +286,8 @@ type Draft = {
   state: NeedState;
   confidence: number;
   needScore: number;
-  reason: string;
-  factors: string[];
+  reason: Message;
+  factors: Message[];
   duration?: {
     expectedDurationDays: number;
     consumptionRatePerDay: number | null;
@@ -307,7 +307,7 @@ const finalize = (
 
   if (ignoredFutureCount > 0) {
     factors.push(
-      `Ignored ${ignoredFutureCount} observation${ignoredFutureCount === 1 ? '' : 's'} dated in the future.`,
+      msg('factor.ignoredFuture', { count: ignoredFutureCount }),
     );
   }
 
@@ -317,8 +317,10 @@ const finalize = (
     needScore,
     needsShopping: draft.state !== 'UNKNOWN' && needScore >= config.needThreshold,
     basis: draft.basis,
-    reason: draft.reason,
-    factors,
+    reason: renderMessage(draft.reason, 'en'),
+    factors: factors.map((factor) => renderMessage(factor, 'en')),
+    reasonMessage: draft.reason,
+    factorMessages: factors,
     lastPurchasedAt: lastItem(history.trips),
     typicalIntervalDays:
       history.typicalIntervalDays === null
@@ -337,32 +339,23 @@ const finalize = (
   };
 };
 
-const formatAmount = (value: number, unit: string | null) => {
-  const rounded =
-    value >= 10
-      ? Math.round(value)
-      : value >= 0.1
-        ? Math.round(value * 10) / 10
-        : Math.round(value * 100) / 100;
 
-  return unit ? `${rounded} ${unit}` : `${rounded}`;
-};
 
-const describeRegularity = (history: PurchaseHistory): string | null => {
+const describeRegularity = (history: PurchaseHistory): Message | null => {
   if (history.typicalIntervalDays === null) {
     return null;
   }
   if (history.variation === null) {
-    return `Only one interval so far (${formatInterval(history.typicalIntervalDays)}), so the rhythm is a first guess.`;
+    return msg('factor.oneInterval', { interval: intervalValue(history.typicalIntervalDays) });
   }
   if (history.variation <= 0.25) {
-    return `Purchases are regular: usually every ${formatInterval(history.typicalIntervalDays)}.`;
+    return msg('factor.regular', { interval: intervalValue(history.typicalIntervalDays) });
   }
 
   const shortest = Math.min(...history.intervals);
   const longest = Math.max(...history.intervals);
 
-  return `Purchases are irregular (between ${formatInterval(shortest).slice(1)} and ${formatInterval(longest).slice(1)} apart), so this is a rough estimate.`;
+  return msg('factor.irregular', { shortest: intervalValue(shortest), longest: intervalValue(longest) });
 };
 
 // Estimates whether one product needs to be bought, from its observations
@@ -393,10 +386,8 @@ export const assessProduct = (
         state: 'UNKNOWN',
         confidence: 0,
         needScore: 0,
-        reason: 'No history yet',
-        factors: [
-          'Nothing has been recorded for this product yet. Mark it as bought, empty or in stock to start learning.',
-        ],
+        reason: msg('reason.noHistory'),
+        factors: [msg('factor.nothingRecorded')],
       },
       history,
       ignoredFutureCount,
@@ -424,16 +415,16 @@ export const assessProduct = (
           ((age - config.directSignalConfirmedDays) /
             config.directSignalHalfLifeDays);
     const confidence = 0.95 * freshness;
-    const ago = formatAgo(latestNeed.observedAt, now);
+    const agoValue = ago(latestNeed.observedAt, now);
     const factors = [
       isEmpty
-        ? `Marked empty ${ago} — a direct report, so it counts as confirmed.`
-        : `Added as needed ${ago} — a direct request, so it counts as confirmed.`,
+        ? msg('factor.markedEmpty', { ago: agoValue })
+        : msg('factor.addedAsNeeded', { ago: agoValue }),
     ];
 
     if (freshness < 1) {
       factors.push(
-        'That report is getting old and nothing was bought since, so the estimate is less certain.',
+        msg('factor.reportAging'),
       );
     }
 
@@ -446,7 +437,7 @@ export const assessProduct = (
             : stateFromConfidence(confidence),
         confidence,
         needScore: 0.5 + (base - 0.5) * freshness,
-        reason: isEmpty ? `Marked empty ${ago}` : `Added as needed ${ago}`,
+        reason: msg(isEmpty ? 'reason.markedEmpty' : 'reason.addedAsNeeded', { ago: agoValue }),
         factors,
       },
       history,
@@ -466,8 +457,9 @@ export const assessProduct = (
     latestSighting.observedAt.getTime() - latestNeed.observedAt.getTime() <=
       config.conflictWindowHours * MS_PER_HOUR
   ) {
-    const needLabel =
-      latestNeed.type === 'EMPTY' ? 'marked empty' : 'added as needed';
+    const needLabel = msg(
+      latestNeed.type === 'EMPTY' ? 'need.markedEmpty' : 'need.addedAsNeeded',
+    );
 
     return finalize(
       {
@@ -475,10 +467,14 @@ export const assessProduct = (
         state: 'POSSIBLE',
         confidence: 0.35,
         needScore: 0.6 * 0.15 + 0.4 * 0.95,
-        reason: `Conflicting reports: ${needLabel} ${formatAgo(latestNeed.observedAt, now)}, then seen in stock`,
+        reason: msg('reason.conflict', { need: needLabel, ago: ago(latestNeed.observedAt, now) }),
         factors: [
-          `It was ${needLabel} ${formatAgo(latestNeed.observedAt, now)}, but seen in stock ${formatAgo(latestSighting.observedAt, now)} with no purchase in between.`,
-          'The most recent report weighs more, but confidence is low until someone checks again.',
+          msg('factor.conflict', {
+            need: needLabel,
+            needAgo: ago(latestNeed.observedAt, now),
+            seenAgo: ago(latestSighting.observedAt, now),
+          }),
+          msg('factor.conflictWeight'),
         ],
       },
       history,
@@ -496,10 +492,8 @@ export const assessProduct = (
           state: 'UNKNOWN',
           confidence: 0.15,
           needScore: 0.4,
-          reason: 'Used recently, but no purchases recorded yet',
-          factors: [
-            'Only consumption was recorded. Record a purchase or mark it empty to get an estimate.',
-          ],
+          reason: msg('reason.usedNoPurchases'),
+          factors: [msg('factor.onlyConsumption')],
         },
         history,
         ignoredFutureCount,
@@ -508,7 +502,7 @@ export const assessProduct = (
     }
 
     const age = daysBetween(latestSighting.observedAt, now);
-    const ago = formatAgo(latestSighting.observedAt, now);
+    const agoValue = ago(latestSighting.observedAt, now);
 
     if (age <= config.freshSightingDays) {
       return finalize(
@@ -517,8 +511,8 @@ export const assessProduct = (
           state: 'CONFIRMED',
           confidence: 0.85,
           needScore: 0.1,
-          reason: `Seen in stock ${ago}`,
-          factors: [`Seen in stock ${ago}, so it is very likely still there.`],
+          reason: msg('reason.seenInStock', { ago: agoValue }),
+          factors: [msg('factor.seenStillThere', { ago: agoValue })],
         },
         history,
         ignoredFutureCount,
@@ -541,11 +535,8 @@ export const assessProduct = (
           ) -
             0.5) *
             0.5,
-        reason: `Seen in stock ${ago} · no purchase history yet`,
-        factors: [
-          `Seen in stock ${ago}.`,
-          'Without any recorded purchase the engine can only guess how fast it is used.',
-        ],
+        reason: msg('reason.seenNoPurchases', { ago: agoValue }),
+        factors: [msg('factor.seen', { ago: agoValue }), msg('factor.guessWithoutPurchases')],
       },
       history,
       ignoredFutureCount,
@@ -555,7 +546,7 @@ export const assessProduct = (
 
   // 4. Purchase-based estimate: when should the last purchase run out?
   const purchaseAge = daysBetween(lastPurchase, now);
-  const purchaseAgo = formatAgo(lastPurchase, now);
+  const purchaseAgo = ago(lastPurchase, now);
   const hasPattern = history.typicalIntervalDays !== null;
   const rhythm = Math.max(
     1,
@@ -578,15 +569,15 @@ export const assessProduct = (
   const durationDiffers =
     Math.abs(interval - rhythm) / rhythm >= config.reasonDurationDifference;
   const durationPhrase = !durationDiffers
-    ? `usual interval ${formatInterval(rhythm)}`
+    ? msg('duration.usualInterval', { interval: intervalValue(rhythm) })
     : usesQuantity && lastQuantity !== null
-      ? `${formatAmount(lastQuantity, unit)} usually lasts ${formatInterval(interval)}`
-      : `usually lasts ${formatInterval(interval)}`;
-  const factors: string[] = [];
+      ? msg('duration.quantityLasts', { amount: amount(lastQuantity, unit), interval: intervalValue(interval) })
+      : msg('duration.usuallyLasts', { interval: intervalValue(interval) });
+  const factors: Message[] = [];
 
   if (hasPattern) {
     factors.push(
-      `Based on ${history.trips.length} purchases, last one ${purchaseAgo}.`,
+      msg('factor.basedOnPurchases', { count: history.trips.length, ago: purchaseAgo }),
     );
     const regularity = describeRegularity(history);
 
@@ -595,25 +586,29 @@ export const assessProduct = (
     }
   } else {
     factors.push(
-      `Only one purchase so far (${purchaseAgo}); assuming a typical rhythm of ${formatInterval(config.defaultIntervalDays)} until there is more history.`,
+      msg('factor.onePurchase', { ago: purchaseAgo, interval: intervalValue(config.defaultIntervalDays) }),
     );
   }
 
   if (usesQuantity && lastQuantity !== null && history.typicalRatePerDay !== null) {
     factors.push(
-      `Bought ${formatAmount(lastQuantity, unit)} last time and you use about ${formatAmount(history.typicalRatePerDay, unit)} per day, so it should last ${formatInterval(quantityDuration)}.`,
+      msg('factor.quantityRate', {
+        amount: amount(lastQuantity, unit),
+        rate: amount(history.typicalRatePerDay, unit),
+        interval: intervalValue(quantityDuration),
+      }),
     );
   }
 
   if (calibration) {
     const percent = Math.round(Math.abs(calibration.factor - 1) * 100);
-    const reports =
-      calibration.signalCount === 1
-        ? 'one earlier “Empty”/“Still have it” report'
-        : `${calibration.signalCount} earlier “Empty”/“Still have it” reports`;
-
     factors.push(
-      `Learned from ${reports}: it usually lasts about ${percent}% ${calibration.factor < 1 ? 'less' : 'longer'} than expected, so the estimate is adjusted to ${formatInterval(interval)}.`,
+      msg('factor.learned', {
+        signals: calibration.signalCount,
+        percent,
+        shorter: calibration.factor < 1 ? 1 : 0,
+        interval: intervalValue(interval),
+      }),
     );
   }
 
@@ -633,7 +628,7 @@ export const assessProduct = (
       expectedRunOut = pushedRunOut;
     }
     factors.push(
-      `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)}, which pushes the estimate back.`,
+      msg('factor.seenPushesBack', { ago: ago(sightingAfterPurchase.observedAt, now) }),
     );
   }
 
@@ -662,8 +657,8 @@ export const assessProduct = (
     expectedRunOut = addDays(expectedRunOut, -advance * interval);
     factors.push(
       consumedQuantity !== null && lastQuantity !== null
-        ? `Used ${formatAmount(consumedQuantity, unit)} of ${formatAmount(lastQuantity, unit)} since the last purchase, so it may run out sooner.`
-        : `Used ${consumedSincePurchase === 1 ? 'once' : `${consumedSincePurchase} times`} since the last purchase, so it may run out sooner.`,
+        ? msg('factor.usedAmount', { used: amount(consumedQuantity, unit), bought: amount(lastQuantity, unit) })
+        : msg('factor.usedTimes', { count: consumedSincePurchase }),
     );
   }
 
@@ -679,8 +674,8 @@ export const assessProduct = (
 
   factors.push(
     daysPastRunOut >= 0
-      ? `Expected to have run out ${formatAgo(expectedRunOut, now).replace('today', 'about now')}.`
-      : `Expected to last about ${Math.max(1, Math.round(-daysPastRunOut))} more day${Math.round(-daysPastRunOut) === 1 ? '' : 's'}.`,
+      ? msg('factor.ranOut', { ago: ago(expectedRunOut, now) })
+      : msg('factor.lastsMore', { days: Math.max(1, Math.round(-daysPastRunOut)) }),
   );
 
   const curveNeed = sigmoid(
@@ -696,7 +691,9 @@ export const assessProduct = (
         state: 'CONFIRMED',
         confidence: 0.9,
         needScore: Math.min(curveNeed, 0.05),
-        reason: hasPattern ? `Bought ${purchaseAgo} · ${durationPhrase}` : `Bought ${purchaseAgo}`,
+        reason: hasPattern
+          ? msg('reason.boughtWith', { ago: purchaseAgo, duration: durationPhrase })
+          : msg('reason.bought', { ago: purchaseAgo }),
         factors,
         duration,
       },
@@ -716,7 +713,10 @@ export const assessProduct = (
         state: 'CONFIRMED',
         confidence: 0.85,
         needScore: Math.min(curveNeed, 0.1),
-        reason: `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)} · last purchased ${purchaseAgo}`,
+        reason: msg('reason.seenLastPurchased', {
+          ago: ago(sightingAfterPurchase.observedAt, now),
+          purchased: purchaseAgo,
+        }),
         factors,
         duration,
       },
@@ -765,17 +765,17 @@ export const assessProduct = (
     confidence *= staleness;
     needScore = 0.5 + (needScore - 0.5) * staleness;
     factors.push(
-      'The last evidence is old compared to the usual rhythm, so the estimate carries little weight.',
+      msg('factor.stale'),
     );
   }
 
   const reason = isStale
-    ? `Last purchased ${purchaseAgo} · pattern may be out of date`
+    ? msg('reason.stale', { ago: purchaseAgo })
     : sightingAfterPurchase
-      ? `Seen in stock ${formatAgo(sightingAfterPurchase.observedAt, now)} · ${durationPhrase}`
+      ? msg('reason.seenWith', { ago: ago(sightingAfterPurchase.observedAt, now), duration: durationPhrase })
       : hasPattern
-        ? `Last purchased ${purchaseAgo} · ${durationPhrase}`
-        : `Last purchased ${purchaseAgo} · only one purchase so far`;
+        ? msg('reason.lastPurchasedWith', { ago: purchaseAgo, duration: durationPhrase })
+        : msg('reason.singlePurchase', { ago: purchaseAgo });
 
   return finalize(
     {

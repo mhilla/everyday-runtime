@@ -1,5 +1,6 @@
 import type { HouseholdRepository } from 'src/data/household-repository';
 import { buildDemoHousehold } from 'src/domain/demo-data';
+import type { Lang } from 'src/domain/messages';
 import { findProductByName, parseQuickAdd, toDisplayName } from 'src/domain/quick-add';
 import type { ProductOverview } from 'src/domain/shopping';
 import type { Product, ShoppingItem } from 'src/domain/types';
@@ -276,8 +277,8 @@ export const createHouseholdActions = (
 
     // Creates the documented demo household (see src/domain/demo-data.ts).
     // Existing products with the same name are reused, never duplicated.
-    async loadDemoHousehold(existingProducts: Product[]) {
-      const demo = buildDemoHousehold(clock());
+    async loadDemoHousehold(existingProducts: Product[], lang: Lang = 'en') {
+      const demo = buildDemoHousehold(clock(), lang);
       const productsByKey = new Map<string, Product>();
 
       for (const demoProduct of demo.products) {

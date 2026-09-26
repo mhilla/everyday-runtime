@@ -1,4 +1,6 @@
 import { INFERENCE_CONFIG } from 'src/domain/inference';
+import { msg, renderMessage } from 'src/domain/messages';
+import type { Message } from 'src/domain/messages';
 import type { ProductOverview } from 'src/domain/shopping';
 import { daysBetween } from 'src/domain/time';
 
@@ -22,6 +24,7 @@ export type Question = {
   priority: number;
   // Why the app is asking, in one sentence.
   reason: string;
+  reasonMessage: Message;
 };
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -67,13 +70,14 @@ export const selectQuestions = (
       ? 1
       : round2(closeness * 0.6 + (1 - assessment.confidence) * 0.4);
 
-    const reason = isConflict
-      ? 'Reports disagree — one answer settles it.'
+    const percent = Math.round(assessment.needScore * 100);
+    const reasonMessage = isConflict
+      ? msg('question.conflict')
       : assessment.needScore >= threshold
-        ? `Probably needed (${Math.round(assessment.needScore * 100)}%), but the estimate is uncertain.`
-        : `Might be needed soon (${Math.round(assessment.needScore * 100)}%) — a quick check avoids a surprise.`;
+        ? msg('question.probablyNeeded', { percent })
+        : msg('question.mightBeNeeded', { percent });
 
-    questions.push({ overview, priority, reason });
+    questions.push({ overview, priority, reason: renderMessage(reasonMessage, 'en'), reasonMessage });
   }
 
   return questions

@@ -1,3 +1,5 @@
+import type { Message } from 'src/domain/messages';
+
 // Framework-independent domain model of Everyday Runtime.
 // Nothing in src/domain may import from Twenty, React or any runtime API:
 // the inference engine must stay a pure, deterministic, testable function.
@@ -128,6 +130,9 @@ export type NeedAssessment = {
   reason: string;
   // Longer, ordered explanation lines for the "why?" panel.
   factors: string[];
+  // The same texts as translatable messages (render with renderMessage).
+  reasonMessage: Message;
+  factorMessages: Message[];
   lastPurchasedAt: Date | null;
   typicalIntervalDays: number | null;
   purchaseCount: number;

@@ -1,3 +1,5 @@
+import { amount, money, msg, renderMessage } from 'src/domain/messages';
+import type { Message } from 'src/domain/messages';
 import { daysBetween, median } from 'src/domain/time';
 
 // Price radar: deterministic, explainable price judgements from the
@@ -97,6 +99,7 @@ export type PriceJudgement = {
   discount: number | null;
   isLowestRecent: boolean;
   reason: string;
+  reasonMessage: Message;
 };
 
 // Is this unit price a good deal for this household?
@@ -107,38 +110,39 @@ export const judgePrice = (
   config: PriceConfig = PRICE_CONFIG,
 ): PriceJudgement => {
   const per = unit ? `/${unit}` : '';
+  const withMessage = (
+    judgement: Omit<PriceJudgement, 'reason' | 'reasonMessage'>,
+    message: Message,
+  ): PriceJudgement => ({ ...judgement, reason: renderMessage(message, 'en'), reasonMessage: message });
 
   if (summary.typicalUnitPrice === null || summary.pointCount < config.minPoints) {
-    return {
-      verdict: 'UNKNOWN',
-      discount: null,
-      isLowestRecent: false,
-      reason: 'Not enough prices yet to say whether this is cheap. Every price you log helps.',
-    };
+    return withMessage(
+      { verdict: 'UNKNOWN', discount: null, isLowestRecent: false },
+      msg('price.notEnough'),
+    );
   }
 
   const discount = round2(1 - unitPrice / summary.typicalUnitPrice);
   const isLowestRecent =
     summary.lowestRecent !== null && unitPrice <= summary.lowestRecent.unitPrice;
-  const usual = `usually ${formatMoney(summary.typicalUnitPrice, summary.currency)}${per}`;
-  const percent = Math.round(Math.abs(discount) * 100);
+  const values = {
+    percent: Math.round(Math.abs(discount) * 100),
+    usual: money(summary.typicalUnitPrice, summary.currency),
+    per,
+    lowest: isLowestRecent ? 1 : 0,
+  };
 
   if (discount >= config.greatDiscount || (isLowestRecent && discount >= config.goodDiscount)) {
-    return {
-      verdict: 'GREAT',
-      discount,
-      isLowestRecent,
-      reason: `${percent}% below your usual price (${usual})${isLowestRecent ? ' — lowest in 90 days' : ''}.`,
-    };
+    return withMessage({ verdict: 'GREAT', discount, isLowestRecent }, msg('price.great', values));
   }
   if (discount >= config.goodDiscount) {
-    return { verdict: 'GOOD', discount, isLowestRecent, reason: `${percent}% below your usual price (${usual}).` };
+    return withMessage({ verdict: 'GOOD', discount, isLowestRecent }, msg('price.good', values));
   }
   if (discount <= -config.expensiveMarkup) {
-    return { verdict: 'EXPENSIVE', discount, isLowestRecent, reason: `${percent}% above your usual price (${usual}).` };
+    return withMessage({ verdict: 'EXPENSIVE', discount, isLowestRecent }, msg('price.expensive', values));
   }
 
-  return { verdict: 'NORMAL', discount, isLowestRecent, reason: `About your usual price (${usual}).` };
+  return withMessage({ verdict: 'NORMAL', discount, isLowestRecent }, msg('price.normal', values));
 };
 
 export type StockUpPlan = {
@@ -148,6 +152,7 @@ export type StockUpPlan = {
   // Estimated saving against the usual price, or null if unknown.
   saving: number | null;
   reason: string;
+  reasonMessage: Message;
 };
 
 // How much to buy at this price. Cheap prices justify covering more days,
@@ -175,14 +180,14 @@ export const planStockUp = (
 
   const cycle = Math.max(1, input.usualDurationDays ?? 14);
   const storageLimit = input.maxStockDays ?? config.defaultMaxStockDays;
-  const limit = Math.min(storageLimit, input.shelfLifeDays ?? Number.POSITIVE_INFINITY);
+  const maxDays = Math.min(storageLimit, input.shelfLifeDays ?? Number.POSITIVE_INFINITY);
   const wanted =
     judgement.verdict === 'GREAT'
       ? cycle * 4
       : judgement.verdict === 'GOOD'
         ? cycle * 2
         : cycle;
-  const coverDays = Math.max(1, Math.min(wanted, limit));
+  const coverDays = Math.max(1, Math.min(wanted, maxDays));
   const pack = input.packSize && input.packSize > 0 ? input.packSize : 1;
   const quantity = Math.max(pack, Math.ceil((ratePerDay * coverDays) / pack) * pack);
   const coversDays = Math.round(quantity / ratePerDay);
@@ -190,19 +195,29 @@ export const planStockUp = (
     input.typicalUnitPrice !== null && input.typicalUnitPrice > input.unitPrice
       ? round2((input.typicalUnitPrice - input.unitPrice) * quantity)
       : null;
-  const amount = formatAmountWithUnit(quantity, input.unit);
-  const limitNote =
+  const limit =
     coverDays < wanted
       ? input.shelfLifeDays !== null && input.shelfLifeDays <= storageLimit
-        ? ' (limited by shelf life)'
-        : ' (limited by storage)'
-      : '';
-  const reason =
+        ? 1
+        : 2
+      : 0;
+  const message =
     judgement.verdict === 'GREAT' || judgement.verdict === 'GOOD'
-      ? `Good price: buy ${amount} — lasts about ${coversDays} days${limitNote}${saving !== null ? `, saves about ${formatMoney(saving, input.currency)}` : ''}.`
-      : `Buy ${amount} — enough for about ${coversDays} days. Not worth stocking up at this price.`;
+      ? msg('stock.good', {
+          amount: amount(quantity, input.unit, { plural: true }),
+          days: coversDays,
+          limit,
+          saving: saving !== null ? money(saving, input.currency) : '',
+        })
+      : msg('stock.normal', { amount: amount(quantity, input.unit, { plural: true }), days: coversDays });
 
-  return { quantity: round2(quantity), coversDays, saving, reason };
+  return {
+    quantity: round2(quantity),
+    coversDays,
+    saving,
+    reason: renderMessage(message, 'en'),
+    reasonMessage: message,
+  };
 };
 
 // Returns the points that satisfy a "tell me below X" alert, newest first.

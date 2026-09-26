@@ -3,9 +3,11 @@ import type { FormEvent } from 'react';
 import { RestApiClient } from 'twenty-client-sdk/rest';
 
 import type { ProductPrices } from 'src/domain/deals';
-import { formatMoney, judgePrice, planStockUp } from 'src/domain/prices';
+import { judgePrice, planStockUp } from 'src/domain/prices';
 import type { ProductOverview } from 'src/domain/shopping';
-import { formatAgo } from 'src/domain/time';
+import { agoText, moneyText } from 'src/domain/messages';
+import { renderMessage } from 'src/domain/messages';
+import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
 type CommunityPrice = {
@@ -56,6 +58,7 @@ export const PriceSection = ({
 }) => {
   const { product, assessment } = entry;
   const { run, busyKey, now } = household;
+  const { t, lang } = useI18n();
   const unit = product.defaultUnit;
   const per = unit ? `/${unit}` : '';
   const idPrefix = `er-price-${product.id}`;
@@ -106,7 +109,7 @@ export const PriceSection = ({
           packQuantity: packValue,
           store: store.trim() === '' ? null : store.trim(),
         }),
-      'Price saved',
+      t('Price saved'),
     );
     setPrice('');
   };
@@ -121,7 +124,7 @@ export const PriceSection = ({
           shelfLifeDays: toNumber(shelfLife) === null ? null : Math.round(toNumber(shelfLife) as number),
           barcode: barcode.trim() === '' ? null : barcode.trim(),
         }),
-      'Settings saved',
+      t('Settings saved'),
     );
   };
 
@@ -143,35 +146,34 @@ export const PriceSection = ({
   return (
     <section className="er-price" aria-labelledby={`${idPrefix}-title`}>
       <h3 className="er-section-title" id={`${idPrefix}-title`}>
-        Prices
+        {t('Prices')}
       </h3>
       {summary && summary.typicalUnitPrice !== null ? (
         <dl className="er-facts">
           <div className="er-fact">
-            <dt>Usual</dt>
-            <dd>{formatMoney(summary.typicalUnitPrice, summary.currency)}{per}</dd>
+            <dt>{t('Usual')}</dt>
+            <dd>{moneyText(summary.typicalUnitPrice, summary.currency, lang)}{per}</dd>
           </div>
           <div className="er-fact">
-            <dt>Lowest (90 days)</dt>
+            <dt>{t('Lowest (90 days)')}</dt>
             <dd>
               {summary.lowestRecent
-                ? `${formatMoney(summary.lowestRecent.unitPrice, summary.currency)}${per}`
+                ? `${moneyText(summary.lowestRecent.unitPrice, summary.currency, lang)}${per}`
                 : '—'}
             </dd>
           </div>
           <div className="er-fact">
-            <dt>Where</dt>
+            <dt>{t('Where')}</dt>
             <dd>{summary.lowestRecent?.store ?? '—'}</dd>
           </div>
           <div className="er-fact">
-            <dt>Prices known</dt>
+            <dt>{t('Prices known')}</dt>
             <dd>{summary.pointCount}</dd>
           </div>
         </dl>
       ) : (
         <p className="er-reason">
-          No prices yet. Add a price when you buy it or see it — after two prices the app can
-          tell you whether something is a good deal.
+          {t('No prices yet. Add a price when you buy it or see it — after two prices the app can tell you whether something is a good deal.')}
         </p>
       )}
 
@@ -181,12 +183,12 @@ export const PriceSection = ({
             <li key={`${point.source}-${point.observedAt.getTime()}-${point.unitPrice}`}>
               <div>
                 <strong>
-                  {formatMoney(point.unitPrice, point.currency)}
+                  {moneyText(point.unitPrice, point.currency, lang)}
                   {per}
                 </strong>{' '}
-                · {SOURCE_LABELS[point.source] ?? point.source}
+                · {t(SOURCE_LABELS[point.source] ?? point.source)}
                 <div className="er-time">
-                  {formatAgo(point.observedAt, now)}
+                  {agoText(point.observedAt, now, lang)}
                   {point.store ? ` · ${point.store}` : ''}
                 </div>
               </div>
@@ -195,64 +197,64 @@ export const PriceSection = ({
         </ul>
       )}
 
-      <form className="er-buy" onSubmit={logPrice} aria-label={`Log a price for ${product.name}`}>
+      <form className="er-buy" onSubmit={logPrice} aria-label={t('Log a price for {name}', { name: product.name })}>
         <div className="er-buy-grid">
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-amount`}>
-              Price seen (€)
+              {t('Price seen (€)')}
             </label>
-            <input id={`${idPrefix}-amount`} className="er-input" inputMode="decimal" placeholder="e.g. 2.99" value={price} onChange={(e) => setPrice(e.target.value)} />
+            <input id={`${idPrefix}-amount`} className="er-input" inputMode="decimal" placeholder={t('e.g. 2.99')} value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-pack`}>
-              For how much{unit ? ` (${unit})` : ''}
+              {t('For how much{unit}', { unit: unit ? ` (${unit})` : '' })}
             </label>
             <input id={`${idPrefix}-pack`} className="er-input" inputMode="decimal" value={pack} onChange={(e) => setPack(e.target.value)} />
           </div>
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-store`}>
-              Where (optional)
+              {t('Where (optional)')}
             </label>
-            <input id={`${idPrefix}-store`} className="er-input" placeholder="e.g. Discounter" value={store} onChange={(e) => setStore(e.target.value)} />
+            <input id={`${idPrefix}-store`} className="er-input" placeholder={t('e.g. Discounter')} value={store} onChange={(e) => setStore(e.target.value)} />
           </div>
         </div>
         {preview && (
           <p className={`er-verdict er-verdict-${preview.verdict.toLowerCase()}`} aria-live="polite">
-            <strong>{VERDICT_LABELS[preview.verdict]}.</strong> {preview.reason}
-            {previewPlan && <span className="er-verdict-plan"> {previewPlan.reason}</span>}
+            <strong>{t(VERDICT_LABELS[preview.verdict])}.</strong> {renderMessage(preview.reasonMessage, lang)}
+            {previewPlan && <span className="er-verdict-plan"> {renderMessage(previewPlan.reasonMessage, lang)}</span>}
           </p>
         )}
         <div className="er-actions">
           <button type="submit" className="er-btn er-btn-small" disabled={busyKey !== null || priceValue === null || packValue === null || packValue === 0}>
-            Save price
+            {t('Save price')}
           </button>
         </div>
       </form>
 
-      <form className="er-buy" onSubmit={saveSettings} aria-label={`Price alert and details for ${product.name}`}>
+      <form className="er-buy" onSubmit={saveSettings} aria-label={t('Price alert and details for {name}', { name: product.name })}>
         <div className="er-buy-grid">
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-alert`}>
-              Alert me below (€{per})
+              {t('Alert me below (€{per})', { per })}
             </label>
-            <input id={`${idPrefix}-alert`} className="er-input" inputMode="decimal" placeholder="e.g. 0.45" value={alert} onChange={(e) => setAlert(e.target.value)} />
+            <input id={`${idPrefix}-alert`} className="er-input" inputMode="decimal" placeholder={t('e.g. 0.45')} value={alert} onChange={(e) => setAlert(e.target.value)} />
           </div>
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-shelf`}>
-              Keeps for (days)
+              {t('Keeps for (days)')}
             </label>
-            <input id={`${idPrefix}-shelf`} className="er-input" inputMode="numeric" placeholder="e.g. 365" value={shelfLife} onChange={(e) => setShelfLife(e.target.value)} />
+            <input id={`${idPrefix}-shelf`} className="er-input" inputMode="numeric" placeholder={t('e.g. 365')} value={shelfLife} onChange={(e) => setShelfLife(e.target.value)} />
           </div>
           <div>
             <label className="er-label" htmlFor={`${idPrefix}-barcode`}>
-              Barcode (EAN)
+              {t('Barcode (EAN)')}
             </label>
-            <input id={`${idPrefix}-barcode`} className="er-input" inputMode="numeric" placeholder="e.g. 3057640257773" value={barcode} onChange={(e) => setBarcode(e.target.value)} />
+            <input id={`${idPrefix}-barcode`} className="er-input" inputMode="numeric" placeholder={t('e.g. 3057640257773')} value={barcode} onChange={(e) => setBarcode(e.target.value)} />
           </div>
         </div>
         <div className="er-actions">
           <button type="submit" className="er-btn er-btn-small" disabled={busyKey !== null}>
-            Save
+            {t('Save')}
           </button>
           <button
             type="button"
@@ -260,14 +262,14 @@ export const PriceSection = ({
             disabled={!/^\d{8,14}$/.test(barcode.trim()) || communityState === 'loading'}
             onClick={loadCommunity}
           >
-            {communityState === 'loading' ? 'Looking up…' : 'Community prices'}
+            {communityState === 'loading' ? t('Looking up…') : t('Community prices')}
           </button>
         </div>
       </form>
 
       {communityState === 'error' && (
         <p className="er-reason" role="status">
-          Could not load community prices{community?.error ? `: ${community.error}` : ''}.
+          {t('Could not load community prices{error}.', { error: community?.error ? `: ${community.error}` : '' })}
         </p>
       )}
       {community && !community.error && (
@@ -277,17 +279,17 @@ export const PriceSection = ({
             {community.product?.brand || community.product?.name
               ? ` · ${[community.product?.brand, community.product?.name].filter(Boolean).join(' ')}`
               : ''}{' '}
-            — {community.prices.length === 0 ? 'no community prices yet for this barcode.' : `${community.prices.length} recent prices from other people.`}
+            — {community.prices.length === 0 ? t('no community prices yet for this barcode.') : t('{count} recent prices from other people.', { count: community.prices.length })}
           </p>
           {community.prices.length > 0 && (
             <>
               <ul>
                 {community.prices.slice(0, 5).map((p, index) => (
                   <li key={`${p.date}-${index}`}>
-                    {formatMoney(p.price, p.currency)}
-                    {p.packQuantity ? ` for ${p.packQuantity}${unit ? ` ${unit}` : ''}` : ''} · {p.date}
+                    {moneyText(p.price, p.currency, lang)}
+                    {p.packQuantity ? t(' for {amount}', { amount: `${p.packQuantity}${unit ? ` ${unit}` : ''}` }) : ''} · {p.date}
                     {p.store ? ` · ${p.store}` : ''}
-                    {p.isDiscounted ? ' · discounted' : ''}
+                    {p.isDiscounted ? t(' · discounted') : ''}
                   </li>
                 ))}
               </ul>
@@ -297,15 +299,15 @@ export const PriceSection = ({
                   className="er-btn er-btn-small"
                   disabled={busyKey !== null}
                   onClick={() =>
-                    run(product.id, (actions) => actions.importCommunityPrices(product, community.prices), 'Community prices added')
+                    run(product.id, (actions) => actions.importCommunityPrices(product, community.prices), t('Community prices added'))
                   }
                 >
-                  Use these prices
+                  {t('Use these prices')}
                 </button>
               </div>
             </>
           )}
-          <p className="er-fine-print">Community data from Open Prices (Open Food Facts, ODbL). Prices may be from other countries.</p>
+          <p className="er-fine-print">{t('Community data from Open Prices (Open Food Facts, ODbL). Prices may be from other countries.')}</p>
         </div>
       )}
     </section>
