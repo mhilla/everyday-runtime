@@ -4,4 +4,4 @@ gazetteer-matcher==1.1.0
 hassil==3.12.1
 home-assistant-intents==2026.8.28
 # Local To-do stands in for the Alexa list in tests/test_alexa_list_example.py.
-ical==14.1.1
+ical==14.2.0
