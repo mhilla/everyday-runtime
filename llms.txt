@@ -2,7 +2,7 @@
 
 > Open-source (MIT), self-hosted shopping assistant for households, built as an app for the Twenty platform. It estimates what a household probably needs from partial observations (bought, used some, empty, still have it, needed) and shows a confidence and a plain-language reason for every estimate. It deliberately does not track exact inventory, needs no AI service or API key, and keeps all data in the user's own Twenty workspace.
 
-Current version: 0.4.0 (early; see known limitations in the changelog). Primary maintainer: @micha16372.
+Current version: 0.4.1 (early; see known limitations in the changelog). Primary maintainer: @micha16372.
 
 Key facts:
 - Deterministic inference engine in plain TypeScript (`src/domain`), unit-tested; same observations at the same moment give the same result.

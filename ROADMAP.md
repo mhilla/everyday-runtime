@@ -25,7 +25,7 @@ households — open an issue or join the [discussions](https://github.com/micha1
 - [x] Stock-up planning: use per day × shelf life × storage × discount
 - [x] Open Food Facts barcode lookup and Open Prices as an open price source (read)
 
-## v0.4 — Talk to your list ✅ (0.4.0)
+## v0.4 — Talk to your list ✅ (0.4.0, new look in 0.4.1)
 
 - [x] Free, offline sentence understanding in German and English (“Milch ist leer”, “Was brauchen wir?”)
 - [x] AI tools and a skill for Twenty's AI chat / MCP — the model talks, the engine decides ([docs/AI.md](docs/AI.md))

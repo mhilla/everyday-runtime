@@ -6,6 +6,26 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+## 0.4.1 — 2026-09-26
+
+### Changed
+
+- **New look**: colour tokens from Radix Colors (MIT), Tabler icons (MIT), ring gauges
+  for "how likely needed" (estimates marked with `~` and a dashed track), product
+  avatars by category, bottom navigation on phones, deal cards with the usual price
+  struck through, and tappable assistant suggestions built from your own products.
+- **Punchier copy** in English and German: shorter, active, benefit-first. Tabs are
+  now Now, List, Pantry and History. Estimates are still clearly marked as guesses.
+
+### Fixed
+
+- Taps on icons now reach their buttons (SVG `pointer-events`).
+
+### Docs
+
+- docs/MARKET.md: competitor analysis with a feature matrix and ranked parity gaps
+  (#43–#49).
+
 ## 0.4.0 — 2026-09-26
 
 ### Added

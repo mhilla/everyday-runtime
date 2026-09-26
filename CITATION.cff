@@ -7,7 +7,7 @@ authors:
 repository-code: "https://github.com/micha16372/everyday-runtime"
 url: "https://micha16372.github.io/everyday-runtime/"
 license: MIT
-version: 0.4.0
+version: 0.4.1
 date-released: "2026-09-26"
 keywords:
   - self-hosted

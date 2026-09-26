@@ -1,6 +1,6 @@
 {
   "name": "everyday-runtime",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Self-hosted shopping assistant for Twenty that infers what a household probably needs, with confidence and a plain-language reason.",
   "license": "MIT",
   "keywords": [
