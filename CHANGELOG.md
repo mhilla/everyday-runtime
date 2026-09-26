@@ -6,6 +6,8 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+## 0.4.0 — 2026-09-26
+
 ### Added
 
 - **Talk to your list**: a free, offline German/English sentence parser on Now —
