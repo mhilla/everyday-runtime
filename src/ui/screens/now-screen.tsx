@@ -1,3 +1,12 @@
+import {
+  IconAlertTriangle,
+  IconCircleCheck,
+  IconListCheck,
+  IconPlus,
+  IconShoppingCart,
+  IconTrendingDown,
+} from '@tabler/icons-react';
+
 import { selectDeals } from 'src/domain/deals';
 import { selectQuestions } from 'src/domain/questions';
 import { moneyText, renderMessage } from 'src/domain/messages';
@@ -6,6 +15,7 @@ import { summarizeCount } from 'src/domain/presentation';
 import { EmptyState, NeedCard, QuickAddForm } from 'src/ui/components';
 import type { Household } from 'src/ui/use-household';
 import { useI18n } from 'src/ui/i18n';
+import { ProductAvatar } from 'src/ui/design';
 import { TalkBox } from 'src/ui/talk-box';
 import { useSkippedQuestions } from 'src/ui/use-skipped-questions';
 
@@ -22,7 +32,7 @@ export const WelcomeState = ({
 
   return (
   <EmptyState
-    title={t('Welcome to Everyday Runtime')}
+    title={t('Never run out of the basics again.')}
     actions={
       <button
         type="button"
@@ -32,15 +42,15 @@ export const WelcomeState = ({
           household.run(
             'demo',
             (actions) => actions.loadDemoHousehold(household.snapshot?.products ?? [], lang),
-            t('Demo household loaded'),
+            t('Demo household is ready'),
           )
         }
       >
-        {household.busyKey === 'demo' ? t('Loading…') : t('Load demo household')}
+        {household.busyKey === 'demo' ? t('Loading…') : t('Try the demo household')}
       </button>
     }
   >
-    {t('Tell the app what you buy, what runs out and what you still have. It learns your rhythm and suggests what you probably need — with a reason for every guess. Start by adding something below, or load a small demo household to see how it works.')}
+    {t('Tell it what you buy and what\'s running low. It learns your household\'s rhythm and gives you a heads-up before things run out — always with the why. Add your first item below, or take the demo household for a spin.')}
   </EmptyState>
   );
 };
@@ -68,13 +78,13 @@ export const NowScreen = ({
         <WelcomeState household={household} />
         <QuickAddForm
           label={t('Add to shopping list')}
-          placeholder={t('Add something… e.g. 2 milk')}
+          placeholder={t('Add anything — e.g. 2 milk')}
           submitLabel={t('Add')}
           busy={busyKey !== null}
           onSubmit={(value) =>
             run('quick-add', (actions) =>
               actions.quickAddToList(value, snapshot?.products ?? [], openItems),
-            t('Added to your list'))
+            t('On your list'))
           }
         />
       </div>
@@ -84,21 +94,25 @@ export const NowScreen = ({
   return (
     <div className="er-stack">
       <section className="er-card er-hero" aria-labelledby="er-now-title">
-        <p className="er-hero-eyebrow">{t('SHOPPING')}</p>
+        <p className="er-hero-eyebrow">
+          <IconShoppingCart size={16} stroke={2} aria-hidden="true" />
+          {t('YOUR SHOPPING')}
+        </p>
         <h2 className="er-hero-title" id="er-now-title">
           {summarizeCount(needed.length, lang)}
         </h2>
         <p className="er-hero-sub">
           {needed.length === 0
-            ? t('Nothing looks low. We will tell you when something probably runs out.')
-            : t('{onList} on your list · {suggested} suggested', { onList, suggested })}
+            ? t('You\'re all set. We\'ll give you a heads-up before anything runs out.')
+            : t('{onList} on your list · {suggested} smart picks', { onList, suggested })}
         </p>
         <button
           type="button"
           className="er-btn er-btn-primary er-btn-block"
           onClick={() => onNavigate('list')}
         >
-          {t('Open shopping list')}
+          <IconListCheck size={18} stroke={2} aria-hidden="true" />
+          {t('View shopping list')}
         </button>
       </section>
 
@@ -107,7 +121,7 @@ export const NowScreen = ({
       {deals.length > 0 && (
         <section aria-labelledby="er-deals-title">
           <h2 className="er-section-title" id="er-deals-title">
-            {t('Good prices for you')}
+            {t('Deals worth grabbing')}
           </h2>
           <div className="er-need-grid">
             {deals.map((deal) => {
@@ -115,21 +129,33 @@ export const NowScreen = ({
 
               return (
                 <article key={deal.overview.product.id} className="er-card er-deal" aria-label={t('Price for {name}', { name: deal.overview.product.name })}>
-                  <div className="er-row-top">
-                    <h3 className="er-name">{deal.overview.product.name}</h3>
-                    <span className="er-percent er-tone-low">
-                      {moneyText(deal.point.unitPrice, deal.point.currency, lang)}
+                  <div className="er-need-top">
+                    <ProductAvatar category={deal.overview.product.category} />
+                    <div className="er-need-text">
+                      <h3 className="er-name">{deal.overview.product.name}</h3>
+                      {deal.judgement.discount !== null && deal.judgement.discount > 0 && (
+                        <span className="er-save">
+                          <IconTrendingDown size={14} stroke={2} aria-hidden="true" />
+                          {t('{percent}% cheaper', { percent: Math.round(deal.judgement.discount * 100) })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="er-deal-price">
+                      <strong>{moneyText(deal.point.unitPrice, deal.point.currency, lang)}</strong>
+                      {deal.usualUnitPrice !== null && deal.usualUnitPrice > deal.point.unitPrice && (
+                        <span className="er-strike">{moneyText(deal.usualUnitPrice, deal.point.currency, lang)}</span>
+                      )}
                       {unit ? <span className="er-percent-label">{t('per {unit}', { unit })}</span> : null}
-                    </span>
+                    </div>
                   </div>
                   <p className="er-reason">
-                    {deal.alertTriggered ? t('Your price alert: ') : ''}
+                    {deal.alertTriggered ? t('Price alert hit: ') : ''}
                     {renderMessage(deal.judgement.reasonMessage, lang)}
                     {deal.point.store ? t(' At {store}.', { store: deal.point.store }) : ''}
                   </p>
                   {deal.plan && <p className="er-headline">{renderMessage(deal.plan.reasonMessage, lang)}</p>}
                   <div className="er-chips">
-                    <span className="er-chip er-chip-estimate">{t('Estimate from your price history')}</span>
+                    <span className="er-chip er-chip-estimate">{t('Based on your price history')}</span>
                   </div>
                   {deal.overview.openItem === null && (
                     <div className="er-actions">
@@ -141,6 +167,7 @@ export const NowScreen = ({
                           run(deal.overview.product.id, (actions) => actions.addManually(deal.overview), t('{name} added to your list', { name: deal.overview.product.name }))
                         }
                       >
+                        <IconPlus size={18} stroke={2} aria-hidden="true" />
                         {t('Add to list')}
                       </button>
                     </div>
@@ -155,7 +182,7 @@ export const NowScreen = ({
       {questions.length > 0 && (
         <section aria-labelledby="er-questions-title">
           <h2 className="er-section-title" id="er-questions-title">
-            {t('Quick questions')}
+            {t('Quick check')}
           </h2>
           <div className="er-need-grid">
             {questions.map(({ overview: entry, reasonMessage }) => (
@@ -164,7 +191,10 @@ export const NowScreen = ({
                 className="er-card er-question"
                 aria-label={t('Question about {name}', { name: entry.product.name })}
               >
-                <h3 className="er-name">{t('Still enough {name}?', { name: entry.product.name })}</h3>
+                <div className="er-need-top">
+                  <ProductAvatar category={entry.product.category} size={40} />
+                  <h3 className="er-name">{t('Still enough {name}?', { name: entry.product.name })}</h3>
+                </div>
                 <p className="er-reason">{renderMessage(reasonMessage, lang)}</p>
                 <div className="er-actions">
                   <button
@@ -172,10 +202,11 @@ export const NowScreen = ({
                     className="er-btn er-btn-small"
                     disabled={busyKey !== null}
                     onClick={() =>
-                      run(entry.product.id, (actions) => actions.markInStock(entry), t('Thanks — noted you still have {name}', { name: entry.product.name }))
+                      run(entry.product.id, (actions) => actions.markInStock(entry), t('Got it — {name} is still stocked', { name: entry.product.name }))
                     }
                   >
-                    {t('Yes, enough')}
+                    <IconCircleCheck size={18} stroke={2} aria-hidden="true" />
+                    {t('Yes, plenty')}
                   </button>
                   <button
                     type="button"
@@ -185,7 +216,8 @@ export const NowScreen = ({
                       run(entry.product.id, (actions) => actions.markEmpty(entry), t('{name} added to your list', { name: entry.product.name }))
                     }
                   >
-                    {t('Running out')}
+                    <IconAlertTriangle size={18} stroke={2} aria-hidden="true" />
+                    {t('Running low')}
                   </button>
                   <button
                     type="button"
@@ -204,7 +236,7 @@ export const NowScreen = ({
       {needed.length > 0 && (
         <section aria-labelledby="er-needed-title">
           <h2 className="er-section-title" id="er-needed-title">
-            {t('Probably needed')}
+            {t('Running low')}
           </h2>
           <div className="er-need-grid">
             {needed.slice(0, MAX_CARDS).map((entry) => (
@@ -218,6 +250,7 @@ export const NowScreen = ({
                       run(entry.product.id, (actions) => actions.acceptSuggestion(entry), t('{name} added to your list', { name: entry.product.name }))
                     }
                   >
+                    <IconPlus size={18} stroke={2} aria-hidden="true" />
                     {t('Add to list')}
                   </button>
                 )}
@@ -226,10 +259,11 @@ export const NowScreen = ({
                   className="er-btn er-btn-small"
                   disabled={busyKey !== null}
                   onClick={() =>
-                    run(entry.product.id, (actions) => actions.markInStock(entry), t('Noted: you still have {name}', { name: entry.product.name }))
+                    run(entry.product.id, (actions) => actions.markInStock(entry), t('Got it — {name} is still stocked', { name: entry.product.name }))
                   }
                 >
-                  {t('Still have it')}
+                  <IconCircleCheck size={18} stroke={2} aria-hidden="true" />
+                  {t('Still have some')}
                 </button>
               </NeedCard>
             ))}
@@ -240,7 +274,7 @@ export const NowScreen = ({
               className="er-btn er-btn-ghost er-btn-block"
               onClick={() => onNavigate('list')}
             >
-              {t('Show all {count}', { count: needed.length })}
+              {t('See all {count}', { count: needed.length })}
             </button>
           )}
         </section>
@@ -248,17 +282,17 @@ export const NowScreen = ({
 
       <section aria-labelledby="er-quick-title">
         <h2 className="er-section-title" id="er-quick-title">
-          {t('Need something else?')}
+          {t('Anything else?')}
         </h2>
         <QuickAddForm
           label={t('Add to shopping list')}
-          placeholder={t('Add something… e.g. 2 milk')}
+          placeholder={t('Add anything — e.g. 2 milk')}
           submitLabel={t('Add')}
           busy={busyKey !== null}
           onSubmit={(value) =>
             run('quick-add', (actions) =>
               actions.quickAddToList(value, snapshot?.products ?? [], openItems),
-            t('Added to your list'))
+            t('On your list'))
           }
         />
       </section>

@@ -1,3 +1,4 @@
+import { IconCheck, IconShoppingBag, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { formatPercent, formatQuantity } from 'src/domain/presentation';
@@ -7,6 +8,7 @@ import type { ProductOverview } from 'src/domain/shopping';
 import { daysBetween } from 'src/domain/time';
 import type { Product, ShoppingItem } from 'src/domain/types';
 import { ariaBool, BuyPanel, EmptyState, NeedCard, QuickAddForm } from 'src/ui/components';
+import { ProductAvatar } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
@@ -16,8 +18,8 @@ const OriginChip = ({ item }: { item: ShoppingItem }) => {
   const { t } = useI18n();
 
   return item.origin === 'INFERRED' ? (
-    <span className="er-chip er-chip-estimate" title={t('Suggested by the app')}>
-      {t('Suggested{confidence}', {
+    <span className="er-chip er-chip-estimate" title={t('Suggested from your history')}>
+      {t('Smart pick{confidence}', {
         confidence: item.confidence !== null ? ` · ${formatPercent(item.confidence)}` : '',
       })}
     </span>
@@ -61,8 +63,9 @@ const ListItemRow = ({
           disabled={product === null}
           onClick={() => setIsBuying((value) => !value)}
         >
-          ✓
+          <IconCheck size={22} stroke={2.25} aria-hidden="true" />
         </button>
+        <ProductAvatar category={product?.category ?? null} size={40} />
         <div className="er-item-body">
           <h3 className="er-name">
             {item.name}{' '}
@@ -82,7 +85,7 @@ const ListItemRow = ({
           disabled={busyKey !== null}
           onClick={() => run(item.id, (actions) => actions.removeFromList(item), t('{name} removed', { name: item.name }))}
         >
-          ✕
+          <IconX size={18} stroke={2} aria-hidden="true" />
         </button>
       </div>
       {isBuying && product && (
@@ -92,7 +95,7 @@ const ListItemRow = ({
           busy={busy}
           onCancel={() => setIsBuying(false)}
           onConfirm={(details) =>
-            run(item.id, (actions) => actions.markPurchased(item, product, details), t('{name} bought', { name: item.name }))
+            run(item.id, (actions) => actions.markPurchased(item, product, details), t('Nice — {name} is checked off', { name: item.name }))
           }
         />
       )}
@@ -123,23 +126,23 @@ export const ListScreen = ({ household }: { household: Household }) => {
     <div className="er-stack">
       <QuickAddForm
         label={t('Add to shopping list')}
-        placeholder={t('Add something… e.g. 2 milk')}
+        placeholder={t('Add anything — e.g. 2 milk')}
         submitLabel={t('Add')}
         busy={busyKey !== null}
         onSubmit={(value) =>
-          run('quick-add', (actions) => actions.quickAddToList(value, products, openItems), t('Added to your list'))
+          run('quick-add', (actions) => actions.quickAddToList(value, products, openItems), t('On your list'))
         }
       />
 
       <section aria-labelledby="er-tobuy-title">
         <h2 className="er-section-title" id="er-tobuy-title">
-          {t('To buy ({count})', { count: openItems.length })}
+          {t('To buy · {count}', { count: openItems.length })}
         </h2>
         {openItems.length === 0 ? (
           <EmptyState title={t('Your list is empty')}>
             {suggestions.length > 0
-              ? t('Nothing added yet — the suggestions below are what probably runs out next.')
-              : t('Add what you need above. The app will also suggest things that probably run out.')}
+              ? t('Nothing on it yet. Here\'s what\'s likely to run out next.')
+              : t('Add what you need above — we\'ll suggest the rest before it runs out.')}
           </EmptyState>
         ) : (
           <ul className="er-stack" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -159,7 +162,7 @@ export const ListScreen = ({ household }: { household: Household }) => {
       {suggestions.length > 0 && (
         <section aria-labelledby="er-suggest-title">
           <h2 className="er-section-title" id="er-suggest-title">
-            {t('Suggested for you')}
+            {t('Smart picks for you')}
           </h2>
           <div className="er-need-grid">
             {suggestions.map((entry) => (
@@ -179,7 +182,7 @@ export const ListScreen = ({ household }: { household: Household }) => {
                   className="er-btn er-btn-small"
                   disabled={busyKey !== null}
                   onClick={() =>
-                    run(entry.product.id, (actions) => actions.dismissSuggestion(entry), t('Okay — not suggesting it for now'))
+                    run(entry.product.id, (actions) => actions.dismissSuggestion(entry), t('Okay, we\'ll hold off on that one'))
                   }
                 >
                   {t('Not now')}
@@ -193,12 +196,14 @@ export const ListScreen = ({ household }: { household: Household }) => {
       {recentlyBought.length > 0 && (
         <section aria-labelledby="er-bought-title">
           <h2 className="er-section-title" id="er-bought-title">
-            {t('Recently bought')}
+            {t('Just bought')}
           </h2>
           <ul className="er-card er-timeline">
             {recentlyBought.map((item) => (
               <li key={item.id}>
-                <span className="er-dot" data-tone="low" aria-hidden="true" />
+                <span className="er-event-icon" data-tone="low" aria-hidden="true">
+                  <IconShoppingBag size={18} stroke={1.75} aria-hidden="true" />
+                </span>
                 <div>
                   <strong>{item.name}</strong>
                   <div className="er-time">

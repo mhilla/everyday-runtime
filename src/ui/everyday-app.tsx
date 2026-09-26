@@ -1,3 +1,4 @@
+import { IconBasket, IconHistory, IconHome, IconListCheck } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useColorScheme } from 'twenty-sdk/front-component';
 
@@ -10,14 +11,16 @@ import { NowScreen } from 'src/ui/screens/now-screen';
 import type { Tab } from 'src/ui/screens/now-screen';
 import { ProductsScreen } from 'src/ui/screens/products-screen';
 import { APP_STYLES } from 'src/ui/styles';
+import { Icon } from 'src/ui/design';
+import type { IconComponent } from 'src/ui/design';
 import { I18nProvider, useI18n } from 'src/ui/i18n';
 import { useHousehold } from 'src/ui/use-household';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'now', label: 'Now' },
-  { id: 'list', label: 'List' },
-  { id: 'products', label: 'Products' },
-  { id: 'activity', label: 'Activity' },
+const TABS: { id: Tab; label: string; icon: IconComponent }[] = [
+  { id: 'now', label: 'Now', icon: IconHome },
+  { id: 'list', label: 'List', icon: IconListCheck },
+  { id: 'products', label: 'Pantry', icon: IconBasket },
+  { id: 'activity', label: 'History', icon: IconHistory },
 ];
 
 export const EverydayApp = () => (
@@ -82,6 +85,7 @@ const EverydayAppContent = () => {
                 className={`er-tab${tab === entry.id ? ' er-tab-active' : ''}`}
                 onClick={() => navigate(entry.id)}
               >
+                <Icon icon={entry.icon} size={20} />
                 {t(entry.label)}
                 {entry.id === 'list' && openCount > 0 && (
                   <span className="er-tab-count" aria-label={t('{count} open', { count: openCount })}>
@@ -100,7 +104,7 @@ const EverydayAppContent = () => {
           <div className="er-visually-hidden" aria-live="polite">
             {announcement}
           </div>
-          {loadState === 'loading' && <div className="er-loading">{t('Loading your household…')}</div>}
+          {loadState === 'loading' && <div className="er-loading">{t('Getting your household ready…')}</div>}
           {loadState === 'error' && (
             <div className="er-stack">
               <div className="er-banner" role="alert">

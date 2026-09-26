@@ -1,8 +1,11 @@
+import { IconMessageChatbot, IconMicrophone, IconSend } from '@tabler/icons-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 
 import { executeCommand } from 'src/data/command-executor';
 import { renderMessage } from 'src/domain/messages';
+import { selectProbablyNeeded } from 'src/domain/shopping';
+import { Icon } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
@@ -17,11 +20,10 @@ export const TalkBox = ({ household }: { household: Household }) => {
   const [text, setText] = useState('');
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const { snapshot, overview, prices, busyKey, run } = household;
+  const busy = busyKey !== null;
 
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-
-    const said = text.trim();
+  const send = (sentence: string) => {
+    const said = sentence.trim();
 
     if (said === '' || !snapshot) {
       return;
@@ -43,29 +45,74 @@ export const TalkBox = ({ household }: { household: Household }) => {
     });
   };
 
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    send(text);
+  };
+
+  // Suggestions use the household's own products: ask about the most likely
+  // *estimate* (a confirmed report needs no question) and about a price.
+  const estimate = selectProbablyNeeded(overview).find(
+    (entry) => entry.openItem === null && entry.assessment.state !== 'CONFIRMED',
+  )?.product.name;
+  const priced = [...prices.keys()]
+    .map((id) => overview.find((entry) => entry.product.id === id)?.product.name)
+    .find(Boolean);
+  const suggestions = [
+    t('What do we need?'),
+    ...(estimate ? [t('Enough {name} left?', { name: estimate })] : []),
+    ...(priced ? [t('Price of {name}?', { name: priced })] : []),
+  ];
+
   return (
     <section className="er-card er-talk" aria-labelledby="er-talk-title">
-      <h2 className="er-section-title" id="er-talk-title">
-        {t('Talk to your list')}
-      </h2>
-      <form className="er-form" onSubmit={submit} aria-label={t('Talk to your list')}>
+      <div className="er-talk-head">
+        <span className="er-talk-badge" aria-hidden="true">
+          <IconMessageChatbot size={22} stroke={1.75} aria-hidden="true" />
+        </span>
+        <div>
+          <h2 className="er-talk-title" id="er-talk-title">
+            {t('Just tell it')}
+          </h2>
+          <p className="er-talk-hint">{t('“We\'re out of milk”, “What do we need?” — or tap the mic on your keyboard.')}</p>
+        </div>
+      </div>
+      <form className="er-talk-bar" onSubmit={submit} aria-label={t('Just tell it')}>
+        <Icon icon={IconMicrophone} size={20} />
         <label className="er-visually-hidden" htmlFor="er-talk-input">
           {t('What happened?')}
         </label>
         <input
           id="er-talk-input"
-          className="er-input"
-          placeholder={t('e.g. “milk is empty” or “what do we need?”')}
+          className="er-talk-input"
+          placeholder={t('We\'re out of milk…')}
           value={text}
           autoComplete="off"
           enterKeyHint="send"
           onChange={(event) => setText(event.target.value)}
         />
-        <button type="submit" className="er-btn er-btn-primary" disabled={busyKey !== null || text.trim() === ''}>
-          {busyKey === 'talk' ? '…' : t('Send')}
+        <button
+          type="submit"
+          className="er-talk-send"
+          aria-label={t('Send')}
+          disabled={busy || text.trim() === ''}
+        >
+          <IconSend size={20} stroke={2} aria-hidden="true" />
         </button>
       </form>
-      <p className="er-fine-print">{t('Tip: use the microphone on your phone keyboard to speak.')}</p>
+      <div className="er-suggestions" aria-label={t('Suggestions')}>
+        {suggestions.map((suggestion) => (
+          <button
+            key={suggestion}
+            type="button"
+            className="er-suggestion"
+            disabled={busy}
+            onClick={() => send(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
       {exchanges.length > 0 && (
         <ol className="er-talk-log" role="log" aria-live="polite" aria-label={t('Conversation')}>
           {exchanges.map((exchange) => (

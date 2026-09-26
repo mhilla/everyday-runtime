@@ -1,10 +1,18 @@
+import {
+  IconAlertTriangle,
+  IconArchive,
+  IconChevronDown,
+  IconChevronUp,
+  IconCircleCheck,
+  IconPlus,
+  IconShoppingBag,
+} from '@tabler/icons-react';
 import { useState } from 'react';
 
 import {
   categoryLabel,
   describeConfidence,
   describeNeed,
-  formatPercent,
   formatRate,
   observationLabel,
 } from 'src/domain/presentation';
@@ -14,6 +22,7 @@ import { agoText, intervalText, renderMessage } from 'src/domain/messages';
 import { ariaBool, BuyPanel, EmptyState, EvidenceChip, NeedMeter, QuickAddForm, WhyPanel } from 'src/ui/components';
 import { PriceSection } from 'src/ui/price-section';
 import { WelcomeState } from 'src/ui/screens/now-screen';
+import { NeedGauge, ProductAvatar } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
 
@@ -42,7 +51,7 @@ const ProductDetail = ({
         <EvidenceChip overview={entry} />
         {assessment.calibrationFactor !== null && (
           <span className="er-chip er-chip-muted" title={t('Adjusted using your earlier Empty / Still have it reports')}>
-            {t('Learned from your corrections')}
+            {t('Learns from your corrections')}
           </span>
         )}
       </div>
@@ -76,17 +85,19 @@ const ProductDetail = ({
           type="button"
           className="er-btn er-btn-small"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.markEmpty(entry), t('{name} marked empty', { name: product.name }))}
+          onClick={() => run(product.id, (actions) => actions.markEmpty(entry), t('{name} is out — added to your list', { name: product.name }))}
         >
-          {t('It’s empty')}
+          <IconAlertTriangle size={18} stroke={2} aria-hidden="true" />
+          {t('All out')}
         </button>
         <button
           type="button"
           className="er-btn er-btn-small"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.markInStock(entry), t('Noted: you still have {name}', { name: product.name }))}
+          onClick={() => run(product.id, (actions) => actions.markInStock(entry), t('Got it — {name} is still stocked', { name: product.name }))}
         >
-          {t('Still have it')}
+          <IconCircleCheck size={18} stroke={2} aria-hidden="true" />
+          {t('Still have some')}
         </button>
         <button
           type="button"
@@ -94,7 +105,8 @@ const ProductDetail = ({
           aria-expanded={ariaBool(isBuying)}
           onClick={() => setIsBuying((value) => !value)}
         >
-          {t('Bought')}
+          <IconShoppingBag size={18} stroke={2} aria-hidden="true" />
+          {t('Bought it')}
         </button>
         {entry.openItem === null && (
           <button
@@ -103,6 +115,7 @@ const ProductDetail = ({
             disabled={busy}
             onClick={() => run(product.id, (actions) => actions.addManually(entry), t('{name} added to your list', { name: product.name }))}
           >
+            <IconPlus size={18} stroke={2} aria-hidden="true" />
             {t('Add to list')}
           </button>
         )}
@@ -114,7 +127,7 @@ const ProductDetail = ({
           busy={busyKey === product.id}
           onCancel={() => setIsBuying(false)}
           onConfirm={(details) =>
-            run(product.id, (actions) => actions.markPurchased(entry.openItem, product, details), t('{name} bought', { name: product.name }))
+            run(product.id, (actions) => actions.markPurchased(entry.openItem, product, details), t('Nice — {name} is checked off', { name: product.name }))
           }
         />
       )}
@@ -144,9 +157,10 @@ const ProductDetail = ({
           type="button"
           className="er-btn er-btn-ghost er-btn-small er-btn-danger"
           disabled={busy}
-          onClick={() => run(product.id, (actions) => actions.archiveProduct(entry), t('{name} archived', { name: product.name }))}
+          onClick={() => run(product.id, (actions) => actions.archiveProduct(entry), t('{name} is no longer tracked', { name: product.name }))}
         >
-          {t('Archive product')}
+          <IconArchive size={18} stroke={2} aria-hidden="true" />
+          {t('Stop tracking')}
         </button>
       </div>
     </div>
@@ -165,24 +179,24 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
 
   return (
     <div className="er-stack">
-      <h2 className="er-visually-hidden">{t('Products')}</h2>
+      <h2 className="er-visually-hidden">{t('Pantry')}</h2>
       <QuickAddForm
         label={t('Find or add a product')}
-        placeholder={t('Find or add a product…')}
+        placeholder={t('Search or add a product…')}
         submitLabel={t('Add')}
         busy={busyKey !== null}
         value={query}
         onChange={setQuery}
         onSubmit={(value) =>
-          run('new-product', (actions) => actions.createProduct(value, snapshot?.products ?? []), t('Product saved'))
+          run('new-product', (actions) => actions.createProduct(value, snapshot?.products ?? []), t('Added to your pantry'))
         }
       />
 
       {overview.length === 0 ? (
         <WelcomeState household={household} />
       ) : visible.length === 0 ? (
-        <EmptyState title={t('No product with that name')}>
-          {t('Press “Add” to create “{name}”.', { name: query.trim() })}
+        <EmptyState title={t('Not in your pantry yet')}>
+          {t('Hit “Add” to start tracking “{name}”.', { name: query.trim() })}
         </EmptyState>
       ) : (
         <ul className="er-stack" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -199,18 +213,26 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
                   aria-controls={`er-product-${entry.product.id}`}
                   onClick={() => setExpandedId(isExpanded ? null : entry.product.id)}
                 >
-                  <span className="er-dot" data-tone={headline.tone} aria-hidden="true" />
+                  <ProductAvatar category={entry.product.category} size={40} />
                   <span>
                     <span className="er-name">{entry.product.name}</span>
                     <span className="er-product-meta" style={{ display: 'block' }}>
                       {headline.label}
-                      {entry.assessment.state !== 'UNKNOWN' && ` · ${formatPercent(entry.assessment.needScore)}`}
                       {entry.product.category && ` · ${categoryLabel(entry.product.category, lang)}`}
                       {entry.openItem && t(' · on your list')}
                     </span>
                   </span>
+                  <NeedGauge
+                    value={entry.assessment.needScore}
+                    tone={headline.tone}
+                    isEstimate={headline.isEstimate}
+                    size={44}
+                    label={t(headline.isEstimate ? 'Estimated need {percent}%' : 'Confirmed need {percent}%', {
+                      percent: Math.round(entry.assessment.needScore * 100),
+                    })}
+                  />
                   <span className="er-chevron" aria-hidden="true">
-                    {isExpanded ? '▴' : '▾'}
+                    {isExpanded ? <IconChevronUp size={18} aria-hidden="true" /> : <IconChevronDown size={18} aria-hidden="true" />}
                   </span>
                 </button>
                 {isExpanded && <ProductDetail entry={entry} household={household} />}

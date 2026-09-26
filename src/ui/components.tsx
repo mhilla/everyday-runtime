@@ -1,3 +1,4 @@
+import { IconInfoCircle, IconShoppingBag } from '@tabler/icons-react';
 import { useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 
@@ -10,6 +11,7 @@ import {
 import type { ProductOverview } from 'src/domain/shopping';
 import { renderMessage } from 'src/domain/messages';
 import type { NeedAssessment, Product } from 'src/domain/types';
+import { Icon, NeedGauge, ProductAvatar } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
 
 // Remote DOM serializes boolean attributes as empty strings, which screen
@@ -50,12 +52,12 @@ export const EvidenceChip = ({ overview }: { overview: ProductOverview }) => {
     <>
       {overview.openItem && <span className="er-chip er-chip-list">{t('On your list')}</span>}
       {headline.isEstimate ? (
-        <span className="er-chip er-chip-estimate" title={t('Estimated from past activity')}>
-          {t('Estimate')}
+        <span className="er-chip er-chip-estimate" title={t('Our best guess from your history')}>
+          {t('Best guess')}
         </span>
       ) : (
-        <span className="er-chip er-chip-confirmed" title={t('Based on something you reported')}>
-          {t('Confirmed')}
+        <span className="er-chip er-chip-confirmed" title={t('Based on something you told us')}>
+          {t('You told us')}
         </span>
       )}
     </>
@@ -88,7 +90,7 @@ export const WhyPanel = ({
       </ul>
       {describeNeed(assessment).isEstimate && (
         <p className="er-fine-print">
-          {t('This is an estimate from past activity, not a stock count. Tap “Still have it” or “Empty” to correct it.')}
+          {t('This is our best guess, not a stock count. Wrong? Tap “Still have some” or “All out” and it learns.')}
         </p>
       )}
     </div>
@@ -112,20 +114,22 @@ export const NeedCard = ({
 
   return (
     <article className="er-card" aria-busy={ariaBool(busy)} aria-label={product.name}>
-      <div className="er-row-top">
-        <div>
+      <div className="er-need-top">
+        <ProductAvatar category={product.category} />
+        <div className="er-need-text">
           <h3 className="er-name">{product.name}</h3>
           <p className={`er-headline er-tone-${headline.tone}`}>{headline.label}</p>
         </div>
-        <div>
-          <span className={`er-percent er-tone-${headline.tone}`}>
-            {formatPercent(assessment.needScore)}
-          </span>
-          <span className="er-percent-label">{t('likely needed')}</span>
-        </div>
+        <NeedGauge
+          value={assessment.needScore}
+          tone={headline.tone}
+          isEstimate={headline.isEstimate}
+          label={t(headline.isEstimate ? 'Estimated need {percent}%' : 'Confirmed need {percent}%', {
+            percent: Math.round(assessment.needScore * 100),
+          })}
+        />
       </div>
       <p className="er-reason">{renderMessage(assessment.reasonMessage, lang)}</p>
-      <NeedMeter assessment={assessment} />
       <div className="er-chips">
         <EvidenceChip overview={overview} />
       </div>
@@ -138,7 +142,8 @@ export const NeedCard = ({
           aria-controls={whyId}
           onClick={() => setShowWhy((value) => !value)}
         >
-          {showWhy ? t('Hide reason') : t('Why?')}
+          <Icon icon={IconInfoCircle} size={18} />
+          {showWhy ? t('Got it') : t('Why?')}
         </button>
       </div>
       {showWhy && <WhyPanel assessment={assessment} id={whyId} />}
@@ -327,6 +332,9 @@ export const EmptyState = ({
   actions?: ReactNode;
 }) => (
   <div className="er-card er-empty">
+    <span className="er-empty-icon" aria-hidden="true">
+      <IconShoppingBag size={28} stroke={1.75} aria-hidden="true" />
+    </span>
     <h2>{title}</h2>
     <p>{children}</p>
     {actions && <div className="er-actions">{actions}</div>}

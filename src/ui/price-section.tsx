@@ -40,10 +40,10 @@ const SOURCE_LABELS: Record<string, string> = {
 };
 
 const VERDICT_LABELS: Record<string, string> = {
-  GREAT: 'Great price',
-  GOOD: 'Good price',
-  NORMAL: 'Usual price',
-  EXPENSIVE: 'Expensive',
+  GREAT: 'Steal',
+  GOOD: 'Good deal',
+  NORMAL: 'Regular price',
+  EXPENSIVE: 'Pricey',
   UNKNOWN: 'Not enough data',
 };
 
@@ -173,7 +173,7 @@ export const PriceSection = ({
         </dl>
       ) : (
         <p className="er-reason">
-          {t('No prices yet. Add a price when you buy it or see it — after two prices the app can tell you whether something is a good deal.')}
+          {t('No prices yet. Log one when you buy or spot it — after two, we\'ll tell you whether it\'s a deal.')}
         </p>
       )}
 

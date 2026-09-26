@@ -48,6 +48,11 @@ const cases: [string, string, [string, number | null][], Partial<{ price: number
   ['What do we need?', 'ASK_NEEDS', []],
   ['Do we have coffee?', 'ASK_PRODUCT', [['Coffee', null]]],
   ['Is Volvic cheap right now?', 'ASK_PRICE', [['Volvic', null]]],
+  // app suggestion chips
+  ['Noch genug Kaffee?', 'ASK_PRODUCT', [['Kaffee', null]]],
+  ['Preis von Kaffee?', 'ASK_PRICE', [['Kaffee', null]]],
+  ['Enough coffee left?', 'ASK_PRODUCT', [['Coffee', null]]],
+  ['Price of coffee?', 'ASK_PRICE', [['Coffee', null]]],
 ];
 
 describe('parseCommand', () => {

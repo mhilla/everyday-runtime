@@ -133,6 +133,7 @@ const PATTERNS: Pattern[] = [
   { intent: 'ASK_PRODUCT', lang: 'de', match: re(/^(?:haben wir|ist|sind)\s+(?:noch\s+)?(?:genug\s+)?(.+?)\s+(?:da|im haus|vorrätig|übrig)$/i) },
   { intent: 'ASK_PRODUCT', lang: 'de', match: re(/^(?:haben wir noch|haben wir genug|brauchen wir|müssen wir)\s+(.+?)(?:\s+kaufen)?$/i) },
   { intent: 'ASK_PRODUCT', lang: 'de', match: re(/^noch genug\s+(.+)$/i) },
+  { intent: 'ASK_PRODUCT', lang: 'en', match: re(/^enough\s+(.+?)\s+left$/i) },
   { intent: 'ASK_PRODUCT', lang: 'en', match: re(/^(?:do we (?:still )?have(?: enough)?|do we need|is there (?:still )?(?:enough )?|are there (?:still )?(?:enough )?)\s*(.+?)(?:\s+left)?$/i) },
   { intent: 'EMPTY', lang: 'de', match: re(/^(?:kein|keine|keinen)\s+(.+?)\s+mehr(?:\s+da)?$/i) },
   { intent: 'EMPTY', lang: 'de', match: re(/^(.+?)\s+(?:ist|sind)\s+(?:leer|alle|aus|aufgebraucht|verbraucht)$/i) },

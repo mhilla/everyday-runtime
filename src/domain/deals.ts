@@ -68,6 +68,8 @@ export type Deal = {
   judgement: PriceJudgement;
   plan: StockUpPlan | null;
   alertTriggered: boolean;
+  // The usual price per unit this offer is compared with, if known.
+  usualUnitPrice: number | null;
 };
 
 const daysUntilRunOut = (overview: ProductOverview, now: Date): number | null => {
@@ -131,6 +133,7 @@ export const selectDeals = (
       point: best,
       judgement,
       alertTriggered,
+      usualUnitPrice: reference.typicalUnitPrice,
       plan: planStockUp({
         ratePerDay: overview.assessment.consumptionRatePerDay,
         usualDurationDays: overview.assessment.expectedDurationDays,

@@ -1,3 +1,4 @@
+import { IconAlertTriangle, IconCircleCheck, IconMinus, IconPlus, IconShoppingBag } from '@tabler/icons-react';
 import { observationLabel } from 'src/domain/presentation';
 import type { NeedTone } from 'src/domain/presentation';
 import type { ObservationSource, ObservationType } from 'src/domain/types';
@@ -15,6 +16,14 @@ const TYPE_TONE: Record<ObservationType, NeedTone> = {
   SEEN_IN_STOCK: 'confirmed',
   MANUAL_NEED: 'high',
 };
+
+const TYPE_ICON = {
+  PURCHASED: IconShoppingBag,
+  CONSUMED: IconMinus,
+  EMPTY: IconAlertTriangle,
+  SEEN_IN_STOCK: IconCircleCheck,
+  MANUAL_NEED: IconPlus,
+} as const;
 
 const SOURCE_LABELS: Record<ObservationSource, string> = {
   APP: 'In the app',
@@ -56,8 +65,8 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
 
   if (entries.length === 0) {
     return (
-      <EmptyState title={t('No activity yet')}>
-        {t('Everything you record — bought, empty, still there, needed — shows up here. This is exactly the evidence the suggestions are based on.')}
+      <EmptyState title={t('Nothing here yet')}>
+        {t('Everything you log — bought, all out, still there — shows up here. It\'s exactly what the suggestions are built on.')}
       </EmptyState>
     );
   }
@@ -78,7 +87,7 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
   return (
     <div className="er-stack">
       <p className="er-reason" style={{ margin: 0 }}>
-        {t('Everything the suggestions are based on, newest first.')}
+        {t('Everything the suggestions are built on — newest first.')}
       </p>
       {groups.map((group) => (
         <section key={group.label} aria-label={group.label}>
@@ -90,7 +99,13 @@ export const ActivityScreen = ({ household }: { household: Household }) => {
 
               return (
                 <li key={entry.id}>
-                  <span className="er-dot" data-tone={TYPE_TONE[entry.type]} aria-hidden="true" />
+                  <span className="er-event-icon" data-tone={TYPE_TONE[entry.type]} aria-hidden="true">
+                    {(() => {
+                      const EventIcon = TYPE_ICON[entry.type];
+
+                      return <EventIcon size={18} stroke={1.75} aria-hidden="true" />;
+                    })()}
+                  </span>
                   <div>
                     <strong>{product?.name ?? t('Deleted product')}</strong> —{' '}
                     {observationLabel(entry.type, lang).toLocaleLowerCase(locale)}
