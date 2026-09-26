@@ -41,7 +41,7 @@ describe('AI tools', () => {
 
     expect(result).toEqual({
       ok: true,
-      done: [`Notiert: 2 ${name} gekauft für 9,98 € bei Discounter.`],
+      done: [`Top — 2 ${name} gekauft für 9,98 € bei Discounter.`],
     });
   });
 
@@ -79,7 +79,7 @@ describe('AI tools', () => {
       intent: 'IN_STOCK',
       language: 'de',
       changed: true,
-      reply: `Notiert: ${name} ist noch da.`,
+      reply: `Alles klar — ${name} ist noch da.`,
     });
   });
 

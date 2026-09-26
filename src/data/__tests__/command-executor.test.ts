@@ -64,7 +64,7 @@ describe('executeCommand', () => {
     expect(result.changed).toBe(false);
     expect(calls).toEqual([]);
     expect(result.text).toBe(
-      '2 Sachen sind wahrscheinlich nötig:\nKaffee — Leer (95 %), steht auf der Liste\nMilch — Wahrscheinlich knapp (86 %)',
+      'Das braucht ihr wahrscheinlich (2):\nKaffee — Leer (95 %), steht auf der Liste\nMilch — Wahrscheinlich knapp (86 %)',
     );
   });
 
@@ -92,7 +92,7 @@ describe('executeCommand', () => {
     const result = await talk('Milch und Butter sind leer');
 
     expect(result.text).toBe(
-      'Notiert: Milch ist leer — steht jetzt auf der Liste.\nNotiert: Butter ist leer — steht jetzt auf der Liste.',
+      'Alles klar — Milch ist alle und steht auf der Liste.\nAlles klar — Butter ist alle und steht auf der Liste.',
     );
     expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
       'POST /rest/observations',
@@ -107,7 +107,7 @@ describe('executeCommand', () => {
     const { talk, calls } = setup();
     const result = await talk('Hab 2 Kaffee für 9,98 gekauft bei Discounter');
 
-    expect(result.text).toBe('Notiert: 2 Pck. Kaffee gekauft für 9,98 € bei Discounter.');
+    expect(result.text).toBe('Top — 2 Pck. Kaffee gekauft für 9,98 € bei Discounter.');
     expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
       expect.stringMatching(/^PATCH \/rest\/shoppingItems\//),
       'POST /rest/purchases',
@@ -133,6 +133,6 @@ describe('executeCommand', () => {
   it('explains what it understands when it does not', async () => {
     const { talk } = setup();
 
-    expect((await talk('Tell me a joke')).text).toMatch(/^Sorry, I did not get that/);
+    expect((await talk('Tell me a joke')).text).toMatch(/^Hmm, didn’t catch that/);
   });
 });

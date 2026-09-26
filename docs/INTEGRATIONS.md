@@ -46,7 +46,7 @@ curl -X POST https://your-twenty.example.com/s/talk \
   -H "Content-Type: application/json" \
   -d '{"text": "Hab 2 Milch für 1,98 gekauft beim Discounter"}'
 # → {"ok":true,"intent":"BOUGHT","language":"de","changed":true,
-#    "reply":"Notiert: 2 l Milch gekauft für 1,98 € bei Discounter."}
+#    "reply":"Top — 2 l Milch gekauft für 1,98 € bei Discounter."}
 ```
 
 `GET /s/needs` returns what is probably needed as JSON (for dashboards).
