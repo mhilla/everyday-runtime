@@ -193,9 +193,11 @@ describe('household actions', () => {
       'Pasta',
       'Apples',
     ]);
-    expect(batch?.body).toHaveLength(17);
+    const observations = (batch?.body ?? []) as { productId: string; source: string }[];
+
+    expect(observations).toHaveLength(17);
     expect(
-      (batch?.body as { productId: string; source: string }[]).every(
+      observations.every(
         (body) => body.source === 'DEMO' && body.productId !== undefined,
       ),
     ).toBe(true);

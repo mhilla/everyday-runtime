@@ -80,14 +80,19 @@ const DEMO_ITEMS: DemoShoppingItem[] = [
   },
 ];
 
+// A few hours of deterministic jitter so the activity feed does not show
+// every event at the same minute. Always less than a day, so the stories
+// above keep their day counts.
+const HOURS_EARLIER = [2, 5, 1, 3, 4];
+
 // Deterministic for a given `now`: the same household every time, always
 // expressed relative to the moment it is loaded so the story stays current.
 export const buildDemoHousehold = (now: Date): DemoHousehold => ({
   products: DEMO_PRODUCTS,
-  observations: DEMO_EVENTS.map(([productKey, type, daysAgo, quantity, note]) => ({
+  observations: DEMO_EVENTS.map(([productKey, type, daysAgo, quantity, note], index) => ({
     productKey,
     type,
-    observedAt: addDays(now, -daysAgo),
+    observedAt: addDays(now, -daysAgo - HOURS_EARLIER[index % HOURS_EARLIER.length] / 24),
     quantity,
     note,
   })),
