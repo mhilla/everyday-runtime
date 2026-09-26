@@ -6,6 +6,29 @@ project uses [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+### Added
+
+- **German user interface** (#11): all screens, explanations, prices and questions
+  in German or English; follows the Twenty user language, with a DE/EN switch. The
+  demo household is German when the app is.
+- **Active questions** (#28): “Still enough coffee?” — the app asks where one answer
+  helps most (at most three, never nagging).
+- **Price radar** (#29): price history per product, usual price and recent low,
+  great/good/usual/expensive judgement while typing a price, price alerts,
+  stock-up recommendation with estimated saving, “Good prices for you” on Now.
+- **Open Food Facts / Open Prices** (#30): product data and community prices by
+  barcode, on request, via `GET /s/community-prices`; importable as price
+  observations.
+- New `PriceObservation` object; products get shelf life and a price alert.
+- Vision (English and German), re-planned roadmap with milestones.
+
+### Changed
+
+- The domain returns translatable messages next to the English texts; the English
+  output and `GET /s/needs` are unchanged.
+- Privacy documentation describes the one optional outside call (barcode to Open
+  Food Facts).
+
 ## 0.2.0 — 2026-09-26
 
 ### Added

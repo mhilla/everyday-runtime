@@ -29,9 +29,19 @@ the same workspace.
 
 ## What is sent elsewhere
 
-Nothing. The inference engine runs locally — in the browser for the UI and in a
-Twenty logic function for `GET /s/needs`. There are no calls to AI providers or
-other third-party services.
+By default, nothing. The inference engine runs locally — in the browser for the UI
+and in Twenty logic functions. There are no calls to AI providers and no telemetry.
+
+One feature contacts a third party, **only when you press it**: *Community prices*
+(product details, v0.3) sends the product's **barcode** from your Twenty server to
+[Open Food Facts](https://world.openfoodfacts.org/) and
+[Open Prices](https://prices.openfoodfacts.org/) to read public product data and
+community prices. No household data, product history, names or account data are
+sent. Prices you choose to import are stored in your workspace as “community”
+price observations.
+
+Price observations you enter yourself stay in your workspace; contributing them
+back to Open Prices is planned as a separate, explicit opt-in (not built yet).
 
 ## Access
 

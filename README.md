@@ -69,6 +69,11 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
   *Bought*, *Add to list*, *Archive*.
 - **Activity** — every observation, grouped by day. This is exactly the evidence the
   engine uses.
+- **Active questions** — “Still enough coffee?”: one tap where it helps most.
+- **Price radar** — usual price, recent low, “great / good / usual / expensive”
+  while you type a price, price alerts and a stock-up recommendation with the
+  estimated saving; community prices from Open Food Facts by barcode, on request.
+- **Deutsch und Englisch** — the whole app, including every explanation.
 - **Demo household** — five products (Milk, Coffee, Paper towels, Pasta, Apples)
   that show every rule of the engine within a minute.
 - **`GET /s/needs`** — an authenticated JSON endpoint with the same results, for
@@ -76,6 +81,10 @@ Direct reports are shown as **Confirmed**; everything inferred is visibly an
 - Mobile-friendly layout, light and dark mode, real buttons with labels and large tap targets (see the known accessibility limitation in [CHANGELOG.md](CHANGELOG.md)).
 
 ## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/now-desktop-de.png" alt="German Now screen: good prices for you (coffee 4,99 € instead of about 6,79 €, buy 4 packs, saves about 7,20 €), quick questions and probably needed products" width="640">
+</p>
 
 | Now (phone) | Shopping list (phone) | Product details (dark) |
 | --- | --- | --- |
@@ -157,9 +166,10 @@ the app locally.
 ## Self-hosting and privacy
 
 - All data lives in **your** Twenty workspace database. Everyday Runtime has no
-  backend of its own and sends nothing anywhere else.
-- No AI provider, no telemetry, no external API calls. The engine is plain
-  arithmetic you can read and test.
+  backend of its own and no telemetry.
+- No AI provider. The engine is plain arithmetic you can read and test.
+- The only outside call is **optional and on request**: “Community prices” sends a
+  product's barcode (nothing else) to Open Food Facts / Open Prices.
 - Access follows Twenty's permissions: the UI and the `/s/needs` route act as the
   signed-in person.
 

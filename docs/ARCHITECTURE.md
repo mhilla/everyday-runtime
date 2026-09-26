@@ -40,6 +40,9 @@ backend could reuse it unchanged).
 | **Observation** | One piece of evidence | `product`, `observationType` (PURCHASED, CONSUMED, EMPTY, SEEN_IN_STOCK, MANUAL_NEED), `quantity?`, `observedAt`, `source`, `note?` |
 | **ShoppingItem** | An entry on the list | `product`, `requestedQuantity`, `status` (OPEN, PURCHASED, DISMISSED), `origin` (MANUAL, INFERRED), `confidence?`, `explanation`, `purchasedAt?`, `dismissedAt?` |
 | **Purchase** | What was actually bought | `product`, `quantity`, `purchasedAt`, `price?` (currency), `store?` |
+| **PriceObservation** (v0.3) | A price seen somewhere | `product`, `price` (currency), `packQuantity` (in the product unit), `store?`, `observedAt`, `source` (MANUAL, RECEIPT, OPEN_PRICES) |
+
+Products also have `shelfLifeDays?` and `priceAlertUnitPrice?` (v0.3).
 
 Notes:
 
@@ -123,6 +126,49 @@ Rules, applied in this order (all numbers live in `INFERENCE_CONFIG`):
 Every rule has unit tests in `src/domain/__tests__/inference.test.ts`, including
 order-independence and bounds checks.
 
+## Active questions (v0.3)
+
+`selectQuestions` in `src/domain/questions.ts` picks at most three products worth one
+tap (“Still enough coffee?”): conflicts first, then uncertain estimates (need
+0.35–0.9, confidence ≤ 0.8) ordered by closeness to the 0.6 threshold and lack of
+confidence. Skipped: products on the list, anything observed in the last 2 days, and
+products the person answered “not now” for (kept 3 days in front-component storage).
+Answers are ordinary SEEN_IN_STOCK / EMPTY observations.
+
+## Price radar (v0.3)
+
+`src/domain/prices.ts` and `src/domain/deals.ts`:
+
+- **Price points**: purchases with a price and price observations, normalised to a
+  price per product unit (price ÷ quantity or pack size).
+- **Usual price**: median of the last 180 days; **recent low**: lowest of 90 days.
+- **Judgement** of a price against the *other* prices: *great* (≥ 20 % below usual,
+  or ≥ 10 % below and the lowest in 90 days), *good* (≥ 10 % below), *usual*,
+  *expensive* (≥ 10 % above), or *not enough data* (fewer than 2 prices).
+- **Stock-up plan**: cover one usual cycle at a usual price, two when good, four when
+  great — limited by shelf life and storage (default 60 days), rounded up to whole
+  packs, with the saving against the usual price.
+- **Deals on Now**: seen prices from the last 7 days that are good/great for products
+  needed soon (need ≥ 0.4 or run-out within 21 days), or that satisfy a price alert.
+
+## Integrations (v0.3)
+
+`src/integrations/open-food-facts.ts` parses Open Food Facts product data and Open
+Prices community prices (pure, unit-tested) and converts pack sizes to the product
+unit (ml→l, g→kg). The `GET /s/community-prices?barcode=&unit=` logic function calls
+both APIs server-side with an identifying user agent, only when a person asks.
+
+## Languages (v0.3)
+
+The domain never returns finished text only. Every reason, factor and price or
+question explanation is also a structured message (`src/domain/messages.ts`: a key
+plus values such as “days ago”, intervals, amounts, money). `renderMessage` turns it
+into English or German with correct plurals and decimal commas; the English
+rendering is exactly the former text, so `reason` / `factors` and `GET /s/needs` are
+unchanged. UI text uses gettext-style keys in `src/ui/i18n.tsx`; a unit test fails
+if any `t('…')` text lacks a German translation. The language follows the Twenty
+user's locale, with a DE/EN switch in the app.
+
 ## Front component constraints
 
 Twenty renders front components from a Web Worker via Remote DOM. Things that
@@ -139,6 +185,8 @@ shaped the UI code:
 - The page layout widget uses `heightBehavior: TAB_VIEWPORT` and no `position`;
   widget order is array order (the `position` field is deprecated in twenty-sdk
   2.42).
+- Controlled inputs are synchronised between the sandbox and the page
+  asynchronously; automated tests type with a small per-key delay like a person.
 
 ## Testing
 

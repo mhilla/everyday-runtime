@@ -45,7 +45,9 @@ require an already compromised Twenty server or administrator account.
 
 ## Security notes for self-hosters
 
-- The app has no backend of its own and makes no outbound network calls.
+- The app has no backend of its own. The only outbound call is the optional
+  `GET /s/community-prices` route, which sends a barcode to Open Food Facts /
+  Open Prices when a person asks for community prices.
 - `GET /s/needs` requires authentication and runs with the caller's permissions.
 - The API key in `vitest.config.ts` is Twenty's public **development seed key** for
   the local Docker image. It is only valid against a local development server;

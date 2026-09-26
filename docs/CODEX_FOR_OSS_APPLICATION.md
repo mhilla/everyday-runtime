@@ -25,9 +25,9 @@ corrections. All data stays in the household's own Twenty workspace.
 
 ## Why this repository matters
 
-<!-- max. 500 characters; currently 394 -->
+<!-- max. 500 characters; currently 431 -->
 
-Self-hosted, privacy-first shopping assistant for households. A deterministic, unit-tested engine estimates what is probably needed from partial observations, with confidence and a plain-language reason, and never fakes exact inventory. Runs as a Twenty app with no AI or third-party calls; GET /s/needs offers an integration surface. Maintained in public: releases, CI, CodeQL, triaged issues.
+Self-hosted, privacy-first shopping assistant for households. A deterministic, unit-tested engine estimates what is probably needed from partial observations, with confidence and a plain-language reason, and never fakes exact inventory. Runs as a Twenty app without AI or telemetry; open data (Open Food Facts) only on request; GET /s/needs offers an integration surface. Maintained in public: releases, CI, CodeQL, triaged issues.
 
 ## API credit usage
 

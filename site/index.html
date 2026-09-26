@@ -45,7 +45,7 @@
       "@type": "FAQPage",
       "mainEntity": [
         { "@type": "Question", "name": "Is Everyday Runtime an inventory app?", "acceptedAnswer": { "@type": "Answer", "text": "No. It never claims to know exact stock. It estimates how likely a product is needed from whatever you record — bought, used some, empty, still have it — and explains each estimate." } },
-        { "@type": "Question", "name": "Does it need an AI service or an API key?", "acceptedAnswer": { "@type": "Answer", "text": "No. The engine is deterministic TypeScript with unit tests. It makes no calls to AI providers or other third parties." } },
+        { "@type": "Question", "name": "Does it need an AI service or an API key?", "acceptedAnswer": { "@type": "Answer", "text": "No. The engine is deterministic TypeScript with unit tests. It makes no calls to AI providers. The only outside call is optional: community prices by barcode from Open Food Facts." } },
         { "@type": "Question", "name": "Where is my data stored?", "acceptedAnswer": { "@type": "Answer", "text": "In your own self-hosted Twenty workspace. Everyday Runtime has no backend of its own and no telemetry." } },
         { "@type": "Question", "name": "How is it different from Grocy?", "acceptedAnswer": { "@type": "Answer", "text": "Grocy is a full household inventory system that works best when stock is tracked precisely. Everyday Runtime targets households that will not track everything: it works with partial information and says how sure it is." } },
         { "@type": "Question", "name": "Does it work with Home Assistant?", "acceptedAnswer": { "@type": "Answer", "text": "Not yet. An authenticated JSON endpoint (GET /s/needs) exists today; a Home Assistant integration is on the roadmap." } }
@@ -113,7 +113,7 @@
       <div class="card"><h3>Explains every suggestion</h3><p>Each estimate has a percentage, a plain headline and a “Why?”: purchases, rhythm, expected run-out, conflicts, stale data.</p></div>
       <div class="card"><h3>Facts vs. estimates</h3><p>What someone reported is “Confirmed”; what the app inferred is visibly an “Estimate”. One tap corrects it.</p></div>
       <div class="card"><h3>Learns from you</h3><p>Uses purchase quantities (3&nbsp;l last longer than 1&nbsp;l) and earlier “empty” / “still have it” reports — bounded and explained.</p></div>
-      <div class="card"><h3>Private by design</h3><p>Runs on your own Twenty server. No backend of its own, no telemetry, no AI service, no third-party calls.</p></div>
+      <div class="card"><h3>Private by design</h3><p>Runs on your own Twenty server. No backend of its own, no telemetry, no AI service. Community prices are fetched only when you ask, by barcode.</p></div>
       <div class="card"><h3>Deterministic engine</h3><p>Plain TypeScript with unit tests: same observations, same moment, same answer. Every rule is documented.</p></div>
       <div class="card"><h3>Integration-ready</h3><p>An authenticated JSON endpoint (<code>GET /s/needs</code>) returns the same results for dashboards and automations.</p></div>
     </div>
@@ -155,7 +155,7 @@ yarn twenty apply</code></pre>
   <section>
     <h2>Questions</h2>
     <details><summary>Is it an inventory app?</summary><p>No. It never claims to know exact stock. It estimates how likely a product is needed from whatever you record and explains each estimate.</p></details>
-    <details><summary>Does it need an AI service or an API key?</summary><p>No. The engine is deterministic TypeScript with unit tests and makes no calls to AI providers or other third parties.</p></details>
+    <details><summary>Does it need an AI service or an API key?</summary><p>No. The engine is deterministic TypeScript with unit tests and makes no calls to AI providers. The only outside call is optional: community prices by barcode from Open Food Facts.</p></details>
     <details><summary>Where is my data stored?</summary><p>In your own self-hosted Twenty workspace. See <a href="https://github.com/micha16372/everyday-runtime/blob/main/docs/PRIVACY.md">PRIVACY.md</a>.</p></details>
     <details><summary>How is it different from Grocy?</summary><p>Grocy is a full household inventory system that works best when stock is tracked precisely. Everyday Runtime targets households that will not track everything: it works with partial information and says how sure it is.</p></details>
     <details><summary>Does it work with Home Assistant?</summary><p>Not yet. A JSON endpoint exists today; a Home Assistant integration is on the <a href="https://github.com/micha16372/everyday-runtime/blob/main/ROADMAP.md">roadmap</a> — <a href="https://github.com/micha16372/everyday-runtime/discussions/22">tell us what you would use</a>.</p></details>
