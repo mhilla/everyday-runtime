@@ -167,8 +167,13 @@ Full list: [ROADMAP.md](ROADMAP.md).
 ## Contributing
 
 Contributions are welcome — especially real-world feedback on suggestions that
-felt wrong. Start with [CONTRIBUTING.md](CONTRIBUTING.md). Security issues:
-[SECURITY.md](SECURITY.md). Notable changes: [CHANGELOG.md](CHANGELOG.md).
+felt wrong. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the issues labelled
+[`good first issue`](https://github.com/mhilla/everyday-runtime/labels/good%20first%20issue).
+
+- Questions and ideas: [Discussions](https://github.com/mhilla/everyday-runtime/discussions) · help: [SUPPORT.md](SUPPORT.md)
+- Security issues: [SECURITY.md](SECURITY.md) (private reporting only)
+- Community rules: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · maintainers: [MAINTAINERS.md](MAINTAINERS.md)
+- Releases: [GitHub releases](https://github.com/mhilla/everyday-runtime/releases) · notable changes: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 

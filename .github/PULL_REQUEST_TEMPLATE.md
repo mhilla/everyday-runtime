@@ -1,6 +1,8 @@
 ## What and why
 
-<!-- What does this change, and which problem does it solve? Link issues with "Closes #123". -->
+<!-- What does this change, and which problem does it solve? -->
+
+Closes #
 
 ## How it was tested
 
@@ -16,7 +18,9 @@
 - [ ] Engine changes have tests and are explained in `docs/ARCHITECTURE.md`
 - [ ] Estimates stay visibly marked; no false precision
 - [ ] New Twenty entities use new, valid UUID v4 identifiers
-- [ ] `CHANGELOG.md` updated for user-visible changes
+- [ ] `CHANGELOG.md` updated under "Unreleased" for user-visible changes
+- [ ] Docs updated (README / ARCHITECTURE / SETUP) where behaviour or setup changed
+- [ ] No secrets, personal data or real household data in code, tests or screenshots
 
 ## Screenshots
 
