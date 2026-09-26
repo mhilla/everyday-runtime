@@ -75,25 +75,37 @@ Keep the claims as they are — they are all verifiable in the repository.
 
 ## 4. Twenty community
 
-**Title:** Built with the Twenty app SDK: Everyday Runtime (self-hosted shopping assistant)
+Where: https://github.com/twentyhq/twenty/discussions/new?category=general
 
-> Hi Twenty team and community,
->
-> I built an open-source app on `twenty-sdk` 2.42: four custom objects, one
-> full-page front component and a logic-function route. It's a household shopping
-> assistant — a bit outside the CRM use case, which made it a good test of the app
-> platform.
->
-> Things I learned that might help other app authors (details in
-> [ARCHITECTURE.md](https://github.com/micha16372/everyday-runtime/blob/main/docs/ARCHITECTURE.md)):
-> `type` is a reserved field name, boolean ARIA attributes need string values in
-> front components, `scrollTop` is a no-op so I re-key the scroll container, and the
-> widget wrapper carries `aria-disabled="true"`
-> ([#12](https://github.com/micha16372/everyday-runtime/issues/12)).
->
-> Feedback on how I used the SDK is very welcome — and I'm **looking for real-world
-> feedback** from anyone who tries it.
-> https://github.com/micha16372/everyday-runtime
+**Title:** Built with the Twenty app SDK: Everyday Runtime, a self-hosted shopping assistant (AI tools, MCP, workflow actions)
+
+````markdown
+Hi Twenty team and community,
+
+I built an open-source app on `twenty-sdk` 2.42 that is a bit outside the CRM use case: **Everyday Runtime**, a self-hosted household shopping assistant (MIT).
+
+<img src="https://raw.githubusercontent.com/micha16372/everyday-runtime/main/docs/screenshots/now-desktop.png" alt="Everyday Runtime inside Twenty" width="600">
+
+**What it uses from the platform**
+- 5 custom objects (products, observations, shopping items, purchases, prices) and one full-page front component
+- Logic functions as **AI tools**: they show up in Twenty's AI chat and in the built-in **MCP server** (`app_everyday_needs`, `…_product`, `…_update`), so Claude, ChatGPT or Cursor can read and update the list
+- The same functions as **workflow actions**, plus HTTP routes (`POST /s/talk`: "Milch ist leer" in, answer out) for phone shortcuts and Home Assistant
+- A skill for the AI chat. A deterministic engine decides what is "probably needed", with a confidence and a reason. The model only talks, so small models are enough.
+
+**Things I learned that might help other app authors** (details in [ARCHITECTURE.md](https://github.com/micha16372/everyday-runtime/blob/main/docs/ARCHITECTURE.md))
+- `type` is a reserved field name
+- in front components, boolean ARIA attributes need string values (`'true'`/`'false'`)
+- `scrollTop` is a no-op, so I re-key the scroll container to reset it
+- CSS is injected unscoped: prefix classes and use `:where()` resets and `@container` queries
+- the widget wrapper carries `aria-disabled="true"`, which screen readers announce ([#12](https://github.com/micha16372/everyday-runtime/issues/12))
+- `RestApiClient` keeps typechecking independent of a running server
+
+Feedback on how I used the SDK is very welcome. I'm also **looking for people who try it in a real household** (English and German UI).
+
+Repo: https://github.com/micha16372/everyday-runtime · npm: `everyday-runtime`
+
+_(Posted by @micha16372 with the help of an AI assistant.)_
+````
 
 ---
 
