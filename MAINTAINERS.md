@@ -2,7 +2,7 @@
 
 | Role | GitHub |
 | --- | --- |
-| Primary maintainer | [@mhilla](https://github.com/mhilla) |
+| Primary maintainer | [@micha16372](https://github.com/micha16372) |
 
 The primary maintainer reviews and merges pull requests, triages issues, cuts
 releases and handles security reports.

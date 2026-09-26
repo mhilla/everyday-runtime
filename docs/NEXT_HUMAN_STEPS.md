@@ -5,7 +5,7 @@ Things only a person can do. Everything technical is in place.
 1.
 WHAT: Get the first real households to try it
 WHERE: Messenger / email to friends or family who have Docker (or a computer you can set up for them)
-ACTION: Send them this link and ask for 10 minutes: https://github.com/mhilla/everyday-runtime/blob/main/DEMO.md — ask them to reply in https://github.com/mhilla/everyday-runtime/discussions/19
+ACTION: Send them this link and ask for 10 minutes: https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md — ask them to reply in https://github.com/micha16372/everyday-runtime/discussions/19
 
 2.
 WHAT: Post the r/selfhosted announcement
@@ -14,12 +14,12 @@ ACTION: Copy text 2 from docs/OUTREACH.md, post it, and answer comments yourself
 
 3.
 WHAT: Support the first external contributor
-WHERE: https://github.com/mhilla/everyday-runtime/issues/10 and /issues/12 (@Surendran-7)
+WHERE: https://github.com/micha16372/everyday-runtime/issues/10 and /issues/12 (@Surendran-7)
 ACTION: When a pull request arrives, open it and ask the maintainer assistant to review it — reply within a few days
 
 4.
 WHAT: Keep maintaining for a few weeks
-WHERE: https://github.com/mhilla/everyday-runtime/pulls and /issues
+WHERE: https://github.com/micha16372/everyday-runtime/pulls and /issues
 ACTION: Once a week: merge or answer Dependabot PRs and new issues; ship v0.3.0 when feedback leads to real changes
 
 5.

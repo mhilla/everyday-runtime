@@ -18,7 +18,7 @@ Keep the claims as they are — they are all verifiable in the repository.
 >
 > It’s early and I’m **looking for real-world feedback**: does setup work, do the
 > suggestions make sense for your household?
-> https://github.com/mhilla/everyday-runtime
+> https://github.com/micha16372/everyday-runtime
 
 ---
 
@@ -41,12 +41,12 @@ Keep the claims as they are — they are all verifiable in the repository.
 >
 > **State:** v0.2.0, MIT, early. Setup is `git clone`, `yarn install`,
 > `yarn twenty docker:start`, `yarn twenty apply`; a demo household takes one click
-> ([DEMO.md](https://github.com/mhilla/everyday-runtime/blob/main/DEMO.md)).
+> ([DEMO.md](https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md)).
 >
 > **What I'm looking for:** real-world feedback — where setup breaks, which
 > suggestions feel wrong, what would make it useful weekly.
 >
-> Repo: https://github.com/mhilla/everyday-runtime
+> Repo: https://github.com/micha16372/everyday-runtime
 
 ---
 
@@ -69,7 +69,7 @@ Keep the claims as they are — they are all verifiable in the repository.
 > - Which triggers would you want (e.g. notify when leaving work)?
 >
 > It's early (v0.2.0) and I'm **looking for real-world feedback**.
-> https://github.com/mhilla/everyday-runtime
+> https://github.com/micha16372/everyday-runtime
 
 ---
 
@@ -85,15 +85,15 @@ Keep the claims as they are — they are all verifiable in the repository.
 > platform.
 >
 > Things I learned that might help other app authors (details in
-> [ARCHITECTURE.md](https://github.com/mhilla/everyday-runtime/blob/main/docs/ARCHITECTURE.md)):
+> [ARCHITECTURE.md](https://github.com/micha16372/everyday-runtime/blob/main/docs/ARCHITECTURE.md)):
 > `type` is a reserved field name, boolean ARIA attributes need string values in
 > front components, `scrollTop` is a no-op so I re-key the scroll container, and the
 > widget wrapper carries `aria-disabled="true"`
-> ([#12](https://github.com/mhilla/everyday-runtime/issues/12)).
+> ([#12](https://github.com/micha16372/everyday-runtime/issues/12)).
 >
 > Feedback on how I used the SDK is very welcome — and I'm **looking for real-world
 > feedback** from anyone who tries it.
-> https://github.com/mhilla/everyday-runtime
+> https://github.com/micha16372/everyday-runtime
 
 ---
 
@@ -106,10 +106,10 @@ Keep the claims as they are — they are all verifiable in the repository.
 > your data stays with you.
 >
 > What you'd do:
-> 1. Install it with the [three-minute guide](https://github.com/mhilla/everyday-runtime/blob/main/DEMO.md) (needs Docker).
+> 1. Install it with the [three-minute guide](https://github.com/micha16372/everyday-runtime/blob/main/DEMO.md) (needs Docker).
 > 2. For two weeks, tap “bought”, “empty” or “still have it” when you notice
 >    something — no need to be complete.
-> 3. Tell me in [this discussion](https://github.com/mhilla/everyday-runtime/discussions/19)
+> 3. Tell me in [this discussion](https://github.com/micha16372/everyday-runtime/discussions/19)
 >    or via the “Suggestion felt wrong” issue template what worked and what didn't.
 >
 > Please don't share personal details publicly. I'll read everything and credit

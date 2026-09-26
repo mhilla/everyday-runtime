@@ -1,10 +1,10 @@
 blank_issues_enabled: true
 contact_links:
   - name: Questions and ideas
-    url: https://github.com/mhilla/everyday-runtime/discussions
+    url: https://github.com/micha16372/everyday-runtime/discussions
     about: Ask how something works or share how you use Everyday Runtime.
   - name: Security vulnerability
-    url: https://github.com/mhilla/everyday-runtime/security/advisories/new
+    url: https://github.com/micha16372/everyday-runtime/security/advisories/new
     about: Please report security issues privately, not as a public issue.
   - name: Twenty platform questions
     url: https://docs.twenty.com/developers/extend/apps/getting-started/quick-start

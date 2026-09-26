@@ -11,7 +11,7 @@ Please **do not** open a public issue for security problems.
 
 Use GitHub's private vulnerability reporting instead:
 **Security → Report a vulnerability** on
-<https://github.com/mhilla/everyday-runtime/security/advisories/new>.
+<https://github.com/micha16372/everyday-runtime/security/advisories/new>.
 
 Please include:
 

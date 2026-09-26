@@ -2,7 +2,7 @@
 
 **An open-source, self-hosted shopping assistant that learns what a household probably needs — without requiring perfect inventory tracking.**
 
-[![CI](https://github.com/mhilla/everyday-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/mhilla/everyday-runtime/actions/workflows/ci.yml)
+[![CI](https://github.com/micha16372/everyday-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/micha16372/everyday-runtime/actions/workflows/ci.yml)
 
 <p align="center">
   <img src="docs/screenshots/now-desktop.png" alt="The Now screen: 4 things probably needed — Apples (empty, confirmed, 95%), Milk (probably low, 89%, last purchased 6 days ago, usual interval about 5 days), Paper towels and Coffee" width="720">
@@ -115,7 +115,7 @@ and [docs/PRODUCT_PRINCIPLES.md](docs/PRODUCT_PRINCIPLES.md).
 Requirements: Node.js 24 (see `.nvmrc`), Yarn 4 (via Corepack), Docker.
 
 ```bash
-git clone https://github.com/mhilla/everyday-runtime.git
+git clone https://github.com/micha16372/everyday-runtime.git
 cd everyday-runtime
 corepack enable
 yarn install
@@ -172,12 +172,12 @@ Full list: [ROADMAP.md](ROADMAP.md).
 
 Contributions are welcome — especially real-world feedback on suggestions that
 felt wrong. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the issues labelled
-[`good first issue`](https://github.com/mhilla/everyday-runtime/labels/good%20first%20issue).
+[`good first issue`](https://github.com/micha16372/everyday-runtime/labels/good%20first%20issue).
 
-- Questions and ideas: [Discussions](https://github.com/mhilla/everyday-runtime/discussions) · help: [SUPPORT.md](SUPPORT.md)
+- Questions and ideas: [Discussions](https://github.com/micha16372/everyday-runtime/discussions) · help: [SUPPORT.md](SUPPORT.md)
 - Security issues: [SECURITY.md](SECURITY.md) (private reporting only)
 - Community rules: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · maintainers: [MAINTAINERS.md](MAINTAINERS.md)
-- Releases: [GitHub releases](https://github.com/mhilla/everyday-runtime/releases) · notable changes: [CHANGELOG.md](CHANGELOG.md)
+- Releases: [GitHub releases](https://github.com/micha16372/everyday-runtime/releases) · notable changes: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 

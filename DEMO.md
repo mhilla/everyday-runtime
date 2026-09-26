@@ -7,7 +7,7 @@ itself takes about three.
 ## 1. Start the app
 
 ```bash
-git clone https://github.com/mhilla/everyday-runtime.git
+git clone https://github.com/micha16372/everyday-runtime.git
 cd everyday-runtime
 corepack enable && yarn install
 yarn twenty docker:start
@@ -73,5 +73,5 @@ Things to try next:
   learns that it runs out sooner and says so in “Why?”.
 
 If a suggestion ever feels wrong, please tell us with the
-[“Suggestion felt wrong”](https://github.com/mhilla/everyday-runtime/issues/new?template=suggestion_feedback.yml)
+[“Suggestion felt wrong”](https://github.com/micha16372/everyday-runtime/issues/new?template=suggestion_feedback.yml)
 issue template.

@@ -7,11 +7,11 @@ the evidence section before applying.
 
 ## Repository
 
-https://github.com/mhilla/everyday-runtime
+https://github.com/micha16372/everyday-runtime
 
 ## Role
 
-Primary Maintainer ([@mhilla](https://github.com/mhilla), see [MAINTAINERS.md](../MAINTAINERS.md))
+Primary Maintainer ([@micha16372](https://github.com/micha16372), see [MAINTAINERS.md](../MAINTAINERS.md))
 
 ## Public project summary
 
@@ -48,7 +48,7 @@ Collected from the GitHub API on **2026-09-26 17:31 UTC**.
 | Open issues | 8 (roadmap and contributor issues, labelled) |
 | Closed issues | 2 (#2, #3 — shipped in 0.2.0) |
 | Pull requests | 7 merged (3 feature/maintenance by the maintainer, 3 Dependabot updates reviewed and merged, 1 release), 1 Dependabot PR declined with reasoning (#13) |
-| Releases | 2 — [v0.1.0](https://github.com/mhilla/everyday-runtime/releases/tag/v0.1.0), [v0.2.0](https://github.com/mhilla/everyday-runtime/releases/tag/v0.2.0) |
+| Releases | 2 — [v0.1.0](https://github.com/micha16372/everyday-runtime/releases/tag/v0.1.0), [v0.2.0](https://github.com/micha16372/everyday-runtime/releases/tag/v0.2.0) |
 | CI on `main` | passing (lint, typecheck, 89 unit tests, 3 integration tests against a real Twenty instance, dependency review, CodeQL) |
 | Security | policy, private vulnerability reporting, secret scanning + push protection, Dependabot alerts, CodeQL |
 | Contributor experience | CONTRIBUTING, CODE_OF_CONDUCT, SUPPORT, issue/PR templates, 3 `good first issue`s, Discussions |
