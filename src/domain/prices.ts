@@ -232,3 +232,40 @@ export const matchPriceAlert = (
     : points
         .filter((p) => p.unitPrice <= maxUnitPrice && daysBetween(p.observedAt, now) <= withinDays && p.observedAt <= now)
         .sort((a, b) => b.observedAt.getTime() - a.observedAt.getTime());
+
+export type ParsedPriceInput =
+  | { valid: true; value: number | null }
+  | { valid: false; value: null };
+
+// Parses an optional decimal price entered by a person.
+// Returns:
+// - { valid: true, value: null } when empty (price is optional)
+// - { valid: true, value: number } when a non-negative decimal with . or ,
+// - { valid: false, value: null } for invalid input (e.g. "abc", "1,2,3", "-5")
+export const parsePriceInput = (raw: string): ParsedPriceInput => {
+  const trimmed = raw.trim();
+
+  if (trimmed === '') {
+    return { valid: true, value: null };
+  }
+
+  if (!/^(?:\d+(?:[.,]\d+)?|[.,]\d+)$/.test(trimmed)) {
+    return { valid: false, value: null };
+  }
+
+  const normalized = trimmed.replace(',', '.');
+  const parsed = Number(normalized);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return { valid: false, value: null };
+  }
+
+  return { valid: true, value: Math.round(parsed * 100) / 100 };
+};
+
+export const parseDecimal = (value: string): number | null => {
+  const result = parsePriceInput(value);
+
+  return result.valid ? result.value : null;
+};
+

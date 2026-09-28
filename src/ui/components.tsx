@@ -9,6 +9,7 @@ import {
   formatQuantity,
 } from 'src/domain/presentation';
 import type { ProductOverview } from 'src/domain/shopping';
+import { parsePriceInput } from 'src/domain/prices';
 import { renderMessage } from 'src/domain/messages';
 import type { NeedAssessment, Product } from 'src/domain/types';
 import { Icon, NeedGauge, ProductAvatar } from 'src/ui/design';
@@ -151,18 +152,6 @@ export const NeedCard = ({
   );
 };
 
-const parseDecimal = (value: string): number | null => {
-  const normalized = value.trim().replace(',', '.');
-
-  if (normalized === '') {
-    return null;
-  }
-
-  const parsed = Number(normalized);
-
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
-};
-
 export type BuyDetails = {
   quantity: number;
   priceAmount: number | null;
@@ -186,17 +175,34 @@ export const BuyPanel = ({
   const { t } = useI18n();
   const [quantity, setQuantity] = useState(initialQuantity > 0 ? initialQuantity : 1);
   const [price, setPrice] = useState('');
+  const [priceError, setPriceError] = useState(false);
   const [store, setStore] = useState('');
   const step = quantity < 1 ? 0.25 : 1;
   const idPrefix = `er-buy-${product.id}`;
+  const priceErrorId = `${idPrefix}-price-error`;
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    const parsed = parsePriceInput(price);
+
+    if (!parsed.valid) {
+      setPriceError(true);
+
+      return;
+    }
+
     onConfirm({
       quantity,
-      priceAmount: parseDecimal(price),
+      priceAmount: parsed.value,
       store: store.trim() === '' ? null : store.trim(),
     });
+  };
+
+  const handlePriceChange = (value: string) => {
+    setPrice(value);
+    if (priceError) {
+      setPriceError(false);
+    }
   };
 
   return (
@@ -238,9 +244,17 @@ export const BuyPanel = ({
             inputMode="decimal"
             placeholder={t('e.g. 1.19')}
             value={price}
-            onChange={(event) => setPrice(event.target.value)}
+            aria-invalid={ariaBool(priceError)}
+            aria-describedby={priceError ? priceErrorId : undefined}
+            onChange={(event) => handlePriceChange(event.target.value)}
           />
+          {priceError && (
+            <p className="er-input-error" id={priceErrorId} role="alert">
+              {t('Enter a price like 1.19 or leave it empty')}
+            </p>
+          )}
         </div>
+
         <div>
           <label className="er-label" htmlFor={`${idPrefix}-store`}>
             {t('Store (optional)')}

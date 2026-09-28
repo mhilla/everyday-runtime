@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatAmountWithUnit, judgePrice, matchPriceAlert, planStockUp, summarizePrices } from 'src/domain/prices';
+import {
+  formatAmountWithUnit,
+  judgePrice,
+  matchPriceAlert,
+  parseDecimal,
+  parsePriceInput,
+  planStockUp,
+  summarizePrices,
+} from 'src/domain/prices';
 import type { PricePoint } from 'src/domain/prices';
 
 import { daysAgo, NOW } from './fixtures';
@@ -123,3 +131,39 @@ describe('formatAmountWithUnit', () => {
     expect(formatAmountWithUnit(2, 'rolls')).toBe('2 rolls');
   });
 });
+
+describe('parsePriceInput and parseDecimal', () => {
+  it('accepts empty input as valid with null value', () => {
+    expect(parsePriceInput('')).toEqual({ valid: true, value: null });
+    expect(parsePriceInput('   ')).toEqual({ valid: true, value: null });
+    expect(parseDecimal('')).toBeNull();
+    expect(parseDecimal('   ')).toBeNull();
+  });
+
+  it('accepts decimal numbers with dot or comma', () => {
+    expect(parsePriceInput('1.19')).toEqual({ valid: true, value: 1.19 });
+    expect(parsePriceInput('1,19')).toEqual({ valid: true, value: 1.19 });
+    expect(parsePriceInput(' 2 ')).toEqual({ valid: true, value: 2 });
+    expect(parsePriceInput('0.99')).toEqual({ valid: true, value: 0.99 });
+    expect(parsePriceInput(',50')).toEqual({ valid: true, value: 0.5 });
+    expect(parsePriceInput('.50')).toEqual({ valid: true, value: 0.5 });
+    expect(parsePriceInput('0')).toEqual({ valid: true, value: 0 });
+
+    expect(parseDecimal('1.19')).toBe(1.19);
+    expect(parseDecimal('1,19')).toBe(1.19);
+  });
+
+  it('rejects invalid inputs such as non-numbers, multiple separators or negative values', () => {
+    expect(parsePriceInput('abc')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput('1,2,3')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput('1.2.3')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput('-1.19')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput('1.19 eur')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput('.')).toEqual({ valid: false, value: null });
+    expect(parsePriceInput(',')).toEqual({ valid: false, value: null });
+
+    expect(parseDecimal('abc')).toBeNull();
+    expect(parseDecimal('1,2,3')).toBeNull();
+  });
+});
+

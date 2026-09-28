@@ -43,6 +43,7 @@ const DE: Record<string, string> = {
   'Increase quantity': 'Menge erhöhen',
   'Price (optional)': 'Preis (optional)',
   'e.g. 1.19': 'z. B. 1,19',
+  'Enter a price like 1.19 or leave it empty': 'Gib einen Preis wie 1,19 ein oder lass das Feld leer',
   'Store (optional)': 'Geschäft (optional)',
   'e.g. Corner shop': 'z. B. Supermarkt',
   'Saving…': 'Speichert …',
