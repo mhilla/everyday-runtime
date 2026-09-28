@@ -41,7 +41,7 @@ How we compare with other list and pantry apps: [docs/MARKET.md](docs/MARKET.md)
 - [ ] Shared-flat mode: shared vs. private products, rota, cost split (#32)
 - [ ] Shopping mode sorted by store and aisle (#43)
 - [ ] Multiple lists, per store or occasion (#46)
-- [ ] CSV import and export (#49)
+- [x] CSV import and export (#49)
 - [ ] Better activity history: filters, undo, edit/delete (#5)
 - [ ] Server-side aggregation for long histories (#6)
 

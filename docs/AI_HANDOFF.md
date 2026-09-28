@@ -29,13 +29,22 @@ Autonome Übernahme des Repositories, Etablierung des dauerhaften Git-/Betriebs-
   - Inline-Fehlermeldung `"Enter a price like 1.19 or leave it empty"` in `BuyPanel` (`src/ui/components.tsx`) mit Verknüpfung über `aria-describedby` und `aria-invalid`.
   - Formular bricht bei ungültigem Preis den Submit ab und bleibt geöffnet; Fehler wird bei Eingabeänderung zurückgesetzt.
   - Deutsche Übersetzung in `src/ui/i18n.tsx` (`'Gib einen Preis wie 1,19 ein oder lass das Feld leer'`) und Styles in `src/ui/styles.ts` (`.er-input-error`, `.er-input[aria-invalid="true"]`).
+- [x] Issue #49 umgesetzt ("CSV import and export"):
+  - Reines Domain-Modul `src/domain/csv.ts` mit RFC 4180 konformem CSV-Parsing (`parseCsv`, `parseProductsCsv`) und Serialisierung (`exportProductsCsv`, `escapeCsvCell`).
+  - Auto-Erkennung von Delimitern (Komma, Semikolon, Tab) sowie flexiblen / mehrsprachigen Spalten-Aliassen (`name`, `category`, `unit`, `typicalQuantity`, `shelfLifeDays`, `barcode`).
+  - 14 Unit-Tests in `src/domain/__tests__/csv.test.ts` inklusive lückenlosem Round-Trip-Test.
+  - `NewProduct` in `src/data/household-repository.ts` um `barcode` erweitert.
+  - `actions.importProductsCsv` in `src/data/household-actions.ts` zum Importieren von Produkten mit Duplikat-Überspringen (`skipping duplicates`) und Unarchiving; Unit-Test in `src/data/__tests__/household-actions.test.ts`.
+  - Pantry-Screen (`src/ui/screens/products-screen.tsx`) um "Import CSV" (Textarea + Datei-Picker) und "Export CSV" (Download via Data-URI) erweitert; vollständige DE-Übersetzungen in `src/ui/i18n.tsx`.
+  - In `ROADMAP.md` abgehakt.
 
 ## 3. Offen
 - [ ] Weitere dokumentierte Roadmap- und Issue-Aufgaben:
-  - Issue #49: CSV Import und Export (v0.5)
   - Issue #5: Activity history: undo, edit, delete (v0.5)
   - Issue #46: Multiple lists (per store, per occasion) (v0.5)
   - Issue #43: Shopping mode sorted by store and aisle (v0.5)
+  - Issue #32: Shared-flat mode (v0.5)
+  - Issue #31: Care mode (v0.5)
   (Hinweis: #10 und #12 bleiben für externe Mitwirkende reserviert).
 
 ## 4. Blocker
@@ -48,8 +57,8 @@ Keine technischen oder organisatorischen Blocker vorhanden.
 
 ## 6. Tatsächlich geprüfter Stand
 - Branch: `antigravity/everyday-runtime`
-- Tests: `yarn lint`, `yarn typecheck`, `yarn test` erfolgreich auf Raspberry Pi ausgeführt (20/20 Testdateien, 208/208 Tests bestanden).
+- Tests: `yarn lint`, `yarn typecheck`, `yarn test` erfolgreich auf Raspberry Pi ausgeführt (21/21 Testdateien, 223/223 Tests bestanden).
 
 ## 7. Exakt nächster Schritt
-1. Issue #9 committen und zu `origin/antigravity/everyday-runtime` pushen, GitHub-Sync verifizieren.
-2. Nächstes Arbeitspaket vorbereiten (Issue #49: CSV Import und Export analysieren und Umsetzung planen).
+1. Issue #49 committen und zu `origin/antigravity/everyday-runtime` pushen, GitHub-Sync verifizieren.
+2. Nächstes Arbeitspaket angehen: Issue #5 (Activity history: undo, edit, delete) oder Issue #43 (Shopping mode).

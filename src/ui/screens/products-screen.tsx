@@ -4,8 +4,10 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconCircleCheck,
+  IconDownload,
   IconPlus,
   IconShoppingBag,
+  IconUpload,
 } from '@tabler/icons-react';
 import { useState } from 'react';
 
@@ -16,6 +18,7 @@ import {
   formatRate,
   observationLabel,
 } from 'src/domain/presentation';
+import { exportProductsCsv } from 'src/domain/csv';
 import { sortProductsForBrowsing } from 'src/domain/shopping';
 import type { ProductOverview } from 'src/domain/shopping';
 import { agoText, intervalText, renderMessage } from 'src/domain/messages';
@@ -170,6 +173,8 @@ const ProductDetail = ({
 export const ProductsScreen = ({ household }: { household: Household }) => {
   const [query, setQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importText, setImportText] = useState('');
   const { overview, busyKey, run, snapshot } = household;
   const { t, lang } = useI18n();
   const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -241,6 +246,102 @@ export const ProductsScreen = ({ household }: { household: Household }) => {
           })}
         </ul>
       )}
+
+      <div className="er-actions" style={{ justifyContent: 'center', marginTop: 16 }}>
+        <button
+          type="button"
+          className="er-btn er-btn-ghost er-btn-small"
+          aria-expanded={ariaBool(isImporting)}
+          onClick={() => setIsImporting((prev) => !prev)}
+        >
+          <IconUpload size={18} stroke={2} aria-hidden="true" />
+          {t('Import CSV')}
+        </button>
+        <a
+          className="er-btn er-btn-ghost er-btn-small"
+          href={`data:text/csv;charset=utf-8,${encodeURIComponent(exportProductsCsv(snapshot?.products ?? []))}`}
+          download="everyday-products.csv"
+        >
+          <IconDownload size={18} stroke={2} aria-hidden="true" />
+          {t('Export CSV')}
+        </a>
+      </div>
+
+      {isImporting && (
+        <section className="er-card" aria-labelledby="er-csv-import-title">
+          <h3 className="er-section-title" id="er-csv-import-title">
+            {t('Import products from CSV')}
+          </h3>
+          <p className="er-fine-print">
+            {t('Paste a CSV with columns name, category, unit — or choose a file.')}
+          </p>
+          <textarea
+            className="er-input"
+            style={{ width: '100%', minHeight: 90, fontFamily: 'monospace', fontSize: 13, resize: 'vertical', marginTop: 8 }}
+            placeholder={'name,category,unit\nMilk,dairy,l\nApples,produce,kg'}
+            value={importText}
+            onChange={(e) => setImportText(e.target.value)}
+          />
+          <div className="er-actions" style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              className="er-btn er-btn-primary er-btn-small"
+              disabled={busyKey !== null || importText.trim() === ''}
+              onClick={() =>
+                run(
+                  'import-csv',
+                  (actions) => actions.importProductsCsv(importText, snapshot?.products ?? []),
+                  (result) => {
+                    setIsImporting(false);
+                    setImportText('');
+
+                    return result
+                      ? t('Imported {imported} products ({skipped} skipped)', {
+                          imported: result.importedCount,
+                          skipped: result.skippedCount,
+                        })
+                      : undefined;
+                  },
+                )
+              }
+            >
+              {t('Start import')}
+            </button>
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="er-visually-hidden"
+              id="er-csv-file-input"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+
+                if (file) {
+                  const reader = new FileReader();
+
+                  reader.onload = (ev) => {
+                    setImportText(String(ev.target?.result ?? ''));
+                  };
+                  reader.readAsText(file);
+                }
+              }}
+            />
+            <label htmlFor="er-csv-file-input" className="er-btn er-btn-ghost er-btn-small">
+              {t('Choose file…')}
+            </label>
+            <button
+              type="button"
+              className="er-btn er-btn-ghost er-btn-small"
+              onClick={() => {
+                setIsImporting(false);
+                setImportText('');
+              }}
+            >
+              {t('Cancel')}
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
+

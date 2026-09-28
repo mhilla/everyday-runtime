@@ -96,6 +96,7 @@ export type NewProduct = {
   defaultUnit?: string | null;
   typicalPurchaseQuantity?: number | null;
   shelfLifeDays?: number | null;
+  barcode?: string | null;
 };
 
 export type NewObservation = {
@@ -186,6 +187,7 @@ export const createHouseholdRepository = (transport: RestTransport) => ({
       defaultUnit: input.defaultUnit ?? null,
       typicalPurchaseQuantity: input.typicalPurchaseQuantity ?? null,
       shelfLifeDays: input.shelfLifeDays ?? null,
+      barcode: input.barcode ?? null,
       archived: false,
     });
 

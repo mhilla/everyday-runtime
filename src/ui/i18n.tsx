@@ -56,6 +56,15 @@ const DE: Record<string, string> = {
   'Marked empty': 'Als leer gemeldet',
   // products
   'Find or add a product': 'Produkt suchen oder anlegen',
+  'Import CSV': 'CSV importieren',
+  'Export CSV': 'CSV exportieren',
+  'Import products from CSV': 'Produkte aus CSV importieren',
+  'Paste a CSV with columns name, category, unit — or choose a file.':
+    'Füge eine CSV mit den Spalten Name, Kategorie, Einheit ein oder wähle eine Datei.',
+  'Choose file…': 'Datei auswählen …',
+  'Start import': 'Import starten',
+  'Imported {imported} products ({skipped} skipped)':
+    '{imported} Produkte importiert ({skipped} übersprungen)',
   ' · on your list': ' · auf der Liste',
   'Last bought': 'Zuletzt gekauft',
   'Lasts about': 'Reicht etwa',

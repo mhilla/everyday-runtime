@@ -1,4 +1,5 @@
 import type { HouseholdRepository } from 'src/data/household-repository';
+import { parseProductsCsv } from 'src/domain/csv';
 import { buildDemoHousehold } from 'src/domain/demo-data';
 import type { Lang } from 'src/domain/messages';
 import { findProductByName, parseQuickAdd, toDisplayName } from 'src/domain/quick-add';
@@ -283,6 +284,45 @@ export const createHouseholdActions = (
           dismissedAt: clock(),
         });
       }
+    },
+
+    // Imports products from a CSV string, skipping existing products by name.
+    async importProductsCsv(csvText: string, existingProducts: Product[]) {
+      const parsedRows = parseProductsCsv(csvText);
+      const imported: Product[] = [];
+      const skipped: string[] = [];
+      const pool = [...existingProducts];
+
+      for (const row of parsedRows) {
+        const existing = findProductByName(pool, row.name);
+
+        if (existing) {
+          if (existing.archived) {
+            await repository.updateProduct(existing.id, { archived: false });
+          }
+          skipped.push(existing.name);
+          continue;
+        }
+
+        const created = await repository.createProduct({
+          name: row.name,
+          category: row.category,
+          defaultUnit: row.defaultUnit,
+          typicalPurchaseQuantity: row.typicalPurchaseQuantity,
+          shelfLifeDays: row.shelfLifeDays,
+          barcode: row.barcode,
+        });
+
+        imported.push(created);
+        pool.push(created);
+      }
+
+      return {
+        importedCount: imported.length,
+        skippedCount: skipped.length,
+        imported,
+        skipped,
+      };
     },
 
     // Creates the documented demo household (see src/domain/demo-data.ts).

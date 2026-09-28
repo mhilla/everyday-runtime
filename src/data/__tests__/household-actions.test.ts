@@ -263,3 +263,19 @@ describe('community prices', () => {
     });
   });
 });
+
+describe('importProductsCsv', () => {
+  it('imports new products from CSV and skips duplicates', async () => {
+    const { actions, calls } = setup();
+    const existing = [product({ id: 'milk-1', name: 'Milk' })];
+    const csv = 'name,category,defaultUnit\nMilk,dairy,l\nButter,dairy,pack\nOat milk,beverages,l\nButter,dairy,pack';
+
+    const result = await actions.importProductsCsv(csv, existing);
+
+    expect(result.importedCount).toBe(2);
+    expect(result.skippedCount).toBe(2);
+    expect(result.skipped).toEqual(['Milk', 'Butter']);
+    expect(calls.filter((c) => c.method === 'POST' && c.path === '/rest/products')).toHaveLength(2);
+  });
+});
+
