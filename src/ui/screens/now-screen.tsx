@@ -16,6 +16,7 @@ import { EmptyState, NeedCard, QuickAddForm } from 'src/ui/components';
 import type { Household } from 'src/ui/use-household';
 import { useI18n } from 'src/ui/i18n';
 import { ProductAvatar } from 'src/ui/design';
+import { quickAddFeedback } from 'src/ui/quick-add-feedback';
 import { TalkBox } from 'src/ui/talk-box';
 import { useSkippedQuestions } from 'src/ui/use-skipped-questions';
 
@@ -82,9 +83,11 @@ export const NowScreen = ({
           submitLabel={t('Add')}
           busy={busyKey !== null}
           onSubmit={(value) =>
-            run('quick-add', (actions) =>
-              actions.quickAddToList(value, snapshot?.products ?? [], openItems),
-            t('On your list'))
+            run(
+              'quick-add',
+              (actions) => actions.quickAddToList(value, snapshot?.products ?? [], openItems),
+              (result) => quickAddFeedback(result, t),
+            )
           }
         />
       </div>
@@ -290,9 +293,11 @@ export const NowScreen = ({
           submitLabel={t('Add')}
           busy={busyKey !== null}
           onSubmit={(value) =>
-            run('quick-add', (actions) =>
-              actions.quickAddToList(value, snapshot?.products ?? [], openItems),
-            t('On your list'))
+            run(
+              'quick-add',
+              (actions) => actions.quickAddToList(value, snapshot?.products ?? [], openItems),
+              (result) => quickAddFeedback(result, t),
+            )
           }
         />
       </section>

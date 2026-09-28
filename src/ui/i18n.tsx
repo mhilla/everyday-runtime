@@ -26,6 +26,7 @@ const DE: Record<string, string> = {
   ' At {store}.': ' Bei {store}.',
   'Add to list': 'Auf die Liste',
   '{name} added to your list': '{name} auf die Liste gesetzt',
+  '{name} is already on your list': '{name} steht schon auf der Liste',
   'Question about {name}': 'Frage zu {name}',
   'Still enough {name}?': 'Noch genug {name}?',
   // cards

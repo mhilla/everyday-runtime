@@ -12,10 +12,10 @@ import type { HouseholdSnapshot, ProductOverview } from 'src/domain/shopping';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
-export type RunAction = (
+export type RunAction = <T = unknown>(
   key: string,
-  work: (actions: HouseholdActions) => Promise<unknown>,
-  successMessage?: string,
+  work: (actions: HouseholdActions) => Promise<T>,
+  successMessage?: string | ((result: T) => string | undefined),
 ) => Promise<void>;
 
 const notify = (message: string, variant: 'success' | 'error') => {
@@ -82,11 +82,14 @@ export const useHousehold = () => {
     async (key, work, successMessage) => {
       setBusyKey(key);
       try {
-        await work(actions);
+        const result = await work(actions);
         await reload();
-        if (successMessage) {
-          setAnnouncement(successMessage);
-          notify(successMessage, 'success');
+        const message =
+          typeof successMessage === 'function' ? successMessage(result) : successMessage;
+
+        if (message) {
+          setAnnouncement(message);
+          notify(message, 'success');
         }
       } catch (error) {
         const message = t('Could not save: {error}', { error: errorMessage(error) });

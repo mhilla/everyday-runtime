@@ -10,6 +10,7 @@ import type { Product, ShoppingItem } from 'src/domain/types';
 import { ariaBool, BuyPanel, EmptyState, NeedCard, QuickAddForm } from 'src/ui/components';
 import { ProductAvatar } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
+import { quickAddFeedback } from 'src/ui/quick-add-feedback';
 import type { Household } from 'src/ui/use-household';
 
 const RECENTLY_BOUGHT_DAYS = 7;
@@ -130,7 +131,11 @@ export const ListScreen = ({ household }: { household: Household }) => {
         submitLabel={t('Add')}
         busy={busyKey !== null}
         onSubmit={(value) =>
-          run('quick-add', (actions) => actions.quickAddToList(value, products, openItems), t('On your list'))
+          run(
+            'quick-add',
+            (actions) => actions.quickAddToList(value, products, openItems),
+            (result) => quickAddFeedback(result, t),
+          )
         }
       />
 
