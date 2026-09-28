@@ -81,3 +81,43 @@ This helps automatically generate required IDs etc.
 - Page layout widgets: no `position` (deprecated in twenty-sdk 2.42); order = array order, height via `heightBehavior`.
 - Checks: `yarn lint`, `yarn typecheck`, `yarn test` (unit), `yarn test:integration` (needs `yarn twenty docker:start`; it uninstalls the app afterwards, so run `yarn twenty apply` again).
 - Right after `yarn twenty docker:start`, `yarn twenty apply` may fail with `ECONNRESET` while the server warms up; wait and retry.
+
+## Git, CI and Operational Rules
+
+- **Workspace and branch:**
+  - Work exclusively in the local checkout `/home/mic8070/antigravity-workspaces/everyday-runtime` and on the working branch `antigravity/everyday-runtime`.
+  - Use Local Mode; never create an additional git worktree.
+  - Branch `antigravity/everyday-runtime` tracks `origin/antigravity/everyday-runtime`.
+  - Never reset, stash, clean, overwrite, or delete unknown or uncommitted changes. No force-push.
+- **GitHub backup and sync workflow:**
+  - GitHub is the permanent backup and handoff point.
+  - After every coherent, completed work package:
+    1. Run relevant local checks on the Raspberry Pi (`yarn lint`, `yarn typecheck`, `yarn test`, and local integration tests when relevant).
+    2. Check `git diff` and `git status`.
+    3. Make a clear, meaningful commit.
+    4. Push to `origin/antigravity/everyday-runtime`.
+    5. Verify GitHub sync via `git fetch origin --prune` and `git rev-list --left-right --count '@{u}'...HEAD`.
+    6. Update `docs/AI_HANDOFF.md` and commit/push the update.
+  - A completed work state must never remain only locally on the Pi.
+- **GitHub Actions restrictions:**
+  - Do not use GitHub Actions at present. Do not trigger, rerun, fix, or require Actions as a mandatory CI step.
+  - Do not create new Actions workflows and do not delete existing ones.
+  - While this rule is active:
+    - No pull requests that would trigger GitHub Actions.
+    - Do not push or merge to `main`.
+    - Exclusively use the working branch `antigravity/everyday-runtime` for GitHub work and backup.
+- **Security and secrets:**
+  - Never commit secrets, tokens, passwords, API keys, `.env` file contents, or private keys.
+- **Architecture and boundaries:**
+  - Preserve architectural boundaries: `src/domain` is pure TypeScript without Twenty/React/side-effect dependencies; `now` is injected; all inference engine rules require unit tests; tunable numbers belong in `INFERENCE_CONFIG`.
+  - All database writes must go through `src/data/household-actions.ts`.
+- **Product focus and direction:**
+  - Vision, roadmap, issues, and real user feedback determine further development. Do not invent a new product strategy.
+  - `docs/NEXT_HUMAN_STEPS.md` contains human activities. Never independently perform external communication, Reddit posts, messages, or user outreach.
+- **Autonomy and escalation:**
+  - Work with maximum autonomy. Only ask the user/owner for genuine owner decisions, login/2FA, external approvals, or missing credentials.
+  - When no owner blocker exists, autonomously continue with the next documented step after completing a work package.
+- **Handoff documentation:**
+  - Maintain `docs/AI_HANDOFF.md` as the canonical, model-independent handoff file. It must always contain: Current Goal, Completed, Open, Blockers, Owner Decisions, Verified State, and Exact Next Step.
+  - No critical working state should exist only in the chat session.
+
