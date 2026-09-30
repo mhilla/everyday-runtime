@@ -202,10 +202,10 @@ Full list: [ROADMAP.md](ROADMAP.md) · where it is heading: [VISION.md](docs/VIS
 
 ## Contributing
 
-Contributions are welcome — especially real-world feedback on suggestions that
-felt wrong. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the issues labelled
-[`good first issue`](https://github.com/micha16372/everyday-runtime/labels/good%20first%20issue).
+Everyday Runtime is maintained as a focused self-hosted project. At this time, we are **not accepting unsolicited pull requests or external code contributions**.
 
+- Feedback & Bug Reports: Please open an [Issue](https://github.com/micha16372/everyday-runtime/issues) — especially real-world feedback on suggestions that felt wrong.
+- Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Questions and ideas: [Discussions](https://github.com/micha16372/everyday-runtime/discussions) · help: [SUPPORT.md](SUPPORT.md)
 - Security issues: [SECURITY.md](SECURITY.md) (private reporting only)
 - Community rules: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · maintainers: [MAINTAINERS.md](MAINTAINERS.md)

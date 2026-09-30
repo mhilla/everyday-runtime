@@ -1,8 +1,12 @@
 # Contributing
 
-Thanks for helping! Everyday Runtime is small on purpose; a focused change with a
-clear reason is the best kind of contribution. By participating you agree to the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+Everyday Runtime is currently maintained as a focused, personal self-hosted project.
+
+> [!NOTE]
+> **Contributions Notice:**
+> We are currently **not accepting unsolicited pull requests or external code contributions**.
+> If you have feedback, find a bug, or an inference suggestion felt wrong, please open an Issue.
+> Thank you for understanding!
 
 ## Ways to help
 
@@ -10,13 +14,8 @@ clear reason is the best kind of contribution. By participating you agree to the
   there is. Open the suggestion's **Why?**, copy the text and file it with the
   [“Suggestion felt wrong”](https://github.com/micha16372/everyday-runtime/issues/new?template=suggestion_feedback.yml)
   template, together with what was actually true. Leave out anything private.
-- Fix a bug or improve accessibility.
-- Pick an issue labelled
-  [`good first issue`](https://github.com/micha16372/everyday-runtime/labels/good%20first%20issue)
-  or [`help wanted`](https://github.com/micha16372/everyday-runtime/labels/help%20wanted).
-- Work on an item from [ROADMAP.md](ROADMAP.md) — please comment on or open an
-  issue first for anything larger than a bug fix, so we agree on the approach
-  before you invest time.
+- Report bugs or accessibility issues via GitHub Issues.
+- Provide feedback on [ROADMAP.md](ROADMAP.md) items in Issues or Discussions.
 
 ## Scope
 
