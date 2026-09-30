@@ -66,6 +66,8 @@ const DE: Record<string, string> = {
   'Imported {imported} products ({skipped} skipped)':
     '{imported} Produkte importiert ({skipped} übersprungen)',
   ' · on your list': ' · auf der Liste',
+  Category: 'Kategorie',
+  '{name} category updated': '{name} Kategorie aktualisiert',
   'Last bought': 'Zuletzt gekauft',
   'Lasts about': 'Reicht etwa',
   'not yet known': 'noch unbekannt',

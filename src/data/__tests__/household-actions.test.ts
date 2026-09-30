@@ -242,6 +242,18 @@ describe('household actions', () => {
       body: { priceAlertUnitPrice: 0.5, shelfLifeDays: 365, barcode: '3057640257773' },
     });
   });
+
+  it('sets a product category', async () => {
+    const { actions, calls } = setup();
+
+    await actions.setCategory(overviewFor(), 'DAIRY');
+
+    expect(calls[0]).toMatchObject({
+      method: 'PATCH',
+      path: '/rest/products/milk',
+      body: { category: 'DAIRY' },
+    });
+  });
 });
 
 

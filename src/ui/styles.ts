@@ -241,6 +241,8 @@ export const APP_STYLES = `
 .er-input:focus { border-color: var(--er-accent); }
 .er-input[aria-invalid="true"] { border-color: var(--er-high); }
 .er-input-error { margin-top: 4px; font-size: 13px; color: var(--er-high); }
+.er-select { height: 36px; padding: 0 10px; border-radius: var(--er-radius-sm); border: 1px solid var(--er-border); background: var(--er-surface); font-size: 14px; color: inherit; }
+.er-select:focus { border-color: var(--er-accent); outline: none; }
 .er-label { display: block; font-size: 13px; font-weight: 600; color: var(--er-muted); margin-bottom: 4px; }
 
 /* list items */

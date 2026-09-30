@@ -19,6 +19,8 @@ import {
   observationLabel,
 } from 'src/domain/presentation';
 import { exportProductsCsv } from 'src/domain/csv';
+import { PRODUCT_CATEGORIES } from 'src/domain/types';
+import type { ProductCategory } from 'src/domain/types';
 import { sortProductsForBrowsing } from 'src/domain/shopping';
 import type { ProductOverview } from 'src/domain/shopping';
 import { agoText, intervalText, renderMessage } from 'src/domain/messages';
@@ -59,6 +61,36 @@ const ProductDetail = ({
         )}
       </div>
       <dl className="er-facts">
+        <div className="er-fact">
+          <dt>
+            <label htmlFor={`er-category-${product.id}`}>{t('Category')}</label>
+          </dt>
+          <dd>
+            <select
+              id={`er-category-${product.id}`}
+              className="er-select"
+              value={product.category ?? 'OTHER'}
+              disabled={busy}
+              onChange={(event) =>
+                run(
+                  product.id,
+                  (actions) =>
+                    actions.setCategory(
+                      entry,
+                      event.target.value as ProductCategory,
+                    ),
+                  t('{name} category updated', { name: product.name }),
+                )
+              }
+            >
+              {PRODUCT_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {categoryLabel(category, lang)}
+                </option>
+              ))}
+            </select>
+          </dd>
+        </div>
         <div className="er-fact">
           <dt>{t('Last bought')}</dt>
           <dd>{assessment.lastPurchasedAt ? agoText(assessment.lastPurchasedAt, now, lang) : '—'}</dd>
