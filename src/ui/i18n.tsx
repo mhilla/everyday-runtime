@@ -7,6 +7,8 @@ import type { Lang } from 'src/domain/messages';
 // gettext-style UI translations: the English text is the key, so a missing
 // German entry falls back to English instead of showing a key.
 const DE: Record<string, string> = {
+    Category: 'Kategorie',
+  '{name} category updated': '{name} Kategorie aktualisiert',
   // shell
   Now: 'Jetzt',
   List: 'Liste',

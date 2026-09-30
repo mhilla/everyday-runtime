@@ -25,7 +25,9 @@ import { WelcomeState } from 'src/ui/screens/now-screen';
 import { NeedGauge, ProductAvatar } from 'src/ui/design';
 import { useI18n } from 'src/ui/i18n';
 import type { Household } from 'src/ui/use-household';
-
+//import { PRODUCT_CATEGORIES, ProductCategory } from 'src/domain/types';
+import { PRODUCT_CATEGORIES } from 'src/domain/types';
+import type { ProductCategory } from 'src/domain/types';
 const ProductDetail = ({
   entry,
   household,
@@ -80,6 +82,33 @@ const ProductDetail = ({
           <dd>{describeConfidence(assessment.confidence, lang)}</dd>
         </div>
       </dl>
+            <div className="er-fact">
+        <label htmlFor={`er-category-${product.id}`}>
+          {t('Category')}
+        </label>
+        <select
+          id={`er-category-${product.id}`}
+          value={product.category ?? 'OTHER'}
+          disabled={busy}
+          onChange={(event) =>
+            run(
+              product.id,
+              (actions) =>
+                actions.setCategory(
+                  entry,
+                  event.target.value as ProductCategory,
+                ),
+              t('{name} category updated', { name: product.name }),
+            )
+          }
+        >
+          {PRODUCT_CATEGORIES.map((category) => (
+            <option key={category} value={category}>
+              {categoryLabel(category, lang)}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="er-actions">
         <button
           type="button"

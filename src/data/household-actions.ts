@@ -3,7 +3,7 @@ import { buildDemoHousehold } from 'src/domain/demo-data';
 import type { Lang } from 'src/domain/messages';
 import { findProductByName, parseQuickAdd, toDisplayName } from 'src/domain/quick-add';
 import type { ProductOverview } from 'src/domain/shopping';
-import type { Product, ShoppingItem } from 'src/domain/types';
+import type { Product, ProductCategory, ShoppingItem } from 'src/domain/types';
 
 // Every user interaction of the app, expressed as a small, explicit sequence
 // of writes. The UI calls these and reloads; nothing else writes data.
@@ -262,18 +262,23 @@ export const createHouseholdActions = (
 
       return usable.length;
     },
+async updateProductSettings(
+  product: Product,
+  settings: {
+    priceAlertUnitPrice?: number | null;
+    shelfLifeDays?: number | null;
+    barcode?: string | null;
+  },
+) {
+  await repository.updateProduct(product.id, settings);
+},
 
-    async updateProductSettings(
-      product: Product,
-      settings: {
-        priceAlertUnitPrice?: number | null;
-        shelfLifeDays?: number | null;
-        barcode?: string | null;
-      },
-    ) {
-      await repository.updateProduct(product.id, settings);
-    },
-
+async setCategory(
+  overview: ProductOverview,
+  category: ProductCategory,
+) {
+  await repository.updateProduct(overview.product.id, { category });
+},
     async archiveProduct(overview: ProductOverview) {
       await repository.updateProduct(overview.product.id, { archived: true });
 
