@@ -1,4 +1,4 @@
-pytest-homeassistant-custom-component==0.13.366
+pytest-homeassistant-custom-component==0.13.367
 # Assist (conversation) for tests/test_voice_examples.py; versions match that Home Assistant release.
 gazetteer-matcher==1.2.0
 hassil==3.12.1
