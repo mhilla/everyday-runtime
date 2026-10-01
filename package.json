@@ -44,9 +44,9 @@
     "oxlint": "^1.85.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "twenty-client-sdk": "2.42.0",
-    "twenty-sdk": "2.42.0",
-    "twenty-ui": "2.42.0",
+    "twenty-client-sdk": "2.43.0",
+    "twenty-sdk": "2.43.0",
+    "twenty-ui": "2.43.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.0"
   }
