@@ -5,6 +5,7 @@ import type {
   Observation,
   PriceObservation,
   Product,
+  ProductCategory,
   Purchase,
   ShoppingItem,
 } from 'src/domain/types';
@@ -138,3 +139,65 @@ export const selectOpenItems = (items: ShoppingItem[]) =>
         (b.confidence ?? 1) - (a.confidence ?? 1) ||
         a.name.localeCompare(b.name),
     );
+
+export const DEFAULT_CATEGORY_AISLE_ORDER: ProductCategory[] = [
+  'PRODUCE',
+  'BAKERY',
+  'DAIRY',
+  'PANTRY',
+  'BEVERAGES',
+  'HOUSEHOLD',
+  'PERSONAL_CARE',
+  'FROZEN',
+  'OTHER',
+];
+
+export type AisleGroup<T> = {
+  category: ProductCategory;
+  items: T[];
+};
+
+export const groupItemsByAisle = (
+  items: ShoppingItem[],
+  productsById: Map<string, Product>,
+  aisleOrder: readonly ProductCategory[] = DEFAULT_CATEGORY_AISLE_ORDER,
+): AisleGroup<ShoppingItem>[] => {
+  const groups = new Map<ProductCategory, ShoppingItem[]>();
+
+  for (const item of items) {
+    const product = item.productId ? productsById.get(item.productId) : null;
+    const category: ProductCategory = product?.category ?? 'OTHER';
+    const list = groups.get(category);
+
+    if (list) {
+      list.push(item);
+    } else {
+      groups.set(category, [item]);
+    }
+  }
+
+  const result: AisleGroup<ShoppingItem>[] = [];
+
+  for (const category of aisleOrder) {
+    const list = groups.get(category);
+
+    if (list && list.length > 0) {
+      result.push({
+        category,
+        items: [...list].sort((a, b) => a.name.localeCompare(b.name)),
+      });
+      groups.delete(category);
+    }
+  }
+
+  for (const [category, list] of groups.entries()) {
+    if (list.length > 0) {
+      result.push({
+        category,
+        items: [...list].sort((a, b) => a.name.localeCompare(b.name)),
+      });
+    }
+  }
+
+  return result;
+};

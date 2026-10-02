@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { buildNeedsReport } from 'src/domain/needs-report';
 import {
   buildOverview,
+  groupItemsByAisle,
   selectProbablyNeeded,
   selectSuggestions,
 } from 'src/domain/shopping';
@@ -179,5 +180,72 @@ describe('buildNeedsReport', () => {
         },
       ],
     });
+  });
+});
+
+describe('groupItemsByAisle', () => {
+  const apples = product({ id: 'apples', name: 'Apples', category: 'PRODUCE' });
+  const bananas = product({ id: 'bananas', name: 'Bananas', category: 'PRODUCE' });
+  const toast = product({ id: 'toast', name: 'Toast', category: 'BAKERY' });
+  const butter = product({ id: 'butter', name: 'Butter', category: 'DAIRY' });
+  const peas = product({ id: 'peas', name: 'Frozen Peas', category: 'FROZEN' });
+  const batteries = product({ id: 'batteries', name: 'Batteries', category: null });
+
+  const productsMap = new Map([
+    ['apples', apples],
+    ['bananas', bananas],
+    ['toast', toast],
+    ['butter', butter],
+    ['peas', peas],
+    ['batteries', batteries],
+  ]);
+
+  it('groups items into aisle order and sorts alphabetically within category', () => {
+    const items = [
+      shoppingItem({ id: 'i1', name: 'Frozen Peas', productId: 'peas' }),
+      shoppingItem({ id: 'i2', name: 'Bananas', productId: 'bananas' }),
+      shoppingItem({ id: 'i3', name: 'Apples', productId: 'apples' }),
+      shoppingItem({ id: 'i4', name: 'Butter', productId: 'butter' }),
+      shoppingItem({ id: 'i5', name: 'Toast', productId: 'toast' }),
+      shoppingItem({ id: 'i6', name: 'Batteries', productId: 'batteries' }),
+    ];
+
+    const groups = groupItemsByAisle(items, productsMap);
+
+    expect(groups.map((g) => g.category)).toEqual([
+      'PRODUCE',
+      'BAKERY',
+      'DAIRY',
+      'FROZEN',
+      'OTHER',
+    ]);
+
+    // PRODUCE has Apples before Bananas
+    expect(groups[0].items.map((i) => i.name)).toEqual(['Apples', 'Bananas']);
+    // OTHER has Batteries
+    expect(groups[4].items.map((i) => i.name)).toEqual(['Batteries']);
+  });
+
+  it('handles items without a productId or unmapped products as OTHER', () => {
+    const items = [
+      shoppingItem({ id: 'i1', name: 'Sponges', productId: null }),
+    ];
+
+    const groups = groupItemsByAisle(items, productsMap);
+    expect(groups).toEqual([
+      { category: 'OTHER', items: [items[0]] },
+    ]);
+  });
+
+  it('respects a custom aisle order', () => {
+    const items = [
+      shoppingItem({ id: 'i1', name: 'Butter', productId: 'butter' }),
+      shoppingItem({ id: 'i2', name: 'Apples', productId: 'apples' }),
+    ];
+
+    const customOrder = ['DAIRY', 'PRODUCE'] as const;
+    const groups = groupItemsByAisle(items, productsMap, customOrder);
+
+    expect(groups.map((g) => g.category)).toEqual(['DAIRY', 'PRODUCE']);
   });
 });
